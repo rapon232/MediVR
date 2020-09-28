@@ -30,8 +30,6 @@ public class importDicom : MonoBehaviour
     private GameObject dicomImagePlane4;
     private GameObject dicomImagePlane5;
 
-    private GameObject dicomImageCube;
-
     private Texture2D[] planeTextureArray;
 
     private Texture2D planeTexture;
@@ -42,7 +40,12 @@ public class importDicom : MonoBehaviour
 
     private Texture2D[] textureArray;
     private Color[] colorsFor3DTexture;
-    private Texture3D cubeTexture;
+    private Texture3D threeDimTexture;
+
+    public int textureWidth;
+    public int textureHeight;
+    public int textureDepth;
+    public string textureRessourceName;
 
 
     // Start is called before the first frame update
@@ -68,6 +71,13 @@ public class importDicom : MonoBehaviour
 
         Debug.Log($"Path to Directory: {dirPath}");
         Debug.Log($"Path to first File in Directory: {path}");
+
+
+        //////// TEXTURE SELECTION
+
+        textureWidth = textureHeight = 256;
+        textureDepth = 512;
+        textureRessourceName = "Textures/Dicom 3D Textures/" + dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
 
 
         //////// 2D
@@ -109,33 +119,24 @@ public class importDicom : MonoBehaviour
 
 
         /////Create 3D Texture from Dicomfiles
-        //double scaleTexture = .25; cubeTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
+        //double scaleTexture = .25; threeDimTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
         
         /////Load 3DTexture as Asset
-        int textureXY = 256;
-        int textureDepth = 512;
-        string textureRessourceName = "Textures/" + dirName + "_3DTexture_" + textureXY + "x" + textureXY + "x" + textureDepth;
-
-        cubeTexture = Resources.Load<Texture3D>(textureRessourceName); 
+        threeDimTexture = Resources.Load<Texture3D>(textureRessourceName); 
         
-        if(cubeTexture != null)
+        if(threeDimTexture != null)
         {
-            Debug.Log($"3D Texture: {textureRessourceName} loaded from Ressources.");
+            Debug.Log($"3D Texture: {textureRessourceName} loaded from Ressources/Textures/Dicom 3D Textures.");
         }
         else
         {
             Debug.Log($"3D Texture does not exist. Initializing 3D Texture from {dirPath}.");
-            double scaleTexture = Convert.ToDouble(textureXY) / Convert.ToDouble(planeTextureArray[0].width); 
+            double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(planeTextureArray[0].width); 
             Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
-            cubeTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
-            Debug.Log($"3D Texture created from path {dirPath} and saved to Ressources.");
+            threeDimTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
+            Debug.Log($"3D Texture created from path {dirPath} and saved to Ressourcess/Textures/Dicom 3D Textures.");
         }
 
-        /////Set 3D Texture to material of cube
-        dicomImageCube = GameObject.Find("Dicom_Cube");
-        var dicomImageCubeRenderer = dicomImageCube.GetComponent<Renderer>();
-        dicomImageCubeRenderer.material.SetTexture("_Data", cubeTexture);
-        dicomImageCubeRenderer.material.SetInt("_Iterations", cubeTexture.width);
     }
 
     

@@ -240,7 +240,7 @@ public static class imageTools
 
             // Save the texture Asset to your Unity Project
 
-            string assetName = "Assets/Resources/Textures/" + textureAssetName + "_3DTexture_" + texture.width + "x" + texture.height + "x" + texture.depth + ".asset";
+            string assetName = "Assets/Resources/Textures/Dicom 3D Textures/" + textureAssetName + "_3DTexture_" + texture.width + "x" + texture.height + "x" + texture.depth + ".asset";
 
             UnityEditor.AssetDatabase.CreateAsset(texture, assetName);
 

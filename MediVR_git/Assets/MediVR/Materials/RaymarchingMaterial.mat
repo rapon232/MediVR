@@ -76,7 +76,7 @@ Material:
     - _Iterations: 512
     - _Metallic: 0
     - _Mode: 0
-    - _Normalization: 1.17
+    - _Normalization: 0.98
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SliceAxis1Max: 1
@@ -84,7 +84,7 @@ Material:
     - _SliceAxis2Max: 1
     - _SliceAxis2Min: 0
     - _SliceAxis3Max: 1
-    - _SliceAxis3Min: 0
+    - _SliceAxis3Min: 0.433
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

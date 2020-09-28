@@ -1,6 +1,6 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Custom/Ray Casting" {
+Shader "MediVR/RayCastingRendering" {
 	
 	Properties {
 		// the data cube
@@ -79,8 +79,10 @@ Shader "Custom/Ray Casting" {
 			    // calculate eye ray in object space
 				o.ray_d = -ObjSpaceViewDir(i.pos);
 				o.ray_o = i.pos.xyz - o.ray_d;
+				//o.ray_o = _WorldSpaceCameraPos;
 				// calculate position on screen (unused)
 				o.pos = UnityObjectToClipPos(i.pos);
+				//o.pos = mul(unity_WorldToObject, i.pos);
 
 				return o;
 			}
