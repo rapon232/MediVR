@@ -20,7 +20,7 @@ public class coordScript : MonoBehaviour
         quadRenderer = this.GetComponent<Renderer>();
         //Quad = GameObject.Find("Quad");
         
-        quadRenderer.material.SetTexture("_MainTex", Resources.Load<Texture3D>("Textures/Dicom 3D Textures/CT_Series_3DTexture_256x256x512"));
+        //quadRenderer.material.SetTexture("_MainTex", Resources.Load<Texture3D>("Textures/Dicom 3D Textures/CT_Series_3DTexture_256x256x512"));
         quadRenderer.material.SetVector("_StartCoords", startCoords);
     }
 
