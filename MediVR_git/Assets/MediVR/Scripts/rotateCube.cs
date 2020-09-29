@@ -14,21 +14,6 @@ public class rotateCube : MonoBehaviour
 
     protected bool rotate = false;
 
-    private void GetDevice()
-    {
-        InputDevices.GetDevicesAtXRNode(UnityEngine.XR.XRNode.LeftHand, devices);
-        if(devices.Count == 1)
-        {
-            controller = devices[0];
-            Debug.Log(devices[0]);
-        }
-    }
-
-    public void RotateCube ()
-    {
-        rotate = !rotate;
-    }
-
     public void Start()
     {
         GetDevice();
@@ -48,7 +33,7 @@ public class rotateCube : MonoBehaviour
             colors.normalColor = Color.red;
             button.GetComponent<Button> ().colors = colors;
 
-            if (controller.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 position))
+            if (controller.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 position) && position != Vector2.zero)
             {
                 //Debug.Log(position);
                 transform.Rotate (new Vector3 (position.y*100, -position.x*100, 0f) * Time.deltaTime, Space.World);
@@ -60,5 +45,20 @@ public class rotateCube : MonoBehaviour
             colors.normalColor = Color.black;
             button.GetComponent<Button> ().colors = colors;
         }
+    }
+
+    private void GetDevice()
+    {
+        InputDevices.GetDevicesAtXRNode(UnityEngine.XR.XRNode.LeftHand, devices);
+        if(devices.Count == 1)
+        {
+            controller = devices[0];
+            Debug.Log(devices[0]);
+        }
+    }
+
+    public void RotateCube ()
+    {
+        rotate = !rotate;
     }
 }
