@@ -26,11 +26,10 @@ public class loadCubeTexture : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         screenPlane = GameObject.Find("Screen_Plane");
-        var screenPlaneScript = screenPlane.GetComponent<importDicom>();
+        //var screenPlaneScript = screenPlane.GetComponent<importDicom>();
         textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
-        Debug.Log(textureRessourceName);
+        //Debug.Log(textureRessourceName);
 
         cubeTexture = Resources.Load<Texture3D>(textureRessourceName); 
         

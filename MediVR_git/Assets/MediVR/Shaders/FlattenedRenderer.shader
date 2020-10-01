@@ -4,6 +4,8 @@
     {
         _MainTex("Texture", 3D) = "white" {}
 
+        _MainTex_TexelSize("Texel Size", Vector) = (0,0,0,0)
+
         _OutlineColor("Outline Color", Color) = (0,0,0,1)
         _OutlineWidth("Outline Width", Range(0,0.1)) = 0.02
 

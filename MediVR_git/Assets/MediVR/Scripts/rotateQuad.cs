@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.XR;
 
@@ -24,6 +25,9 @@ public class rotateQuad : MonoBehaviour
     void Start()
     {
         GetControllers();
+        rotate = false;
+        translate = false;
+        Debug.Log("Got Controllers");
     }
 
     // Update is called once per frame
@@ -32,9 +36,11 @@ public class rotateQuad : MonoBehaviour
         if(leftController == null || rightController == null)
         {
             GetControllers();
+            Debug.Log("Got Controllers Update");
         }
 
         RotateQuad();
+        //Debug.Log("Rotated Quad");
     }
 
     private void GetControllers()
@@ -43,14 +49,14 @@ public class rotateQuad : MonoBehaviour
         if(leftDevices.Count == 1)
         {
             leftController = leftDevices[0];
-            Debug.Log(leftDevices[0]);
+            //Debug.Log(leftDevices[0]);
         }
 
         InputDevices.GetDevicesAtXRNode(rightControllerNode, rightDevices);
         if(rightDevices.Count == 1)
         {
             rightController = rightDevices[0];
-            Debug.Log(rightDevices[0]);
+            //Debug.Log(rightDevices[0]);
         }
     }
 
@@ -93,7 +99,7 @@ public class rotateQuad : MonoBehaviour
                 }
             }
 
-            if (leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lGrip) && lGrip)
+            /*if (leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lGrip) && lGrip)
             {
                 SetRotate();
                 SetTranslate();
@@ -103,19 +109,19 @@ public class rotateQuad : MonoBehaviour
             {
                 SetRotate();
                 SetTranslate();
-            }
+            }*/
         }
     }
 
-    public void SetRotate()
+    public void SetRotate(bool state)
     {
-        rotate = !rotate;
+        rotate = state;
         Debug.Log($"Rotate set to: {rotate}!");
     }
 
-    public void SetTranslate()
+    public void SetTranslate(bool state)
     {
-        translate = !translate;
+        translate = state;
         Debug.Log($"Translate set to: {translate}!");
     }
 }

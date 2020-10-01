@@ -28,18 +28,18 @@ public class moveLocomotion : LocomotionProvider
     {
         PositionController();
         CheckForInput();
-        ApplyGravity();
+        //ApplyGravity();
     }
 
     private void PositionController()
     {
         // Get the head in local, playspace ground
-        float headHeight = Mathf.Clamp(head.transform.localPosition.y, 1, 2);
-        characterController.height = headHeight;
+        //float headHeight = Mathf.Clamp(head.transform.localPosition.y, 1, 2);
+        characterController.height = head.transform.localPosition.y;//headHeight;
 
         // Cut in half, add skin
         Vector3 newCenter = Vector3.zero;
-        newCenter.y = characterController.height / 2;
+        newCenter.y = characterController.height;// / 2;
         newCenter.y += characterController.skinWidth;
 
         // Let's move the capsule in local space as well

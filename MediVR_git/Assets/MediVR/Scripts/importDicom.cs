@@ -19,28 +19,18 @@ using TMPro;
 
 public class importDicom : MonoBehaviour
 {
-    private string dirName;
-    private string fileName;
+    private Texture2D singleTexture;
 
     private string dicomInfo;
-
-    private GameObject dicomImagePlane;
-    private GameObject dicomImagePlane2;
-    private GameObject dicomImagePlane3;
-    private GameObject dicomImagePlane4;
-    private GameObject dicomImagePlane5;
-
-    private Texture2D[] planeTextureArray;
-
-    private Texture2D planeTexture;
-    private Texture2D planeTexture2;
-    private Texture2D planeTexture3;
-    private Texture2D planeTexture4;
-    private Texture2D planeTexture5;
 
     private Texture2D[] textureArray;
     private Color[] colorsFor3DTexture;
     private Texture3D threeDimTexture;
+
+    public string dirName;
+    public string fileName;
+    public string dirPath;
+    public string path;
 
     public int textureWidth;
     public int textureHeight;
@@ -65,8 +55,8 @@ public class importDicom : MonoBehaviour
             var rootPath = "sdcard/DCIM";
         #endif
 
-        var dirPath = Path.Combine(rootPath, dirName);
-        var path = Path.Combine(dirPath, fileName);
+        dirPath = Path.Combine(rootPath, dirName);
+        path = Path.Combine(dirPath, fileName);
         
 
         Debug.Log($"Path to Directory: {dirPath}");
@@ -79,44 +69,11 @@ public class importDicom : MonoBehaviour
         textureDepth = 512;
         textureRessourceName = "Textures/Dicom 3D Textures/" + dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
 
+        ///////// 2D
 
-        //////// 2D
-    
-
-        /////Load single slice into Texture2D
-        //planeTexture = imageTools.CreateTextureFromDicom(path, false, ref dicomInfo);
-
-
-        /////Load multiple slices into Texture2D Array
-        planeTextureArray = imageTools.CreateNumberedTextureArrayFromDicomdir (dirPath, false, ref dicomInfo, 5);
-
-        /////Assign slice texture to each Plane
-        dicomImagePlane = GameObject.Find("Dicom_Image_Plane");
-        var dicomImagePlaneRenderer = dicomImagePlane.GetComponent<Renderer>();
-        dicomImagePlaneRenderer.material.mainTexture = planeTextureArray[0];
-
-        dicomImagePlane2 = GameObject.Find("Dicom_Image_Plane_2");
-        var dicomImagePlaneRenderer2 = dicomImagePlane2.GetComponent<Renderer>();
-        dicomImagePlaneRenderer2.material.mainTexture = planeTextureArray[1];
-
-        dicomImagePlane3 = GameObject.Find("Dicom_Image_Plane_3");
-        var dicomImagePlaneRenderer3 = dicomImagePlane3.GetComponent<Renderer>();
-        dicomImagePlaneRenderer3.material.mainTexture = planeTextureArray[2];
-
-        dicomImagePlane4 = GameObject.Find("Dicom_Image_Plane_4");
-        var dicomImagePlaneRenderer4 = dicomImagePlane4.GetComponent<Renderer>();
-        dicomImagePlaneRenderer4.material.mainTexture = planeTextureArray[3];
-
-        dicomImagePlane5 = GameObject.Find("Dicom_Image_Plane_5");
-        var dicomImagePlaneRenderer5 = dicomImagePlane5.GetComponent<Renderer>();
-        dicomImagePlaneRenderer5.material.mainTexture = planeTextureArray[4];
-        
-        /////Assign slice dicom information to Canvas
-        dicomImagePlane.GetComponentInChildren<TextMeshProUGUI>().text = dicomInfo;
-
+        singleTexture = imageTools.CreateTextureFromDicom (path, false, ref dicomInfo);
 
         ///////// 3D 
-
 
         /////Create 3D Texture from Dicomfiles
         //double scaleTexture = .25; threeDimTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
@@ -131,7 +88,7 @@ public class importDicom : MonoBehaviour
         else
         {
             Debug.Log($"3D Texture does not exist. Initializing 3D Texture from {dirPath}.");
-            double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(planeTextureArray[0].width); 
+            double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
             Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
             threeDimTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
             Debug.Log($"3D Texture created from path {dirPath} and saved to Ressourcess/Textures/Dicom 3D Textures.");
