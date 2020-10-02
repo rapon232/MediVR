@@ -50,6 +50,7 @@ public class grabQuad : XRGrabInteractable
 
         rotateQuadScript = this.GetComponent<rotateQuad>();
         //textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
+
     }
 
     protected override void OnSelectEnter(XRBaseInteractor interactor)
@@ -204,4 +205,5 @@ public class grabQuad : XRGrabInteractable
         //StoreOutlineColor(material, colorName);
         material.SetColor(colorName, color);
     }
+
 }

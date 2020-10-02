@@ -17,19 +17,23 @@ using TMPro;
 
 public class loadPlaneTexture : MonoBehaviour
 {
-    private GameObject screenPlane;
+    private GameObject screenPlane = null;
 
-    private string dicomInfo;
+    private dicomInfo dicomInformation = new dicomInfo();
 
-    private GameObject dicomImagePlane;
-    private GameObject dicomImagePlane2;
-    private GameObject dicomImagePlane3;
-    private GameObject dicomImagePlane4;
-    private GameObject dicomImagePlane5;
+    private GameObject dicomImagePlane = null;
+    private GameObject dicomImagePlane2 = null;
+    private GameObject dicomImagePlane3 = null;
+    private GameObject dicomImagePlane4 = null;
+    private GameObject dicomImagePlane5 = null;
 
-    private Texture2D[] planeTextureArray;
+    private GameObject studyText = null;
+    private GameObject patientText = null;
+    private GameObject modalityText = null;
 
-    public string dirPath;
+    private Texture2D[] planeTextureArray = null;
+
+    public string dirPath = null;
 
     // Start is called before the first frame update
     void Start()
@@ -39,7 +43,7 @@ public class loadPlaneTexture : MonoBehaviour
         dirPath = screenPlane.GetComponent<importDicom>().dirPath;
 
         /////Load multiple slices into Texture2D Array
-        planeTextureArray = imageTools.CreateNumberedTextureArrayFromDicomdir (dirPath, false, ref dicomInfo, 5);
+        planeTextureArray = imageTools.CreateNumberedTextureArrayFromDicomdir (dirPath, false, ref dicomInformation, 5);
 
         /////Assign slice texture to each Plane
         dicomImagePlane = GameObject.Find("Dicom_Image_Plane");
@@ -63,7 +67,13 @@ public class loadPlaneTexture : MonoBehaviour
         dicomImagePlaneRenderer5.material.mainTexture = planeTextureArray[4];
         
         /////Assign slice dicom information to Canvas
-        dicomImagePlane.GetComponentInChildren<TextMeshProUGUI>().text = dicomInfo;
+        studyText = GameObject.Find("Dicom_Info_Text_Study (TMP)");
+        patientText = GameObject.Find("Dicom_Info_Text_Patient (TMP)");
+        modalityText = GameObject.Find("Dicom_Info_Text_Modality (TMP)");
+
+        studyText.GetComponent<TextMeshProUGUI>().text = dicomInformation.Strings.studyInfo;
+        patientText.GetComponent<TextMeshProUGUI>().text = dicomInformation.Strings.patientInfo;
+        modalityText.GetComponent<TextMeshProUGUI>().text = dicomInformation.Strings.modalityInfo;
 
     }
 

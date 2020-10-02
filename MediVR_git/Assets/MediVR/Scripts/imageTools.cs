@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ using TMPro;
 public static class imageTools
 {
 
-    public static Texture2D CreateTextureFromDicom (string path, bool anonymize, ref string dicomInfo)
+    public static Texture2D CreateTextureFromDicom(string path, bool anonymize, ref dicomInfo info)
     {
         var stream = File.OpenRead(path);
 
@@ -34,7 +35,7 @@ public static class imageTools
 
         //dump = file.WriteToString();
 
-        dicomInfo = DumpDicomInfo(file);
+        info.setDicomInfo(file);
 
         Texture2D texture = new DicomImage(file.Dataset).RenderImage().As<Texture2D>();
 
@@ -43,7 +44,7 @@ public static class imageTools
         return texture;
     }
 
-    public static Texture2D[] CreateNumberedTextureArrayFromDicomdir (string dirPath, bool anonymize, ref string dicomInfo, int numberOfImages)
+    public static Texture2D[] CreateNumberedTextureArrayFromDicomdir(string dirPath, bool anonymize, ref dicomInfo info, int numberOfImages)
     {
         var dicomDirectoryInfo = new DirectoryInfo(dirPath);
 
@@ -94,7 +95,8 @@ public static class imageTools
                                 var anonymizer = new DicomAnonymizer();
                                 anonymizer.AnonymizeInPlace(tmpDicom);
                             }
-                            dicomInfo = DumpDicomInfo(tmpDicom);
+
+                            info.setDicomInfo(tmpDicom);
                             infoGet = true;
                         }
 
@@ -117,7 +119,7 @@ public static class imageTools
         return slices;
     }
 
-    public static Texture2D[] CreateTextureArrayFromDicomdir (string dirPath, double scaleTexture)
+    public static Texture2D[] CreateTextureArrayFromDicomdir(string dirPath, double scaleTexture)
     {
         var dicomDirectoryInfo = new DirectoryInfo(dirPath);
 
@@ -168,13 +170,11 @@ public static class imageTools
         return slices;
     }
 
-
-
-    public static Color[] CreateTexture3DColorArray (Texture2D[] slices)
+    public static Color[] CreateTexture3DColorArray(Texture2D[] slices)
     {
         var w = slices[0].width;
 		var h = slices[0].height;
-		var d = NearestSuperiorPow2(slices.Length);
+		var d = NextPow2(slices.Length);
 
         var textureCount = 0;
 
@@ -185,22 +185,42 @@ public static class imageTools
 
         Debug.Log($"Populating color array for 3D Texture");
 
-		var slicesCount = 0;
-		var sliceCountFloat = 0f;
+		var slicesCount = -1;
+		//var sliceCountFloat = 0f;
+
+        var sliceCountOffset = Mathf.FloorToInt(d - slices.Length) / 2;
+        var invSliceCountOffset = sliceCountOffset + slices.Length;
+
 		for(int z = 0; z < d; z++)
 		{
             textureCount++;
-			sliceCountFloat += countOffset;
-			slicesCount = Mathf.FloorToInt(sliceCountFloat);
+			//sliceCountFloat += countOffset;
+			//slicesCount = Mathf.FloorToInt(sliceCountFloat);
+
+            if(z > sliceCountOffset && z < invSliceCountOffset)
+            {
+                slicesCount++; 
+            }
+
 			for(int x = 0; x < w; x++)
 			{
 				for(int y = 0; y < h; y++)
 				{
 					var idx = x + (y * w) + (z * (w * h));
 
-					Color c = slices[slicesCount].GetPixelBilinear(x / (float)w, y / (float)h); 
+                    Color c;
 
-					if (!(c.r < 0.1f && c.g < 0.1f && c.b < 0.1f))
+                    if(z > sliceCountOffset && z < invSliceCountOffset)
+                    {
+                        //c = slices[slicesCount].GetPixelBilinear(x / (float)w, y / (float)h);
+                        c = slices[slicesCount].GetPixel(x, y);
+                    }
+					else
+                    {
+                        c = Color.clear;
+                    }
+
+					//if (!(c.r < 0.1f && c.g < 0.1f && c.b < 0.1f))
 						colors [idx] = c;
 
 				}
@@ -213,9 +233,9 @@ public static class imageTools
 
     }
 
-    public static Texture3D CreateTexture3D (Texture2D[] slices, Color[] colors)
+    public static Texture3D CreateTexture3D(Texture2D[] slices, Color[] colors)
     {
-        Texture3D texture = new Texture3D (slices[0].width, slices[0].height, NearestSuperiorPow2(slices.Length), TextureFormat.RGBA32, true);
+        Texture3D texture = new Texture3D (slices[0].width, slices[0].height, NextPow2(slices.Length), TextureFormat.RGBA32, true);
 
 		texture.wrapMode = TextureWrapMode.Clamp;
         texture.filterMode = FilterMode.Bilinear;
@@ -234,7 +254,7 @@ public static class imageTools
         return texture;
     }
 
-    public static void SaveTexture3DToAsset (Texture3D texture, string textureAssetName)
+    public static void SaveTexture3DToAsset(Texture3D texture, string textureAssetName)
     {
         #if UNITY_EDITOR
 
@@ -248,6 +268,23 @@ public static class imageTools
 
         #endif
 
+    }
+
+    public static Texture3D CreateTexture3DAsAssetScript(string dirPath, string dirName, double scaleTexture)
+    {
+        /////Load all slices from directory into array of 2D Textures
+        var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
+
+        /////Copy pixel data of 2D Textures in array into color array
+        var colorsFor3DTexture = CreateTexture3DColorArray(textureArray);
+
+        /////Map 2D Texture color pixels to 3D Texture
+        var cubeTexture = CreateTexture3D(textureArray, colorsFor3DTexture);
+
+        /////Save 3D Texture as Asset in Unity Editor
+        SaveTexture3DToAsset (cubeTexture, dirName);
+
+        return cubeTexture;
     }
 
     public static Texture2DArray CreateTexture2DArray(int w, int h, int d, Texture2D[] slices)
@@ -279,24 +316,7 @@ public static class imageTools
         return texture2DArray;
     }
 
-    public static Texture3D CreateTexture3DAsAssetScript (string dirPath, string dirName, double scaleTexture)
-    {
-        /////Load all slices from directory into array of 2D Textures
-        var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
-
-        /////Copy pixel data of 2D Textures in array into color array
-        var colorsFor3DTexture = CreateTexture3DColorArray (textureArray);
-
-        /////Map 2D Texture color pixels to 3D Texture
-        var cubeTexture = CreateTexture3D(textureArray, colorsFor3DTexture);
-
-        /////Save 3D Texture as Asset in Unity Editor
-        SaveTexture3DToAsset (cubeTexture, dirName);
-
-        return cubeTexture;
-    }
-
-    public static Texture2D rotate (this Texture2D t)
+    public static Texture2D rotate(this Texture2D t)
     {
         Texture2D newTexture = new Texture2D(t.height, t.width, t.format, false);
 
@@ -314,11 +334,12 @@ public static class imageTools
         return newTexture;
     }
 
-    public static int NearestSuperiorPow2(int n)
+    public static int NextPow2(int a)
 	{
 		int x = 2;
 
-		while (x < n) {
+		while (x < a) 
+        {
 			x *= 2;
 		}
 		
@@ -342,83 +363,6 @@ public static class imageTools
 
         return tag;
     }*/
-
-    public static string DumpDicomInfo(DicomFile _file)
-    {
-        string dumpPatientId = "N/A";
-        string dumpPatientSex = "N/A";
-        string dumpPatientName = "N/A";
-        string dumpPatientBd = "N/A";
-        string dumpStudyId = "N/A";
-        string dumpStudyDate = "N/A";
-        string dumpStudyTime = "N/A";
-        string dumpDoctorName = "N/A";
-        string dumpModality = "N/A";
-        string dumpModalityManufacturer = "N/A";
-        
-        if(_file.Dataset.Contains(DicomTag.PatientID))
-        {
-            dumpPatientId = _file.Dataset.Get<string>(DicomTag.PatientID).ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.PatientSex))
-        {
-            dumpPatientSex = _file.Dataset.Get<string>(DicomTag.PatientSex, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.PatientName))
-        {
-            dumpPatientName = _file.Dataset.Get<string>(DicomTag.PatientName, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.PatientBirthDate))
-        {
-            dumpPatientBd = _file.Dataset.Get<string>(DicomTag.PatientBirthDate, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.StudyID))
-        {
-            dumpStudyId= _file.Dataset.Get<string>(DicomTag.StudyID, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.StudyDate))
-        {
-            dumpStudyDate = _file.Dataset.Get<string>(DicomTag.StudyDate, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.StudyTime))
-        {
-            dumpStudyTime = _file.Dataset.Get<string>(DicomTag.StudyTime, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.ReferringPhysicianName))
-        {
-            dumpDoctorName = _file.Dataset.Get<string>(DicomTag.ReferringPhysicianName, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.Modality))
-        {
-            dumpModality = _file.Dataset.Get<string>(DicomTag.Modality, "N/A").ToString();
-        }
-        if(_file.Dataset.Contains(DicomTag.Manufacturer))
-        {
-            dumpModalityManufacturer = _file.Dataset.Get<string>(DicomTag.Manufacturer, "N/A").ToString(); 
-        }
-            
-        var dicomInfo =   "<b>Patient Info:\n\n</b>" +
-                        $"ID: N/A, Gender: {dumpPatientSex}\n" + 
-                        $"Name: {dumpPatientName}, Birth Date: {dumpPatientBd}\n" +
-                        "\n<b>Study Info:</b>\n\n" +
-                        $"ID: {dumpStudyId}, Date: {dumpStudyDate}, Time: {dumpStudyTime}\n" +
-                        $"Referring Physician: {dumpDoctorName}\n" +
-                        "\n<b>Modality Info:</b>\n\n" +
-                        $"Modality: {dumpModality}, Manufacturer: {dumpModalityManufacturer}\n";
-
-        /*Debug.Log(dumpPatientId);
-        Debug.Log(dumpPatientSex);
-        Debug.Log(dumpPatientName);
-        Debug.Log(dumpPatientBd);
-        Debug.Log(dumpStudyId);
-        Debug.Log(dumpStudyDate);
-        Debug.Log(dumpStudyTime);
-        Debug.Log(dumpDoctorName);
-        Debug.Log(dumpModality);
-        Debug.Log(dumpModalityManufacturer);*/
-            
-        return dicomInfo;
-    }
         
 
 //for opening DICOMDIR

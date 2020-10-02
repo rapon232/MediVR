@@ -19,23 +19,22 @@ using TMPro;
 
 public class importDicom : MonoBehaviour
 {
-    private Texture2D singleTexture;
+    private Texture2D singleTexture = null;
 
-    private string dicomInfo;
+    private dicomInfo dicomInformation  = new dicomInfo();
 
-    private Texture2D[] textureArray;
-    private Color[] colorsFor3DTexture;
-    private Texture3D threeDimTexture;
+    public Texture3D threeDimTexture = null;
 
-    public string dirName;
-    public string fileName;
-    public string dirPath;
-    public string path;
+    public string dirName = null;
+    public string fileName = null;
+    public string dirPath = null;
+    public string path = null;
 
-    public int textureWidth;
-    public int textureHeight;
-    public int textureDepth;
-    public string textureRessourceName;
+    public int textureWidth = 0;
+    public int textureHeight = 0;
+    public int textureDepth = 0;
+
+    public string textureRessourceName = null;
 
 
     // Start is called before the first frame update
@@ -71,12 +70,11 @@ public class importDicom : MonoBehaviour
 
         ///////// 2D
 
-        singleTexture = imageTools.CreateTextureFromDicom (path, false, ref dicomInfo);
+        singleTexture = imageTools.CreateTextureFromDicom (path, false, ref dicomInformation);
 
         ///////// 3D 
 
         /////Create 3D Texture from Dicomfiles
-        //double scaleTexture = .25; threeDimTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
         
         /////Load 3DTexture as Asset
         threeDimTexture = Resources.Load<Texture3D>(textureRessourceName); 
@@ -96,19 +94,11 @@ public class importDicom : MonoBehaviour
 
     }
 
-    
-
     // Update is called once per frame
     void Update()
     {
         
     }
-
-    /*private void OnGUI()
-    {
-        GUI.DrawTexture(new Rect(0, 0, _texture.width, _texture.height), _texture);
-        GUI.Label(new Rect(_texture.width, 0, Screen.width - _texture.width, Screen.height), _dump);
-    }*/
 
     
 

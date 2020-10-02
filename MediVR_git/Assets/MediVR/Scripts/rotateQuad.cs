@@ -27,7 +27,7 @@ public class rotateQuad : MonoBehaviour
         GetControllers();
         rotate = false;
         translate = false;
-        Debug.Log("Got Controllers");
+        //Debug.Log("Got Controllers");
     }
 
     // Update is called once per frame
@@ -36,7 +36,7 @@ public class rotateQuad : MonoBehaviour
         if(leftController == null || rightController == null)
         {
             GetControllers();
-            Debug.Log("Got Controllers Update");
+            //Debug.Log("Got Controllers Update");
         }
 
         RotateQuad();
@@ -72,6 +72,7 @@ public class rotateQuad : MonoBehaviour
                     var yAxis = lPosition.y * rotateSpeed * Time.deltaTime;
 
                     transform.Rotate(new Vector3 (yAxis, -xAxis, 0f), Space.Self);
+                    //Debug.Log(lPosition);
                 }
                 else if(translate)
                 {
@@ -79,6 +80,7 @@ public class rotateQuad : MonoBehaviour
                     var yAxis = lPosition.y * translateSpeed * Time.deltaTime;
 
                     transform.Translate(new Vector3 (xAxis, yAxis, 0f), Space.Self);
+                    //Debug.Log(lPosition);
                 }
                 
             }
@@ -90,12 +92,14 @@ public class rotateQuad : MonoBehaviour
                     var zAxis = rPosition.y * rotateSpeed * Time.deltaTime;
 
                     transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
+                    //Debug.Log(rPosition);
                 }
                 else if(translate)
                 {
                     var zAxis = rPosition.y * translateSpeed * Time.deltaTime;
 
                     transform.Translate(new Vector3 (0f, 0f, zAxis), Space.Self);
+                    //Debug.Log(rPosition);
                 }
             }
 
