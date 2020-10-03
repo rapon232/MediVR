@@ -19,7 +19,7 @@ public class loadPlaneTexture : MonoBehaviour
 {
     private GameObject screenPlane = null;
 
-    private dicomInfo dicomInformation = new dicomInfo();
+    private dicomInfoTools dicomInformation = new dicomInfoTools();
 
     private GameObject dicomImagePlane = null;
     private GameObject dicomImagePlane2 = null;
@@ -43,7 +43,7 @@ public class loadPlaneTexture : MonoBehaviour
         dirPath = screenPlane.GetComponent<importDicom>().dirPath;
 
         /////Load multiple slices into Texture2D Array
-        planeTextureArray = imageTools.CreateNumberedTextureArrayFromDicomdir (dirPath, false, ref dicomInformation, 5);
+        planeTextureArray = dicomImageTools.CreateNumberedTextureArrayFromDicomdir (dirPath, false, ref dicomInformation, 5);
 
         /////Assign slice texture to each Plane
         dicomImagePlane = GameObject.Find("Dicom_Image_Plane");

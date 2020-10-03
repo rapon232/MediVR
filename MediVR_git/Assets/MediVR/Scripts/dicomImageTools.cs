@@ -16,10 +16,10 @@ using Dicom.Media;
 
 using TMPro;
 
-public static class imageTools
+public static class dicomImageTools
 {
 
-    public static Texture2D CreateTextureFromDicom(string path, bool anonymize, ref dicomInfo info)
+    public static Texture2D CreateTextureFromDicom(string path, bool anonymize, ref dicomInfoTools info)
     {
         var stream = File.OpenRead(path);
 
@@ -44,7 +44,7 @@ public static class imageTools
         return texture;
     }
 
-    public static Texture2D[] CreateNumberedTextureArrayFromDicomdir(string dirPath, bool anonymize, ref dicomInfo info, int numberOfImages)
+    public static Texture2D[] CreateNumberedTextureArrayFromDicomdir(string dirPath, bool anonymize, ref dicomInfoTools info, int numberOfImages)
     {
         var dicomDirectoryInfo = new DirectoryInfo(dirPath);
 
@@ -254,35 +254,141 @@ public static class imageTools
         return texture;
     }
 
-    public static void SaveTexture3DToAsset(Texture3D texture, string textureAssetName)
+    public static void exportTexture3DToAsset(Texture3D texture, string ressourceDestinationPath, string textureRessourceName)
     {
-        #if UNITY_EDITOR
+        // Save the texture Asset to your Unity Project
 
-            // Save the texture Asset to your Unity Project
+        string assetName = "Assets/Ressources" + textureRessourceName + ".asset";
 
-            string assetName = "Assets/Resources/Textures/Dicom 3D Textures/" + textureAssetName + "_3DTexture_" + texture.width + "x" + texture.height + "x" + texture.depth + ".asset";
+        UnityEditor.AssetDatabase.CreateAsset(texture, assetName);
 
-            UnityEditor.AssetDatabase.CreateAsset(texture, assetName);
-
-            Debug.Log($"3D Texture saved as Asset to path: {assetName}");
-
-        #endif
-
+        Debug.Log($"3D Texture saved as Asset to path: {assetName}");
     }
 
-    public static Texture3D CreateTexture3DAsAssetScript(string dirPath, string dirName, double scaleTexture)
+    public static void exportTexture3DToFile(Texture3D texture, Color[] toExport, string fileDestinationPath, string textureArrayName)
+    {
+        //string objectPath = fileDestinationPath + "/" + textureAssetName + "_3DTexture_Color_Array" + texture.width + "x" + texture.height + "x" + texture.depth + ".txt";
+
+        //Debug.Log(textureArrayName);
+
+        byte[] export = new byte[toExport.Length * 4];
+
+        int colorCount = 0;
+
+        for(int i = 0; i < export.Length; i+=4)
+        {
+            UnityEngine.Color32 c = toExport[colorCount];
+
+            export[i + 0] = c.r;
+            export[i + 1] = c.g;
+            export[i + 2] = c.b;
+            export[i + 3] = c.a;
+
+            colorCount++;
+        }
+
+        if(export != null && textureArrayName != null && textureArrayName.Length != 0)
+        {
+            if(!Directory.Exists(fileDestinationPath))
+            {
+                Directory.CreateDirectory(fileDestinationPath);
+                Debug.Log($"Directory {fileDestinationPath} created.");
+            }
+
+            File.WriteAllBytes(textureArrayName, export);
+        }
+
+        Debug.Log($"Color Array for 3D Texture saved to {fileDestinationPath}.");
+    }
+
+    public static Texture3D importColorArrayTo3DTexture(string textureArrayName, int textureWidth, int textureHeight, int textureDepth)
+    {
+        byte[] import = null;
+
+        if(textureArrayName != null && textureArrayName.Length != 0)
+        {
+            import = File.ReadAllBytes(textureArrayName);
+            Debug.Log($"File at {textureArrayName} read.");
+        }
+        else
+        {
+            Debug.Log($"File at {textureArrayName} missing.");
+        }
+
+        Debug.Log($"Loading color array for 3D Texture.");
+
+        Color[] colorImport = new Color[import.Length / 4];
+
+        Texture3D texture = new Texture3D (textureWidth, textureHeight, textureDepth, TextureFormat.RGBA32, true);
+
+		texture.wrapMode = TextureWrapMode.Clamp;
+        texture.filterMode = FilterMode.Bilinear;
+        texture.anisoLevel = 6;
+
+        if(import != null)
+        {
+            for(int i = 0; i < import.Length; i+=4)
+            {
+                Color c = new Color(import[i + 0],
+                                    import[i + 1],
+                                    import[i + 2],
+                                    import[i + 3]);
+
+                colorImport[i / 4] = c;
+            }
+
+            Debug.Log($"Creating 3D Texture...");
+
+            // Copy the color values to the texture
+            texture.SetPixels(colorImport);
+
+            // Apply the changes to the texture and upload the updated texture to the GPU
+            texture.Apply();
+
+            Debug.Log($"3D Texture created from file {textureArrayName}.");
+        }
+        else
+        {
+            texture = null;
+            Debug.Log($"3D Texture empty.");
+        }
+
+        return texture;
+    }
+
+    public static Texture3D createTexture3DAsAssetScript(string dirPath, string dirName, string ressourceDestinationPath, double scaleTexture, string textureRessourceName)
     {
         /////Load all slices from directory into array of 2D Textures
         var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
-        var colorsFor3DTexture = CreateTexture3DColorArray(textureArray);
+        var colorsForCubeTexture = CreateTexture3DColorArray(textureArray);
 
         /////Map 2D Texture color pixels to 3D Texture
-        var cubeTexture = CreateTexture3D(textureArray, colorsFor3DTexture);
+        var cubeTexture = CreateTexture3D(textureArray, colorsForCubeTexture);
+        Debug.Log($"3D Texture created from path {dirPath}");
 
         /////Save 3D Texture as Asset in Unity Editor
-        SaveTexture3DToAsset (cubeTexture, dirName);
+        #if UNITY_EDITOR
+            dicomImageTools.exportTexture3DToAsset(cubeTexture, ressourceDestinationPath, textureRessourceName);
+        #endif
+
+        return cubeTexture;
+    }
+
+    public static Texture3D createTexture3DAsFileScript(string dirPath, string dirName, string fileDestinationPath, double scaleTexture, string textureArrayName)
+    {
+        /////Load all slices from directory into array of 2D Textures
+        var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
+
+        /////Copy pixel data of 2D Textures in array into color array
+        var colorsForCubeTexture = CreateTexture3DColorArray(textureArray);
+
+        /////Map 2D Texture color pixels to 3D Texture
+        var cubeTexture = CreateTexture3D(textureArray, colorsForCubeTexture);
+
+        /////Save 3D Texture as Asset in Unity Editor
+        dicomImageTools.exportTexture3DToFile(cubeTexture, colorsForCubeTexture, fileDestinationPath, textureArrayName);
 
         return cubeTexture;
     }

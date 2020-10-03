@@ -16,7 +16,7 @@ using Dicom.Media;
 
 using TMPro;
 
-public class dicomInfo
+public class dicomInfoTools
 {
 
     private string dateFormat = "N/A";
@@ -214,9 +214,9 @@ public class dicomInfo
         if(file.Dataset.Contains(DicomTag.StudyDescription))
         {
             studyDescription = file.Dataset.Get<string>(DicomTag.StudyDescription, "N/A");
-            Debug.Log(studyDescription.Length);
+            //Debug.Log(studyDescription.Length);
             studyDescription = studyDescription.Remove(studyDescription.Length - 1);
-            Debug.Log(studyDescription.Length);
+            //Debug.Log(studyDescription.Length);
         }
         else
         {

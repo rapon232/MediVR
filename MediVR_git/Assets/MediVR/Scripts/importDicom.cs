@@ -21,20 +21,25 @@ public class importDicom : MonoBehaviour
 {
     private Texture2D singleTexture = null;
 
-    private dicomInfo dicomInformation  = new dicomInfo();
+    private dicomInfoTools dicomInformation  = new dicomInfoTools();
 
     public Texture3D threeDimTexture = null;
 
     public string dirName = null;
     public string fileName = null;
+    public string destinationTextureDirName = null;
+    public string destinationDirName = null;
     public string dirPath = null;
     public string path = null;
+    public string ressourceDestinationPath = null;
+    public string fileDestinationPath = null;
 
     public int textureWidth = 0;
     public int textureHeight = 0;
     public int textureDepth = 0;
 
     public string textureRessourceName = null;
+    public string textureArrayName = null;
 
 
     // Start is called before the first frame update
@@ -47,6 +52,8 @@ public class importDicom : MonoBehaviour
 
         dirName = "CT_Series";
         fileName = "image-000001.dcm";
+        destinationTextureDirName = "Dicom 3D Textures";
+        destinationDirName = "Saved";
 
         #if UNITY_EDITOR
             var rootPath = "Assets";
@@ -56,10 +63,14 @@ public class importDicom : MonoBehaviour
 
         dirPath = Path.Combine(rootPath, dirName);
         path = Path.Combine(dirPath, fileName);
+        ressourceDestinationPath = Path.Combine("Assets/Resources/Textures", destinationTextureDirName);
+        fileDestinationPath = Path.Combine(dirPath, destinationDirName);
         
 
         Debug.Log($"Path to Directory: {dirPath}");
         Debug.Log($"Path to first File in Directory: {path}");
+        Debug.Log($"Path to Texture Ressource Directory: {ressourceDestinationPath}");
+        Debug.Log($"Path to Array save Directory: {fileDestinationPath}");
 
 
         //////// TEXTURE SELECTION
@@ -67,10 +78,12 @@ public class importDicom : MonoBehaviour
         textureWidth = textureHeight = 256;
         textureDepth = 512;
         textureRessourceName = "Textures/Dicom 3D Textures/" + dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
+        textureArrayName = fileDestinationPath + "/" + dirName + "_3DTexture_Color_Array" + textureWidth + "x" + textureHeight + "x" + textureDepth + ".txt";
+
 
         ///////// 2D
 
-        singleTexture = imageTools.CreateTextureFromDicom (path, false, ref dicomInformation);
+        singleTexture = dicomImageTools.CreateTextureFromDicom (path, false, ref dicomInformation);
 
         ///////// 3D 
 
@@ -81,15 +94,24 @@ public class importDicom : MonoBehaviour
         
         if(threeDimTexture != null)
         {
-            Debug.Log($"3D Texture: {textureRessourceName} loaded from Ressources/Textures/Dicom 3D Textures.");
+            Debug.Log($"3D texture exists as Ressource. {textureRessourceName} loaded from Ressources/Textures/Dicom 3D Textures.");
         }
         else
         {
-            Debug.Log($"3D Texture does not exist. Initializing 3D Texture from {dirPath}.");
-            double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
-            Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
-            threeDimTexture = imageTools.CreateTexture3DAsAssetScript(dirPath, dirName, scaleTexture);
-            Debug.Log($"3D Texture created from path {dirPath} and saved to Ressourcess/Textures/Dicom 3D Textures.");
+            if(File.Exists(textureArrayName))
+            {
+                Debug.Log($"Color Array for 3D Texture exists. Building 3D Texture from array at {textureArrayName}.");
+                threeDimTexture = dicomImageTools.importColorArrayTo3DTexture(textureArrayName, textureWidth, textureHeight, textureDepth);
+            }
+            else
+            {
+                Debug.Log($"3D Texture does not exist. Initializing 3D Texture from {dirPath}.");
+                double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
+                Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
+
+                //threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, dirName, ressourceDestinationPath, scaleTexture, textureRessourceName);
+                threeDimTexture = dicomImageTools.createTexture3DAsFileScript(dirPath, dirName, fileDestinationPath, scaleTexture, textureArrayName);
+            }
         }
 
     }
