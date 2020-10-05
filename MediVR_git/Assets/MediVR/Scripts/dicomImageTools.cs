@@ -119,6 +119,103 @@ public static class dicomImageTools
         return slices;
     }
 
+    public static Color[] CreateTextureFromDicomdir(string dirPath, double scaleTexture, int textureWidth, int textureHeight, int textureDepth)
+    {
+        var dicomDirectoryInfo = new DirectoryInfo(dirPath);
+
+        int fileCount = dicomDirectoryInfo.GetFiles().Length;
+
+        Debug.Log($"Files found in Directory: {fileCount}");
+        Debug.Log($"Loading Dicom files from Directory {dirPath} into Array");
+
+        int validFileCount = 0;
+
+        List<string> fileNameList = new List<string>();
+
+        foreach (var file in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
+        {
+            if (DicomFile.HasValidHeader(file.FullName))
+            {
+                fileNameList.Add(file.FullName);
+                validFileCount++;
+            }
+        }
+
+        Debug.Log($"Valid Dicom files found in Directory: {validFileCount}. File names loaded onto list.");
+
+        var w = textureWidth;
+		var h = textureHeight;
+		var d = textureDepth;
+
+        var textureCount = 0;
+
+		Color[] colors = new Color[w * h * d];
+
+        Debug.Log($"Populating color array for 3D Texture");
+
+		var slicesCount = -1;
+		//var sliceCountFloat = 0f;
+
+        var sliceCountOffset = Mathf.FloorToInt(d - validFileCount) / 2;
+        var invSliceCountOffset = sliceCountOffset + validFileCount;
+
+        Texture2D tex = null;
+
+		for(int z = 0; z < d; z++)
+		{
+            textureCount++;
+			//sliceCountFloat += countOffset;
+			//slicesCount = Mathf.FloorToInt(sliceCountFloat);
+
+            if(z > sliceCountOffset && z < invSliceCountOffset)
+            {
+                slicesCount++;
+
+                var tmpDicom = DicomFile.Open(fileNameList[slicesCount]);
+                tex = new DicomImage(tmpDicom.Dataset).RenderImage().As<Texture2D>();
+                if(scaleTexture != 0)
+                {
+                    double newWidth = tex.width*scaleTexture;
+                    double newHeight = tex.height*scaleTexture;
+                    TextureScale.Bilinear (tex, Convert.ToInt32(newWidth), Convert.ToInt32(newHeight));
+                }
+                else if (scaleTexture == 1)
+                {
+                    // do nothing
+                }
+            }
+
+			for(int x = 0; x < w; x++)
+			{
+				for(int y = 0; y < h; y++)
+				{
+					var idx = x + (y * w) + (z * (w * h));
+
+                    Color c;
+
+                    if(z > sliceCountOffset && z < invSliceCountOffset)
+                    {
+                        //c = slices[slicesCount].GetPixelBilinear(x / (float)w, y / (float)h);
+                        c = tex.GetPixel(x, y);
+                    }
+					else
+                    {
+                        c = Color.clear;
+                    }
+
+					//if (!(c.r < 0.1f && c.g < 0.1f && c.b < 0.1f))
+						colors [idx] = c;
+
+				}
+			}
+		}
+
+        Debug.Log($"Textures loaded into color array: {textureCount}");
+
+        return colors;
+    }
+
+
     public static Texture2D[] CreateTextureArrayFromDicomdir(string dirPath, double scaleTexture)
     {
         var dicomDirectoryInfo = new DirectoryInfo(dirPath);
@@ -178,9 +275,6 @@ public static class dicomImageTools
 
         var textureCount = 0;
 
-        // skip some slices if we can't fit it all in
-		var countOffset = (slices.Length - 1) / (float)d;
-
 		Color[] colors = new Color[w * h * d];
 
         Debug.Log($"Populating color array for 3D Texture");
@@ -208,7 +302,7 @@ public static class dicomImageTools
 				{
 					var idx = x + (y * w) + (z * (w * h));
 
-                    Color c;
+                    UnityEngine.Color32 c;
 
                     if(z > sliceCountOffset && z < invSliceCountOffset)
                     {
@@ -233,9 +327,9 @@ public static class dicomImageTools
 
     }
 
-    public static Texture3D CreateTexture3D(Texture2D[] slices, Color[] colors)
+    public static Texture3D CreateTexture3D(Color[] colors, int textureWidth, int textureHeight, int textureDepth)
     {
-        Texture3D texture = new Texture3D (slices[0].width, slices[0].height, NextPow2(slices.Length), TextureFormat.RGBA32, true);
+        Texture3D texture = new Texture3D (textureWidth, textureHeight, textureDepth, TextureFormat.RGBA32, true);
 
 		texture.wrapMode = TextureWrapMode.Clamp;
         texture.filterMode = FilterMode.Bilinear;
@@ -256,36 +350,48 @@ public static class dicomImageTools
 
     public static void exportTexture3DToAsset(Texture3D texture, string ressourceDestinationPath, string textureRessourceName)
     {
-        // Save the texture Asset to your Unity Project
+        // Save the texture Asset to your Unity Project - ONLY WORKS IN EDITOR, NOT ON OCULUS
+        #if UNITY_EDITOR
 
-        string assetName = "Assets/Ressources" + textureRessourceName + ".asset";
+            string assetName = "Assets/Ressources" + textureRessourceName + ".asset";
 
-        UnityEditor.AssetDatabase.CreateAsset(texture, assetName);
+            UnityEditor.AssetDatabase.CreateAsset(texture, assetName);
 
-        Debug.Log($"3D Texture saved as Asset to path: {assetName}");
+            Debug.Log($"3D Texture saved as Asset to path: {assetName}");
+
+        #endif
     }
 
-    public static void exportTexture3DToFile(Texture3D texture, Color[] toExport, string fileDestinationPath, string textureArrayName)
+    public static void exportTexture3DToFile(Color[] toExport, string fileDestinationPath, string textureArrayName)
     {
         //string objectPath = fileDestinationPath + "/" + textureAssetName + "_3DTexture_Color_Array" + texture.width + "x" + texture.height + "x" + texture.depth + ".txt";
 
         //Debug.Log(textureArrayName);
 
-        byte[] export = new byte[toExport.Length * 4];
+       
+        Debug.Log("Allocating byte array.");
+        byte[] export = new byte[toExport.Length * 4 * 4];
+        float[] Export = new float[toExport.Length * 4];
+        Debug.Log("Byte array allocated.");
 
         int colorCount = 0;
 
-        for(int i = 0; i < export.Length; i+=4)
-        {
-            UnityEngine.Color32 c = toExport[colorCount];
+        Debug.Log("Filling float array.");
 
-            export[i + 0] = c.r;
-            export[i + 1] = c.g;
-            export[i + 2] = c.b;
-            export[i + 3] = c.a;
+        for(int i = 0; i < Export.Length; i+=4)
+        {
+            //UnityEngine.Color32 c = toExport[colorCount];
+            Color c = toExport[colorCount];
+
+            Export[i + 0] = c.r;
+            Export[i + 1] = c.g;
+            Export[i + 2] = c.b;
+            Export[i + 3] = c.a;
 
             colorCount++;
         }
+
+        Debug.Log("Float array filled.");
 
         if(export != null && textureArrayName != null && textureArrayName.Length != 0)
         {
@@ -295,7 +401,65 @@ public static class dicomImageTools
                 Debug.Log($"Directory {fileDestinationPath} created.");
             }
 
+            //File.WriteAllBytes(textureArrayName, export);
+            /*using(var stream = new MemoryStream())
+            using(var binWriter = new BinaryWriter(stream))
+            {
+                Debug.Log("bin writed opened");
+                foreach(var fl in export)
+                {
+                    binWriter.Write(fl);
+                }
+                binWriter.Flush();
+                File.WriteAllBytes(textureArrayName, stream.ToArray());
+                stream.Close();
+                Debug.Log("done");
+            }*/
+
+            Debug.Log("Starting to copy colors to bit array.");
             File.WriteAllBytes(textureArrayName, export);
+
+            //Buffer.BlockCopy(Export, 0, export, 0, Export.Length);
+
+            //for(int i = 0; i < toExport.Length; i++)
+            //{
+                /*floatImport[i] = BitConverter.ToSingle(import, i * 4);
+                colorCounter++;
+
+                if(colorCounter == 4)
+                {
+                    Color c = new Color(floatImport[i - 3],
+                                        floatImport[i - 2],
+                                        floatImport[i - 1],
+                                        floatImport[i - 0]);
+
+                    colorImport[colorImportCounter] = c;
+                    colorCounter = 0;
+                    colorImportCounter++;
+                }*/
+                /*Color c = toExport[i];
+                //byte[] tmp = new byte[4];
+
+                //Array.Copy(BitConverter.GetBytes(c.r), 0, tmp, 0);
+                Buffer.BlockCopy(BitConverter.GetBytes(c.r), 0, export, (i * 4) + 0, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(c.g), 0, export, (i * 4) + 1, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(c.b), 0, export, (i * 4) + 2, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(c.a), 0, export, (i * 4) + 3, 4);
+                Debug.Log($"Copied pixel {i} of {export.Length / 4}.");
+
+                //export[i + 0] = c.r;
+                //export[i + 1] = c.g;
+                //export[i + 2] = c.b;
+                //export[i + 3] = c.a;
+
+                //colorCount++;
+
+            }
+
+            Debug.Log("Finished copying colors to bit array. Writing file to memory...");
+            File.WriteAllBytes(textureArrayName, export);
+            Debug.Log("Done!");*/
+
         }
 
         Debug.Log($"Color Array for 3D Texture saved to {fileDestinationPath}.");
@@ -317,7 +481,8 @@ public static class dicomImageTools
 
         Debug.Log($"Loading color array for 3D Texture.");
 
-        Color[] colorImport = new Color[import.Length / 4];
+        //float[] floatImport = new float[import.Length / 4];
+        Color[] colorImport = new Color[import.Length / (4 * 4)];
 
         Texture3D texture = new Texture3D (textureWidth, textureHeight, textureDepth, TextureFormat.RGBA32, true);
 
@@ -325,16 +490,36 @@ public static class dicomImageTools
         texture.filterMode = FilterMode.Bilinear;
         texture.anisoLevel = 6;
 
+        int colorCounter = 0;
+        int colorImportCounter = 0;
+
         if(import != null)
         {
-            for(int i = 0; i < import.Length; i+=4)
+            for(int i = 0; i < colorImport.Length; i++)
             {
-                Color c = new Color(import[i + 0],
-                                    import[i + 1],
-                                    import[i + 2],
-                                    import[i + 3]);
+                /*floatImport[i] = BitConverter.ToSingle(import, i * 4);
+                colorCounter++;
 
-                colorImport[i / 4] = c;
+                if(colorCounter == 4)
+                {
+                    Color c = new Color(floatImport[i - 3],
+                                        floatImport[i - 2],
+                                        floatImport[i - 1],
+                                        floatImport[i - 0]);
+
+                    colorImport[colorImportCounter] = c;
+                    colorCounter = 0;
+                    colorImportCounter++;
+                }*/
+                Color c = new Color(BitConverter.ToSingle(import, ((i * 4) + 0)),
+                                    BitConverter.ToSingle(import, ((i * 4) + 1)),
+                                    BitConverter.ToSingle(import, ((i * 4) + 2)),
+                                    BitConverter.ToSingle(import, ((i * 4) + 3)));
+
+                colorImport[i] = c;
+                Debug.Log($"Copied pixel {i} of {colorImport.Length}.");
+                //colorCounter = 0;
+                //colorImportCounter++;
             }
 
             Debug.Log($"Creating 3D Texture...");
@@ -356,7 +541,7 @@ public static class dicomImageTools
         return texture;
     }
 
-    public static Texture3D createTexture3DAsAssetScript(string dirPath, string dirName, string ressourceDestinationPath, double scaleTexture, string textureRessourceName)
+    public static Texture3D createTexture3DAsAssetScript(string dirPath, string dirName, string ressourceDestinationPath, double scaleTexture, string textureRessourceName, int textureWidth, int textureHeight, int textureDepth)
     {
         /////Load all slices from directory into array of 2D Textures
         var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
@@ -364,31 +549,32 @@ public static class dicomImageTools
         /////Copy pixel data of 2D Textures in array into color array
         var colorsForCubeTexture = CreateTexture3DColorArray(textureArray);
 
+        Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
+
         /////Map 2D Texture color pixels to 3D Texture
-        var cubeTexture = CreateTexture3D(textureArray, colorsForCubeTexture);
+        var cubeTexture = CreateTexture3D(colorsForCubeTexture, textureWidth, textureHeight, textureDepth);
         Debug.Log($"3D Texture created from path {dirPath}");
 
         /////Save 3D Texture as Asset in Unity Editor
-        #if UNITY_EDITOR
-            dicomImageTools.exportTexture3DToAsset(cubeTexture, ressourceDestinationPath, textureRessourceName);
-        #endif
+        //dicomImageTools.exportTexture3DToAsset(cubeTexture, ressourceDestinationPath, textureRessourceName);
 
         return cubeTexture;
     }
 
-    public static Texture3D createTexture3DAsFileScript(string dirPath, string dirName, string fileDestinationPath, double scaleTexture, string textureArrayName)
+    public static Texture3D createTexture3DAsFileScript(string dirPath, string dirName, string fileDestinationPath, double scaleTexture, string textureArrayName, int textureWidth, int textureHeight, int textureDepth)
     {
         /////Load all slices from directory into array of 2D Textures
-        var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
+        //var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
-        var colorsForCubeTexture = CreateTexture3DColorArray(textureArray);
+        //var colorsForCubeTexture = CreateTexture3DColorArray(textureArray);
+        var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
+
+        /////Save Color array as file
+        dicomImageTools.exportTexture3DToFile(colorsForCubeTexture, fileDestinationPath, textureArrayName);
 
         /////Map 2D Texture color pixels to 3D Texture
-        var cubeTexture = CreateTexture3D(textureArray, colorsForCubeTexture);
-
-        /////Save 3D Texture as Asset in Unity Editor
-        dicomImageTools.exportTexture3DToFile(cubeTexture, colorsForCubeTexture, fileDestinationPath, textureArrayName);
+        var cubeTexture = CreateTexture3D(colorsForCubeTexture, textureWidth, textureHeight, textureDepth);
 
         return cubeTexture;
     }

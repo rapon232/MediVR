@@ -78,7 +78,7 @@ public class importDicom : MonoBehaviour
         textureWidth = textureHeight = 256;
         textureDepth = 512;
         textureRessourceName = "Textures/Dicom 3D Textures/" + dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
-        textureArrayName = fileDestinationPath + "/" + dirName + "_3DTexture_Color_Array" + textureWidth + "x" + textureHeight + "x" + textureDepth + ".txt";
+        textureArrayName = fileDestinationPath + "/" + dirName + "_3DTexture_Color_Array" + textureWidth + "x" + textureHeight + "x" + textureDepth + ".bytes";
 
 
         ///////// 2D
@@ -109,8 +109,8 @@ public class importDicom : MonoBehaviour
                 double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
                 Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
 
-                //threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, dirName, ressourceDestinationPath, scaleTexture, textureRessourceName);
-                threeDimTexture = dicomImageTools.createTexture3DAsFileScript(dirPath, dirName, fileDestinationPath, scaleTexture, textureArrayName);
+                threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, dirName, ressourceDestinationPath, scaleTexture, textureRessourceName, textureWidth, textureHeight, textureDepth);
+                //threeDimTexture = dicomImageTools.createTexture3DAsFileScript(dirPath, dirName, fileDestinationPath, scaleTexture, textureArrayName, textureWidth, textureHeight, textureDepth);
             }
         }
 
