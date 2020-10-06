@@ -51,7 +51,9 @@ public class importDicom : MonoBehaviour
 
 
         dirName = "CT_Series";
-        fileName = "image-000001.dcm";
+        //dirName = "MR_Series";
+        //fileName = "image-000001.dcm";
+        //fileName = "image-000000.dcm";
         destinationTextureDirName = "Dicom 3D Textures";
         destinationDirName = "Saved";
 
@@ -62,13 +64,13 @@ public class importDicom : MonoBehaviour
         #endif
 
         dirPath = Path.Combine(rootPath, dirName);
-        path = Path.Combine(dirPath, fileName);
+        //path = Path.Combine(dirPath, fileName);
         ressourceDestinationPath = Path.Combine("Assets/Resources/Textures", destinationTextureDirName);
         fileDestinationPath = Path.Combine(dirPath, destinationDirName);
         
 
         Debug.Log($"Path to Directory: {dirPath}");
-        Debug.Log($"Path to first File in Directory: {path}");
+        //Debug.Log($"Path to first File in Directory: {path}");
         Debug.Log($"Path to Texture Ressource Directory: {ressourceDestinationPath}");
         Debug.Log($"Path to Array save Directory: {fileDestinationPath}");
 
@@ -83,7 +85,8 @@ public class importDicom : MonoBehaviour
 
         ///////// 2D
 
-        singleTexture = dicomImageTools.CreateTextureFromDicom (path, false, ref dicomInformation);
+        //singleTexture = dicomImageTools.CreateTextureFromDicom (path, false, ref dicomInformation);
+        singleTexture = dicomImageTools.CreateTextureFromFirstDicom (dirPath, false, ref dicomInformation);
 
         ///////// 3D 
 
@@ -98,20 +101,20 @@ public class importDicom : MonoBehaviour
         }
         else
         {
-            if(File.Exists(textureArrayName))
+            /*if(File.Exists(textureArrayName))
             {
                 Debug.Log($"Color Array for 3D Texture exists. Building 3D Texture from array at {textureArrayName}.");
                 threeDimTexture = dicomImageTools.importColorArrayTo3DTexture(textureArrayName, textureWidth, textureHeight, textureDepth);
             }
             else
-            {
+            {*/
                 Debug.Log($"3D Texture does not exist. Initializing 3D Texture from {dirPath}.");
                 double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
                 Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
 
                 threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, dirName, ressourceDestinationPath, scaleTexture, textureRessourceName, textureWidth, textureHeight, textureDepth);
                 //threeDimTexture = dicomImageTools.createTexture3DAsFileScript(dirPath, dirName, fileDestinationPath, scaleTexture, textureArrayName, textureWidth, textureHeight, textureDepth);
-            }
+            //}
         }
 
     }

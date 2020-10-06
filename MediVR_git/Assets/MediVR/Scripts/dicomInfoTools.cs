@@ -130,12 +130,12 @@ public class dicomInfoTools
             if(isFormattable)
             {
                 patientBd = newDate;
-                Debug.Log($"{date} converts to {patientBd.ToString(dateFormat)}.");
+                //Debug.Log($"{date} converts to {patientBd.ToString(dateFormat)}.");
             }
             else
             {
                 patientBd = DateTime.MinValue;
-                Debug.Log($"{date} is not in the correct format.");
+                //Debug.Log($"{date} is not in the correct format.");
             }
         }
         else
@@ -349,7 +349,7 @@ public class dicomInfoTools
 
         if(patientBd != DateTime.MinValue)
         {
-            patientBdString = patientBd.ToString(timeFormat);
+            patientBdString = patientBd.ToString(dateFormat);
         }
         else
         {
@@ -366,17 +366,17 @@ public class dicomInfoTools
         }
 
         string patInfo =   "<b>Patient Info:\n\n</b>" +
-                            $"ID: {patientIdString}\n Gender: {patientSex}\n Age: {patientAgeString}\n" + 
-                            $"Name: {patientName}\n Birth Date: {patientBdString}\n";
+                            $"ID: {patientIdString}\nGender: {patientSex}\nAge: {patientAgeString}\n" + 
+                            $"Name: {patientName}\nBirth Date: {patientBdString}\n";
 
         string styInfo =    "<b>Study Info:</b>\n\n" +
-                            $"ID: {studyIdString}\n Description: {studyDescription}\n" +
-                            $"Series: {studySeriesDescription}\n Thickness: {studySliceThicknessString} mm\n" +
-                            $"Date: {studyDateString}\n Time: {studyTimeString}\n" +
+                            $"ID: {studyIdString}\nDescription: {studyDescription}\n" +
+                            $"Series: {studySeriesDescription}\nThickness: {studySliceThicknessString} mm\n" +
+                            $"Date: {studyDateString}\nTime: {studyTimeString}\n" +
                             $"Referring Physician: {studyDoctorName}\n";
 
         string mdInfo =     "<b>Modality Info:</b>\n\n" +
-                            $"Modality: {modality}\n Manufacturer: {modalityManufacturer}\n";
+                            $"Modality: {modality}\nManufacturer: {modalityManufacturer}\n";
 
         dicomInfoString info = new dicomInfoString(patInfo, styInfo, mdInfo);
 

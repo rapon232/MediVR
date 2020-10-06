@@ -79,7 +79,7 @@ public class rotateQuad : MonoBehaviour
                     var xAxis = lPosition.x * translateSpeed * Time.deltaTime;
                     var yAxis = lPosition.y * translateSpeed * Time.deltaTime;
 
-                    transform.Translate(new Vector3 (xAxis, -yAxis, 0f), Space.Self);
+                    transform.Translate(new Vector3 (xAxis, yAxis, 0f), Space.Self);
                     //Debug.Log(lPosition);
                 }
                 

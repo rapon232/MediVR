@@ -8,10 +8,29 @@
 
         _OutlineColor("Outline Color", Color) = (0,0,0,1)
         _OutlineWidth("Outline Width", Range(0,0.1)) = 0.02
+        
+        [HideInInspector]
+        _EnlargeMin("Enlargement Minimum", Float) = 1
+        [HideInInspector]
+        _EnlargeMax("Enlargement Maximum", Float) = 10
+        _Enlarge("Enlargement", Range(1, 10)) = 1.8
 
-        _Enlarge("Enlargement", Range(1,10)) = 1.8
+        [HideInInspector]
+        _ContrastMin("Contrast Minimum", Float) = 0
+        [HideInInspector]
+        _ContrastMax("Contrast Maximum", Float) = 3
         _Contrast("Contrast", Range(0,3)) = 1
+
+        [HideInInspector]
+        _BrightnessMin("Brightness Minimum", Float) = -1
+        [HideInInspector]
+        _BrightnessMax("Brightness Maximum", Float) = 1
         _Brightness("Brightness", Range(-1,1)) = 0
+
+        [HideInInspector]
+        _ThresholdMin("Threshold Minimum", Float) = 0
+        [HideInInspector]
+        _ThresholdMax("Threshold Maximum", Float) = 1
         _Threshold("Threshold", Range(0,1)) = 0
         _ThresholdInv("Inverted Threshold", Range(0,1)) = 1
 

@@ -44,6 +44,48 @@ public static class dicomImageTools
         return texture;
     }
 
+    public static Texture2D CreateTextureFromFirstDicom(string path, bool anonymize, ref dicomInfoTools info)
+    {
+        string stream = null;
+
+        DirectoryInfo dicomDirectoryInfo = new DirectoryInfo(path);
+
+        //var stream = dir.GetFiles().Select(fi => fi.Name).FirstOrDefault();
+
+        foreach (var dicom in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
+        {
+            if (DicomFile.HasValidHeader(dicom.FullName))
+            {
+                stream = dicom.FullName;
+                break;
+            }
+        }
+
+        Debug.Log(stream);
+
+        //var stream = File.OpenRead(path);
+
+        var file = DicomFile.Open(stream);
+
+        Debug.Log($"Dicom File at {path} loaded");
+
+        if(anonymize)
+        {
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(file);
+        }
+
+        //dump = file.WriteToString();
+
+        info.setDicomInfo(file);
+
+        Texture2D texture = new DicomImage(file.Dataset).RenderImage().As<Texture2D>();
+
+        Debug.Log($"Single 2D Texture loaded");
+        
+        return texture;
+    }
+
     public static Texture2D[] CreateNumberedTextureArrayFromDicomdir(string dirPath, bool anonymize, ref dicomInfoTools info, int numberOfImages)
     {
         var dicomDirectoryInfo = new DirectoryInfo(dirPath);
@@ -302,7 +344,7 @@ public static class dicomImageTools
 				{
 					var idx = x + (y * w) + (z * (w * h));
 
-                    UnityEngine.Color32 c;
+                    Color c;
 
                     if(z > sliceCountOffset && z < invSliceCountOffset)
                     {
@@ -490,8 +532,8 @@ public static class dicomImageTools
         texture.filterMode = FilterMode.Bilinear;
         texture.anisoLevel = 6;
 
-        int colorCounter = 0;
-        int colorImportCounter = 0;
+        //int colorCounter = 0;
+        //int colorImportCounter = 0;
 
         if(import != null)
         {
@@ -544,10 +586,10 @@ public static class dicomImageTools
     public static Texture3D createTexture3DAsAssetScript(string dirPath, string dirName, string ressourceDestinationPath, double scaleTexture, string textureRessourceName, int textureWidth, int textureHeight, int textureDepth)
     {
         /////Load all slices from directory into array of 2D Textures
-        var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
+        //var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
-        var colorsForCubeTexture = CreateTexture3DColorArray(textureArray);
+        var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
 
         Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
 

@@ -21,6 +21,7 @@ public class grabQuad : XRGrabInteractable
     private moveLocomotion moveLocomotionScript = null;
 
     private rotateQuad rotateQuadScript = null;
+    private adjustQuad adjustQuadScript = null;
 
     public XRNode handController = UnityEngine.XR.XRNode.RightHand;
     public XRNode joystickController = UnityEngine.XR.XRNode.LeftHand;
@@ -33,6 +34,9 @@ public class grabQuad : XRGrabInteractable
 
     public Color selectColorForJoystickMode = Color.magenta;
     public Color activateColorForJoystickMode = Color.cyan;
+
+    
+    //public Color activateColorForJoystickMode = Color.cyan;
 
     public Color inactiveColor = Color.white;
 
@@ -49,6 +53,7 @@ public class grabQuad : XRGrabInteractable
         moveLocomotionScript = xrRig.GetComponent<moveLocomotion>();
 
         rotateQuadScript = this.GetComponent<rotateQuad>();
+        adjustQuadScript = this.GetComponent<adjustQuad>();
         //textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
 
     }
@@ -56,6 +61,8 @@ public class grabQuad : XRGrabInteractable
     protected override void OnSelectEnter(XRBaseInteractor interactor)
     {
         selected = true;
+
+        adjustQuadScript.SetAdjustListen(false);
 
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
@@ -104,6 +111,8 @@ public class grabQuad : XRGrabInteractable
     {
         activated = true;
 
+        adjustQuadScript.SetAdjustListen(false);
+
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
             base.OnActivate(interactor);
@@ -127,6 +136,8 @@ public class grabQuad : XRGrabInteractable
     protected override void OnDeactivate(XRBaseInteractor interactor)
     {
         activated = false;
+
+        adjustQuadScript.SetAdjustListen(true);
 
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
@@ -163,6 +174,20 @@ public class grabQuad : XRGrabInteractable
                 quadMaterial.SetColor(outlineColorName, inactiveColor);
             }
         }
+    }
+
+    protected override void OnHoverEnter(XRBaseInteractor interactor)
+    {
+        base.OnHoverEnter(interactor);
+
+        adjustQuadScript.SetAdjustListen(true);
+    }
+
+    protected override void OnHoverExit(XRBaseInteractor interactor)
+    {
+        base.OnHoverExit(interactor);
+
+        adjustQuadScript.SetAdjustListen(false);
     }
 
     private void StoreInteractor(XRBaseInteractor interactor)
