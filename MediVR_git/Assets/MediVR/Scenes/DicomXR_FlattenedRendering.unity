@@ -137,6 +137,7 @@ GameObject:
   - component: {fileID: 86722777}
   - component: {fileID: 86722776}
   - component: {fileID: 86722780}
+  - component: {fileID: 86722781}
   - component: {fileID: 86722778}
   m_Layer: 0
   m_Name: Dicom_Image_Quad
@@ -365,6 +366,25 @@ MonoBehaviour:
   rightControllerNode: 5
   rotate: 0
   translate: 0
+--- !u!114 &86722781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86722771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8739813b7d5274c9ab401aa34f5c7155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  adjustStep: 1000
+  leftControllerNode: 4
+  rightControllerNode: 5
+  adjustListen: 0
+  adjust: 0
+  adjustColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  inactiveColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &350056314
 GameObject:
   m_ObjectHideFlags: 0

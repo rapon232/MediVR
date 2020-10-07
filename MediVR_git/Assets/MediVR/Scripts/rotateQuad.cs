@@ -21,13 +21,18 @@ public class rotateQuad : MonoBehaviour
     private List<InputDevice> leftDevices = new List<InputDevice>();
     private List<InputDevice> rightDevices = new List<InputDevice>();
 
+    private Quaternion rotateDefault = Quaternion.identity;
+    private Vector3 translateDefault = Vector3.zero;
+
     // Start is called before the first frame update
     void Start()
     {
         GetControllers();
+        //Debug.Log("Got Controllers");
         rotate = false;
         translate = false;
-        //Debug.Log("Got Controllers");
+        rotateDefault = this.transform.rotation;
+        translateDefault = this.transform.position;
     }
 
     // Update is called once per frame
@@ -71,7 +76,7 @@ public class rotateQuad : MonoBehaviour
                     var xAxis = lPosition.x * rotateSpeed * Time.deltaTime;
                     var yAxis = lPosition.y * rotateSpeed * Time.deltaTime;
 
-                    transform.Rotate(new Vector3 (yAxis, -xAxis, 0f), Space.Self);
+                    this.transform.Rotate(new Vector3 (yAxis, -xAxis, 0f), Space.Self);
                     //Debug.Log(lPosition);
                 }
                 else if(translate)
@@ -79,7 +84,7 @@ public class rotateQuad : MonoBehaviour
                     var xAxis = lPosition.x * translateSpeed * Time.deltaTime;
                     var yAxis = lPosition.y * translateSpeed * Time.deltaTime;
 
-                    transform.Translate(new Vector3 (xAxis, yAxis, 0f), Space.Self);
+                    this.transform.Translate(new Vector3 (xAxis, yAxis, 0f), Space.Self);
                     //Debug.Log(lPosition);
                 }
                 
@@ -91,15 +96,39 @@ public class rotateQuad : MonoBehaviour
                 {
                     var zAxis = rPosition.y * rotateSpeed * Time.deltaTime;
 
-                    transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
+                    this.transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
                     //Debug.Log(rPosition);
                 }
                 else if(translate)
                 {
                     var zAxis = rPosition.y * translateSpeed * Time.deltaTime;
 
-                    transform.Translate(new Vector3 (0f, 0f, zAxis), Space.Self);
+                    this.transform.Translate(new Vector3 (0f, 0f, zAxis), Space.Self);
                     //Debug.Log(rPosition);
+                }
+            }
+
+            if(leftController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool lClick) && lClick)
+            {
+                if(rotate)
+                {
+                    this.transform.rotation = rotateDefault;
+                }
+                else if(translate)
+                {
+                    this.transform.position = translateDefault;
+                }
+            }
+
+            if(rightController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool rClick) && rClick)
+            {
+                if(rotate)
+                {
+                    this.transform.rotation = rotateDefault;
+                }
+                else if(translate)
+                {
+                    this.transform.position = translateDefault;
                 }
             }
 
@@ -120,12 +149,12 @@ public class rotateQuad : MonoBehaviour
     public void SetRotate(bool state)
     {
         rotate = state;
-        Debug.Log($"Rotate set to: {rotate}!");
+        //Debug.Log($"Rotate set to: {rotate}!");
     }
 
     public void SetTranslate(bool state)
     {
         translate = state;
-        Debug.Log($"Translate set to: {translate}!");
+        //Debug.Log($"Translate set to: {translate}!");
     }
 }

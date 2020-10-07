@@ -19,6 +19,7 @@ public class grabQuad : XRGrabInteractable
 
     private GameObject xrRig = null;
     private moveLocomotion moveLocomotionScript = null;
+    private SnapTurnProvider snapTurnProviderScript = null;
 
     private rotateQuad rotateQuadScript = null;
     private adjustQuad adjustQuadScript = null;
@@ -51,6 +52,7 @@ public class grabQuad : XRGrabInteractable
 
         xrRig = GameObject.Find("XR Rig");
         moveLocomotionScript = xrRig.GetComponent<moveLocomotion>();
+        snapTurnProviderScript = xrRig.GetComponent<SnapTurnProvider>();
 
         rotateQuadScript = this.GetComponent<rotateQuad>();
         adjustQuadScript = this.GetComponent<adjustQuad>();
@@ -62,8 +64,6 @@ public class grabQuad : XRGrabInteractable
     {
         selected = true;
 
-        adjustQuadScript.SetAdjustListen(false);
-
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
             base.OnSelectEnter(interactor);
@@ -71,14 +71,19 @@ public class grabQuad : XRGrabInteractable
             StoreInteractor(interactor);
             MatchAttachmentPoints(interactor);
 
+            adjustQuadScript.SetAdjustListen(false);
+
             quadMaterial.SetColor(outlineColorName, selectColorForHandMode);
         }
         else if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
             moveLocomotionScript.enabled = false;
+            snapTurnProviderScript.enabled = false;
 
             rotateQuadScript.SetTranslate(true);
             rotateQuadScript.SetRotate(false);
+
+            adjustQuadScript.SetAdjustListen(false);
 
             quadMaterial.SetColor(outlineColorName, selectColorForJoystickMode);
         }
@@ -101,6 +106,7 @@ public class grabQuad : XRGrabInteractable
         else if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
             moveLocomotionScript.enabled = true;
+            snapTurnProviderScript.enabled = true;
 
             rotateQuadScript.SetTranslate(false);
             rotateQuadScript.SetRotate(false);
@@ -111,13 +117,15 @@ public class grabQuad : XRGrabInteractable
     {
         activated = true;
 
-        adjustQuadScript.SetAdjustListen(false);
+        //adjustQuadScript.SetAdjustListen(false);
 
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
             base.OnActivate(interactor);
 
             MatchAttachmentPoints(interactor);
+
+            adjustQuadScript.SetAdjustListen(false);
 
             quadMaterial.SetColor(outlineColorName, activateColorForHandMode);
 
@@ -129,6 +137,8 @@ public class grabQuad : XRGrabInteractable
             rotateQuadScript.SetTranslate(false);
             rotateQuadScript.SetRotate(true);
 
+            adjustQuadScript.SetAdjustListen(false);
+
             quadMaterial.SetColor(outlineColorName, activateColorForJoystickMode);
         }
     }
@@ -137,7 +147,7 @@ public class grabQuad : XRGrabInteractable
     {
         activated = false;
 
-        adjustQuadScript.SetAdjustListen(true);
+        //adjustQuadScript.SetAdjustListen(true);
 
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
@@ -147,10 +157,14 @@ public class grabQuad : XRGrabInteractable
 
             if(selected)
             {
+                adjustQuadScript.SetAdjustListen(false);
+
                 quadMaterial.SetColor(outlineColorName, selectColorForHandMode);
             }
             else
             {
+                adjustQuadScript.SetAdjustListen(true);
+
                 quadMaterial.SetColor(outlineColorName, inactiveColor);
             }
 
@@ -164,12 +178,16 @@ public class grabQuad : XRGrabInteractable
                 rotateQuadScript.SetTranslate(true);
                 rotateQuadScript.SetRotate(false);
 
+                adjustQuadScript.SetAdjustListen(false);
+
                 quadMaterial.SetColor(outlineColorName, selectColorForJoystickMode);
             }
             else
             {
                 rotateQuadScript.SetTranslate(false);
                 rotateQuadScript.SetRotate(false);
+
+                adjustQuadScript.SetAdjustListen(true);
 
                 quadMaterial.SetColor(outlineColorName, inactiveColor);
             }

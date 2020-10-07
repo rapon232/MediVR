@@ -7,14 +7,13 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class adjustQuad : MonoBehaviour
 {
-    public float adjustSpeed = .5f;
+    public float adjustStep = 1000.0f;
 
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
     public bool adjustListen = false;
     public bool adjust = false;
-    public bool flag = false;
 
     public Color adjustColor = Color.yellow;
     public Color inactiveColor = Color.white;
@@ -34,16 +33,20 @@ public class adjustQuad : MonoBehaviour
     private Renderer quadRenderer = null;
     private Material quadMaterial = null;
 
-    private float adjustStep = 1000.0f;
+    private bool flag = false;
 
+    private float brightnessDefault = 0;
     private float brightnessMax = 0;
     private float brightnessMin = 0;
     private float brightnessRange = 0;
 
+    private float contrastDefault = 0;
     private float contrastMax = 0;
     private float contrastMin = 0;
     private float contrastRange = 0;
 
+    private float thresholdDefault = 0;
+    private float thresholdInvDefault = 0;
     private float thresholdMax = 0;
     private float thresholdMin = 0;
     private float thresholdRange = 0;
@@ -61,14 +64,18 @@ public class adjustQuad : MonoBehaviour
 
         inactiveColor = quadMaterial.GetColor(outlineColorName);
 
+        brightnessDefault = quadMaterial.GetFloat("_Brightness");
         brightnessMax = quadMaterial.GetFloat("_BrightnessMax");
         brightnessMin = quadMaterial.GetFloat("_BrightnessMin");
         brightnessRange = brightnessMax - brightnessMin;
 
+        contrastDefault = quadMaterial.GetFloat("_Contrast");
         contrastMax = quadMaterial.GetFloat("_ContrastMax");
         contrastMin = quadMaterial.GetFloat("_ContrastMin");
         contrastRange = contrastMax - contrastMin;
 
+        thresholdDefault = quadMaterial.GetFloat("_Threshold");
+        thresholdInvDefault = quadMaterial.GetFloat("_ThresholdInv");
         thresholdMax = quadMaterial.GetFloat("_ThresholdMax");
         thresholdMin = quadMaterial.GetFloat("_ThresholdMin");
         thresholdRange = thresholdMax - thresholdMin;
@@ -145,8 +152,7 @@ public class adjustQuad : MonoBehaviour
                 }
             }*/
 
-            if((leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lPress) && lPress) || 
-                        (rightController.TryGetFeatureValue(CommonUsages.gripButton, out bool rPress) && rPress))
+            if((leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lPress) && lPress))
             {
                 moveLocomotionScript.enabled = false;
                 snapTurnProviderScript.enabled = false;
@@ -249,11 +255,11 @@ public class adjustQuad : MonoBehaviour
                     float xzTemp = xzOrig + xzAxis;
                     float zTemp = zOrig + zAxis;
 
-                    if(xzTemp <= thresholdMin && xzTemp >= thresholdMax)
+                    if(xzTemp <= thresholdMax && xzTemp >= thresholdMin)
                     {
                         quadMaterial.SetFloat("_Threshold", xzTemp);
                     }
-                    if(zTemp <= thresholdMin && zTemp >= thresholdMax)
+                    if(zTemp <= thresholdMax && zTemp >= thresholdMin)
                     {
                         quadMaterial.SetFloat("_ThresholdInv", zTemp);
                     }
@@ -261,6 +267,18 @@ public class adjustQuad : MonoBehaviour
                     //transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
                     //Debug.Log(rPosition);
                 }
+            }
+
+            if(leftController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool lClick) && lClick)
+            {
+                quadMaterial.SetFloat("_Contrast", contrastDefault);
+                quadMaterial.SetFloat("_Brightness", brightnessDefault);
+            }
+
+            if(rightController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool rClick) && rClick)
+            {
+                quadMaterial.SetFloat("_Threshold", thresholdDefault);
+                quadMaterial.SetFloat("_ThresholdInv", thresholdInvDefault);   
             }
 
             /*else
@@ -285,25 +303,25 @@ public class adjustQuad : MonoBehaviour
     public void SetAdjustListen(bool state)
     {
         adjustListen = state;
-        Debug.Log($"Adjust Listener set to: {adjustListen}!");
+        //Debug.Log($"Adjust Listener set to: {adjustListen}!");
     }
 
     public void SetAdjust(bool state)
     {
         adjust = state;
-        Debug.Log($"Adjust set to: {adjust}!");
+        //Debug.Log($"Adjust set to: {adjust}!");
     }
 
     public void ToggleAdjust()
     {
         adjust = !adjust;
-        Debug.Log($"Adjust set to: {adjust}!");
+        //Debug.Log($"Adjust set to: {adjust}!");
     }
 
     public void ToggleLocomotion()
     {
         moveLocomotionScript.enabled  = !moveLocomotionScript.enabled;
-        Debug.Log($"Locomotion set to: {moveLocomotionScript.enabled}!");
+        //Debug.Log($"Locomotion set to: {moveLocomotionScript.enabled}!");
     }
 
 }
