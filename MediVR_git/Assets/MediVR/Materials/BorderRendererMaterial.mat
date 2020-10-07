@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FlattenedRenderMaterial
-  m_Shader: {fileID: 4800000, guid: 717d64c69a0884b2bb8b70fbd7c32c52, type: 3}
+  m_Name: BorderRendererMaterial
+  m_Shader: {fileID: 4800000, guid: 667bffd4afd904490837da2f91916192, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -66,7 +66,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Enlarge: 2
+    - _Enlarge: 1
     - _EnlargeMax: 10
     - _EnlargeMin: 1
     - _GlossMapScale: 1
@@ -88,9 +88,6 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Coords: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MovingCoords: {r: 0, g: 0, b: 0, a: 1}
-    - _OutlineColor: {r: 0.6117647, g: 0.5803922, b: 0.50980395, a: 1}
-    - _StartCoords: {r: 0, g: 0, b: 0, a: 1}
-    - _uv: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 0, b: 0, a: 1}
+    - _StartCoords: {r: 0, g: 0, b: 0, a: 0}

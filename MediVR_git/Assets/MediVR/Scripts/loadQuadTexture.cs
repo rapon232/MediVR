@@ -18,6 +18,7 @@ using TMPro;
 public class loadQuadTexture : MonoBehaviour
 {
     private GameObject screenPlane;
+    private GameObject borderCube;
 
     private Texture3D quadTexture;
 
@@ -32,8 +33,11 @@ public class loadQuadTexture : MonoBehaviour
         
         /////Set 3D Texture to material of cube
         var quadRenderer = this.GetComponent<Renderer>();
-
         quadRenderer.material.SetTexture("_MainTex", quadTexture);
+
+        borderCube = GameObject.Find("Dicom_Image_Border_Cube");
+        var cubeRenderer = borderCube.GetComponent<Renderer>();
+        cubeRenderer.material.SetTexture("_MainTex", quadTexture);
     }
 
     // Update is called once per frame

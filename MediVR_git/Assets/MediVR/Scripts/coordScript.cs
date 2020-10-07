@@ -6,7 +6,7 @@ using UnityEngine;
 public class coordScript : MonoBehaviour
 {
     public Vector3 startCoords;
-    public Vector3 updatedCoords;
+    //public Vector3 updatedCoords;
     //public GameObject Quad;
     public Renderer quadRenderer;
     public MeshFilter quadMeshFilter;
@@ -30,8 +30,8 @@ public class coordScript : MonoBehaviour
         
         if(transform.hasChanged)
         {
-            updatedCoords = this.transform.position;
-            quadRenderer.material.SetVector("_MovingCoords", (startCoords - updatedCoords));
+            //updatedCoords = this.transform.position;
+            //quadRenderer.material.SetVector("_MovingCoords", (startCoords - updatedCoords));
             calculateCoords();
             transform.hasChanged = false;
         }

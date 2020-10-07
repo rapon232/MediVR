@@ -35,7 +35,7 @@
         _ThresholdInv("Inverted Threshold", Range(0,1)) = 1
 
         _StartCoords("Quad Start Coordinates", Vector) = (0,0,0) 
-        _MovingCoords("Quad Updated Coordinates", Vector) = (0,0,0) 
+        //_MovingCoords("Quad Updated Coordinates", Vector) = (0,0,0) 
 
     }
 
@@ -52,7 +52,7 @@
             float _ThresholdInv;
 
             float3 _StartCoords;
-            float3 _MovingCoords;
+            //float3 _MovingCoords;
 
             struct appdata
             {
