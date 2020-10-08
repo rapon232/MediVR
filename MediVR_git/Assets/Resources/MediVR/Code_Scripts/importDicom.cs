@@ -65,7 +65,7 @@ public class importDicom : MonoBehaviour
 
         dirPath = Path.Combine(rootPath, dirName);
         //path = Path.Combine(dirPath, fileName);
-        ressourceDestinationPath = Path.Combine("Assets/Resources/Textures", destinationTextureDirName);
+        ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", destinationTextureDirName);
         fileDestinationPath = Path.Combine(dirPath, destinationDirName);
         
 
@@ -79,7 +79,7 @@ public class importDicom : MonoBehaviour
 
         textureWidth = textureHeight = 256;
         textureDepth = 512;
-        textureRessourceName = "Textures/Dicom 3D Textures/" + dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
+        textureRessourceName = "MediVR/Textures/Dicom 3D Textures/" + dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
         textureArrayName = fileDestinationPath + "/" + dirName + "_3DTexture_Color_Array" + textureWidth + "x" + textureHeight + "x" + textureDepth + ".bytes";
 
 

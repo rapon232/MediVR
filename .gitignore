@@ -59,7 +59,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 #Large files over 1GB
-MediVR_git/Assets/Resources/Textures/Dicom 3D Textures
+MediVR_git/Assets/Resources/MediVR/Textures/Dicom 3D Textures
 MediVR_git/Assets/CT_Series/Saved
 
 MediVR_git/Assets/Oculus/SampleFramework/Core/TouchControllers/Models/controller_NM.psd

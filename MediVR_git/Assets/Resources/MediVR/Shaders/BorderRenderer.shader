@@ -55,6 +55,7 @@
         Pass
         {
             ZWrite On
+            Cull Off
 
             CGPROGRAM
             #pragma vertex vert

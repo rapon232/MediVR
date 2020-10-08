@@ -16,7 +16,8 @@ public class adjustQuad : MonoBehaviour
     public bool adjust = false;
 
     public Color adjustColor = Color.yellow;
-    public Color inactiveColor = Color.white;
+    
+    private Color inactiveColor = Color.white;
 
     private string outlineColorName = "_OutlineColor";
 

@@ -23,6 +23,7 @@ public class grabQuad : XRGrabInteractable
 
     private rotateQuad rotateQuadScript = null;
     private adjustQuad adjustQuadScript = null;
+    private duplicateQuad duplicateQuadScript = null;
 
     public XRNode handController = UnityEngine.XR.XRNode.RightHand;
     public XRNode joystickController = UnityEngine.XR.XRNode.LeftHand;
@@ -39,11 +40,19 @@ public class grabQuad : XRGrabInteractable
     
     //public Color activateColorForJoystickMode = Color.cyan;
 
-    public Color inactiveColor = Color.white;
+    private Color inactiveColor = Color.white;
 
     protected override void Awake()
     {
         base.Awake();
+
+        base.smoothPosition = true;
+        base.smoothPositionAmount = 20.0f;
+        base.tightenPosition = 0.345f;
+        base.trackRotation = false;
+        base.smoothRotationAmount = 20.0f;
+        base.tightenRotation = 0.345f;
+        base.throwOnDetach = false;
 
         quadRenderer = this.GetComponent<Renderer>();
         quadMaterial = quadRenderer.material;
@@ -56,6 +65,7 @@ public class grabQuad : XRGrabInteractable
 
         rotateQuadScript = this.GetComponent<rotateQuad>();
         adjustQuadScript = this.GetComponent<adjustQuad>();
+        duplicateQuadScript = this.GetComponent<duplicateQuad>();
         //textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
 
     }
@@ -199,6 +209,8 @@ public class grabQuad : XRGrabInteractable
         base.OnHoverEnter(interactor);
 
         adjustQuadScript.SetAdjustListen(true);
+
+        duplicateQuadScript.SetDuplicateListen(true);
     }
 
     protected override void OnHoverExit(XRBaseInteractor interactor)
@@ -206,6 +218,8 @@ public class grabQuad : XRGrabInteractable
         base.OnHoverExit(interactor);
 
         adjustQuadScript.SetAdjustListen(false);
+
+        duplicateQuadScript.SetDuplicateListen(false);
     }
 
     private void StoreInteractor(XRBaseInteractor interactor)

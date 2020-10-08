@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class coordScript : MonoBehaviour
+public class updateQuadVertices : MonoBehaviour
 {
     public Vector3 startCoords;
     //public Vector3 updatedCoords;
