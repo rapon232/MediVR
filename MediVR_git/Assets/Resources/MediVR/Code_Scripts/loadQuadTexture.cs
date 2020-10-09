@@ -21,6 +21,8 @@ public class loadQuadTexture : MonoBehaviour
     private GameObject borderCube;
 
     private Texture3D quadTexture;
+    private Renderer quadRenderer;
+    private Renderer cubeRenderer;
 
     // Start is called before the first frame update
     void Start()
@@ -32,11 +34,11 @@ public class loadQuadTexture : MonoBehaviour
         quadTexture = screenPlaneScript.threeDimTexture;
         
         /////Set 3D Texture to material of cube
-        var quadRenderer = this.GetComponent<Renderer>();
+        quadRenderer = this.GetComponent<Renderer>();
         quadRenderer.material.SetTexture("_MainTex", quadTexture);
 
         borderCube = GameObject.Find("Dicom_Image_Border_Cube");
-        var cubeRenderer = borderCube.GetComponent<Renderer>();
+        cubeRenderer = borderCube.GetComponent<Renderer>();
         cubeRenderer.material.SetTexture("_MainTex", quadTexture);
     }
 
@@ -44,5 +46,19 @@ public class loadQuadTexture : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void ToggleCutBlackPixels()
+    {
+        int set = quadRenderer.material.GetInt("_CutBlackPixels");
+
+        if(set == 1)
+        {
+            quadRenderer.material.SetInt("_CutBlackPixels", 0);
+        }
+        else
+        {
+            quadRenderer.material.SetInt("_CutBlackPixels", 1);
+        }
     }
 }

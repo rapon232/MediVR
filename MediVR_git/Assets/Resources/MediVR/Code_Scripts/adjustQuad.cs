@@ -12,9 +12,6 @@ public class adjustQuad : MonoBehaviour
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
-    public bool adjustListen = false;
-    public bool adjust = false;
-
     public Color adjustColor = Color.yellow;
     
     private Color inactiveColor = Color.white;
@@ -34,6 +31,8 @@ public class adjustQuad : MonoBehaviour
     private Renderer quadRenderer = null;
     private Material quadMaterial = null;
 
+    private bool adjustListen = false;
+    private bool adjust = false;
     private bool flag = false;
 
     private float brightnessDefault = 0;

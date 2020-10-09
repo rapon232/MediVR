@@ -1,8 +1,8 @@
-﻿Shader "MediVR/FlattenedRendering"
+﻿Shader "MediVR/DuplicateRendering"
 {
     Properties
     {
-        _MainTex("Texture", 3D) = "white" {}
+        _MainTex("Texture", 2D) = "white" {}
 
         _MainTex_TexelSize("Texel Size", Vector) = (0,0,0,0)
 
@@ -63,7 +63,7 @@
             {
                 float4 vertex : POSITION;
                 //float2 uv : TEXCOORD0;
-                float3 uv : TEXCOORD0;
+                float2 uv : TEXCOORD0;
 
                 float3 normal : NORMAL;
             };
@@ -72,7 +72,7 @@
             {
                 float4 vertex : SV_POSITION;
                 //float2 uv : TEXCOORD0;
-                float3 uv : TEXCOORD0;
+                float2 uv : TEXCOORD0;
 
                 //float depth : TEXCOORD1;
 
@@ -80,7 +80,7 @@
                 float4 color : COLOR;
             };
 
-            sampler3D _MainTex;
+            sampler2D _MainTex;
             //float4 _MainTex_ST;
             float4 _MainTex_TexelSize;
 
@@ -106,7 +106,7 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.uv = (v.uv -_StartCoords) / _Enlarge + float3(.5,.5,.5);
+                o.uv = v.uv;//(v.uv -_StartCoords) / _Enlarge + float3(.5,.5,.5);
                 //o.uv = float2(_MovingCoords.x, _MovingCoords.y);
                 //float3 updatedCoords = _StartCoords - _MovingCoords;
                 //o.depth = - _MovingCoords.z;
@@ -122,7 +122,7 @@
                 clip(i.uv);
                 clip(1.0 - i.uv);
 
-                fixed4 col = tex3D(_MainTex, i.uv);
+                fixed4 col = tex2D(_MainTex, i.uv);
 
                 if(col.r < _Threshold && col.g < _Threshold && col.b < _Threshold)
 					discard;
@@ -133,7 +133,7 @@
                 if(_CutBlackPixels == 1)
                 {
                     if(col.r < 0.08 && col.g < 0.08 && col.b < 0.08)
-					discard;
+                        discard;
                 }
 
                 col*= _Contrast;

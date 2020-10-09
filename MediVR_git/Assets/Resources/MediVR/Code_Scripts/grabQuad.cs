@@ -28,9 +28,6 @@ public class grabQuad : XRGrabInteractable
     public XRNode handController = UnityEngine.XR.XRNode.RightHand;
     public XRNode joystickController = UnityEngine.XR.XRNode.LeftHand;
 
-    public bool activated = false;
-    public bool selected = false;
-
     public Color selectColorForHandMode = Color.red;
     public Color activateColorForHandMode = Color.blue;
 
@@ -41,6 +38,9 @@ public class grabQuad : XRGrabInteractable
     //public Color activateColorForJoystickMode = Color.cyan;
 
     private Color inactiveColor = Color.white;
+
+    private bool activated = false;
+    private bool selected = false;
 
     protected override void Awake()
     {

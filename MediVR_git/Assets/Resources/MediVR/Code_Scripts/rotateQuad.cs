@@ -12,9 +12,6 @@ public class rotateQuad : MonoBehaviour
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
-    public bool rotate = false;
-    public bool translate = false;
-
     private InputDevice leftController;
     private InputDevice rightController;
 
@@ -23,6 +20,9 @@ public class rotateQuad : MonoBehaviour
 
     private Quaternion rotateDefault = Quaternion.identity;
     private Vector3 translateDefault = Vector3.zero;
+
+    private bool rotate = false;
+    private bool translate = false;
 
     // Start is called before the first frame update
     void Start()

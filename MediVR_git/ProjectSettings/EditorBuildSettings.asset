@@ -6,15 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Oculus/VR/Scenes/ControllerTest.unity
-    guid: d56af3aeb2176e7459f753c1c2e2dd97
-  - enabled: 0
-    path: Assets/Resources/MediVR/Scenes/SampleScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 0
-    path: Assets/Resources/MediVR/Scenes/DicomRender.unity
-    guid: 3738ae26f688a40e3956c8c63be05427
-  - enabled: 0
     path: Assets/Resources/MediVR/Scenes/DicomXR_VolumetricRendering.unity
     guid: f8553399b10da45d9af7d337b1734675
   - enabled: 1

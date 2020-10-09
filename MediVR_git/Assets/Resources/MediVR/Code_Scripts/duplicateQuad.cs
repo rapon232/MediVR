@@ -11,7 +11,7 @@ public class duplicateQuad : MonoBehaviour
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
-    public bool duplicateListen = false;
+    public bool cutBlackPixels = false;
 
     public Color duplicateColor = Color.green;
 
@@ -29,6 +29,7 @@ public class duplicateQuad : MonoBehaviour
     private Renderer quadRenderer = null;
     private Material quadMaterial = null;
 
+    private bool duplicateListen = false;
     private bool flag = false;
     //private bool duplicated = false;
 
@@ -178,6 +179,16 @@ public class duplicateQuad : MonoBehaviour
         newQuadRend.material = material;
         newQuadRend.material.SetTexture("_MainTex", tex);
         newQuadRend.material.SetColor(outlineColorName, inactiveColor);
+
+        if(!cutBlackPixels)
+        {
+            newQuadRend.material.SetInt("_CutBlackPixels", 0);
+        }
+        else
+        {
+            newQuadRend.material.SetInt("_CutBlackPixels", 1);
+        }
+        
 
         newQuad.AddComponent<Rigidbody>();
 
