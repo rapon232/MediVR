@@ -94,6 +94,7 @@
         Pass
         {
             ZWrite On
+            Cull Off
 
             CGPROGRAM
             #pragma vertex vert
@@ -156,6 +157,7 @@
         Pass
         {
             ZWrite Off
+            //Cull Off
 
             CGPROGRAM
             #pragma vertex vert

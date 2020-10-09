@@ -15,6 +15,8 @@ public class duplicateQuad : MonoBehaviour
 
     public Color duplicateColor = Color.green;
 
+    public InputFeatureUsage<bool> duplicateButton = CommonUsages.menuButton;
+
     private Color inactiveColor = Color.white;
     private Color snapshotColor = Color.black;
 
@@ -110,7 +112,7 @@ public class duplicateQuad : MonoBehaviour
     {
         if(duplicateListen)
         {
-            if((leftController.TryGetFeatureValue(CommonUsages.menuButton, out bool press) && press))
+            if((leftController.TryGetFeatureValue(duplicateButton, out bool press) && press))
             {
                 if(!flag)
                 {

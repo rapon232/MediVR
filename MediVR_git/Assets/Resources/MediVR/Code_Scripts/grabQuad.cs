@@ -39,8 +39,8 @@ public class grabQuad : XRGrabInteractable
 
     private Color inactiveColor = Color.white;
 
-    private bool activated = false;
     private bool selected = false;
+    //private bool activated = false;
 
     protected override void Awake()
     {
@@ -125,7 +125,7 @@ public class grabQuad : XRGrabInteractable
 
     protected override void OnActivate(XRBaseInteractor interactor)
     {
-        activated = true;
+        //activated = true;
 
         //adjustQuadScript.SetAdjustListen(false);
 
@@ -155,7 +155,7 @@ public class grabQuad : XRGrabInteractable
 
     protected override void OnDeactivate(XRBaseInteractor interactor)
     {
-        activated = false;
+        //activated = false;
 
         //adjustQuadScript.SetAdjustListen(true);
 
@@ -210,7 +210,10 @@ public class grabQuad : XRGrabInteractable
 
         adjustQuadScript.SetAdjustListen(true);
 
-        duplicateQuadScript.SetDuplicateListen(true);
+        if(interactor.GetComponent<XRController>().controllerNode == joystickController)
+        {
+            duplicateQuadScript.SetDuplicateListen(true);
+        }
     }
 
     protected override void OnHoverExit(XRBaseInteractor interactor)
@@ -219,7 +222,10 @@ public class grabQuad : XRGrabInteractable
 
         adjustQuadScript.SetAdjustListen(false);
 
-        duplicateQuadScript.SetDuplicateListen(false);
+        if(interactor.GetComponent<XRController>().controllerNode == joystickController)
+        {
+            duplicateQuadScript.SetDuplicateListen(false);
+        }
     }
 
     private void StoreInteractor(XRBaseInteractor interactor)

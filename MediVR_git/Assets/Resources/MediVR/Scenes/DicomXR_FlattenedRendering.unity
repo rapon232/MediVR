@@ -1264,7 +1264,7 @@ GameObject:
   - component: {fileID: 1065216075}
   - component: {fileID: 1065216077}
   - component: {fileID: 1065216076}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Dicom_Info_Text_Modality (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2085,7 +2085,7 @@ GameObject:
   - component: {fileID: 1349502498}
   - component: {fileID: 1349502500}
   - component: {fileID: 1349502499}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Dicom_Info_Text_Study (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2903,7 +2903,7 @@ GameObject:
   - component: {fileID: 1926631342}
   - component: {fileID: 1926631344}
   - component: {fileID: 1926631343}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Dicom_Info_Text_Patient (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

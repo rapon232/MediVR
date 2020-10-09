@@ -13,6 +13,11 @@ public class adjustQuad : MonoBehaviour
     public XRNode rightControllerNode = XRNode.RightHand;
 
     public Color adjustColor = Color.yellow;
+
+    public InputFeatureUsage<bool> adjustButton = CommonUsages.secondaryButton;
+    public InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
+
+    public InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
     
     private Color inactiveColor = Color.white;
 
@@ -152,7 +157,7 @@ public class adjustQuad : MonoBehaviour
                 }
             }*/
 
-            if((leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lPress) && lPress))
+            if((leftController.TryGetFeatureValue(adjustButton, out bool lPress) && lPress) || (rightController.TryGetFeatureValue(adjustButton, out bool rPress) && rPress))
             {
                 moveLocomotionScript.enabled = false;
                 snapTurnProviderScript.enabled = false;
@@ -205,7 +210,7 @@ public class adjustQuad : MonoBehaviour
 
             //quadMaterial.SetColor(outlineColorName, adjustColor);
 
-            if (leftController.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 lPosition) && lPosition != Vector2.zero)
+            if (leftController.TryGetFeatureValue(joystick, out Vector2 lPosition) && lPosition != Vector2.zero)
             {
                 if(adjust)
                 {
@@ -239,7 +244,7 @@ public class adjustQuad : MonoBehaviour
                 }
             }
 
-            if (rightController.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 rPosition) && rPosition != Vector2.zero)
+            if (rightController.TryGetFeatureValue(joystick, out Vector2 rPosition) && rPosition != Vector2.zero)
             {
                 if(adjust)
                 {
@@ -269,13 +274,13 @@ public class adjustQuad : MonoBehaviour
                 }
             }
 
-            if(leftController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool lClick) && lClick)
+            if(leftController.TryGetFeatureValue(resetButton, out bool lClick) && lClick)
             {
                 quadMaterial.SetFloat("_Contrast", contrastDefault);
                 quadMaterial.SetFloat("_Brightness", brightnessDefault);
             }
 
-            if(rightController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool rClick) && rClick)
+            if(rightController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
             {
                 quadMaterial.SetFloat("_Threshold", thresholdDefault);
                 quadMaterial.SetFloat("_ThresholdInv", thresholdInvDefault);   

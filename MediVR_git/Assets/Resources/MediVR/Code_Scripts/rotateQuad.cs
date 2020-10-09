@@ -12,6 +12,10 @@ public class rotateQuad : MonoBehaviour
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
+    public InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
+
+    public InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
+
     private InputDevice leftController;
     private InputDevice rightController;
 
@@ -69,7 +73,7 @@ public class rotateQuad : MonoBehaviour
     {
         if(rotate || translate)
         {
-            if (leftController.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 lPosition) && lPosition != Vector2.zero)
+            if (leftController.TryGetFeatureValue(joystick, out Vector2 lPosition) && lPosition != Vector2.zero)
             {
                 if(rotate)
                 {
@@ -90,7 +94,7 @@ public class rotateQuad : MonoBehaviour
                 
             }
 
-            if (rightController.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 rPosition) && rPosition != Vector2.zero)
+            if (rightController.TryGetFeatureValue(joystick, out Vector2 rPosition) && rPosition != Vector2.zero)
             {
                 if(rotate)
                 {
@@ -108,7 +112,7 @@ public class rotateQuad : MonoBehaviour
                 }
             }
 
-            if(leftController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool lClick) && lClick)
+            if(leftController.TryGetFeatureValue(resetButton, out bool lClick) && lClick)
             {
                 if(rotate)
                 {
@@ -120,7 +124,7 @@ public class rotateQuad : MonoBehaviour
                 }
             }
 
-            if(rightController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool rClick) && rClick)
+            if(rightController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
             {
                 if(rotate)
                 {
