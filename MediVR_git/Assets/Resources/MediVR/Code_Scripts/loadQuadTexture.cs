@@ -17,7 +17,7 @@ using TMPro;
 
 public class loadQuadTexture : MonoBehaviour
 {
-    private GameObject screenPlane;
+    //private GameObject screenPlane;
     private GameObject borderCube;
 
     private Texture3D quadTexture;
@@ -28,10 +28,10 @@ public class loadQuadTexture : MonoBehaviour
     void Start()
     {
 
-        screenPlane = GameObject.Find("Screen_Plane");
-        var screenPlaneScript = screenPlane.GetComponent<importDicom>();
+        //screenPlane = GameObject.Find("Screen_Plane");
+        //var screenPlaneScript = GetComponent<importDicom>();
 
-        quadTexture = screenPlaneScript.threeDimTexture;
+        quadTexture = this.GetComponent<importDicom>().threeDimTexture;
         
         /////Set 3D Texture to material of cube
         quadRenderer = this.GetComponent<Renderer>();

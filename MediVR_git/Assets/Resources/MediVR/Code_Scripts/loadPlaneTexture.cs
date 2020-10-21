@@ -17,7 +17,7 @@ using TMPro;
 
 public class loadPlaneTexture : MonoBehaviour
 {
-    private GameObject screenPlane = null;
+    private GameObject dicomImageQuad = null;
 
     private dicomInfoTools dicomInformation = new dicomInfoTools();
 
@@ -38,9 +38,9 @@ public class loadPlaneTexture : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        screenPlane = GameObject.Find("Screen_Plane");
+        dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
         //var screenPlaneScript = screenPlane.GetComponent<importDicom>();
-        dirPath = screenPlane.GetComponent<importDicom>().dirPath;
+        dirPath = dicomImageQuad.GetComponent<importDicom>().dirPath;
 
         /////Load multiple slices into Texture2D Array
         planeTextureArray = dicomImageTools.CreateNumberedTextureArrayFromDicomdir (dirPath, false, ref dicomInformation, 5);

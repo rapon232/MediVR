@@ -10,6 +10,7 @@ using UnityEngine;
 
 using Dicom;
 using Dicom.Imaging;
+using Dicom.Imaging.Render;
 using Dicom.Log;
 using Dicom.Network;
 using Dicom.Media;
@@ -257,6 +258,130 @@ public static class dicomImageTools
         return colors;
     }
 
+    public static Color[] CreateColorArrayFromDicomdir(string dirPath, double scaleTexture, int textureWidth, int textureHeight, int textureDepth)
+    {
+        var dicomDirectoryInfo = new DirectoryInfo(dirPath);
+
+        int fileCount = dicomDirectoryInfo.GetFiles().Length;
+
+        Debug.Log($"Files found in Directory: {fileCount}");
+        Debug.Log($"Loading Dicom files from Directory {dirPath} into Array");
+
+        int validFileCount = 0;
+
+        List<string> fileNameList = new List<string>();
+
+        foreach (var file in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
+        {
+            if (DicomFile.HasValidHeader(file.FullName))
+            {
+                fileNameList.Add(file.FullName);
+                validFileCount++;
+            }
+        }
+
+        Debug.Log($"Valid Dicom files found in Directory: {validFileCount}. File names loaded onto list.");
+
+        var w = textureWidth;
+		var h = textureHeight;
+		var d = textureDepth;
+
+        var textureCount = 0;
+
+		Color[] colors = new Color[w * h * d];
+
+        Debug.Log($"Populating color array for 3D Texture");
+
+		var slicesCount = -1;
+		//var sliceCountFloat = 0f;
+
+        var sliceCountOffset = Mathf.FloorToInt(d - validFileCount) / 2;
+        var invSliceCountOffset = sliceCountOffset + validFileCount;
+
+        //Texture2D tex = null;
+        IPixelData pixelData = null;
+        
+          
+
+		for(int z = 0; z < d; z++)
+		{
+            textureCount++;
+			//sliceCountFloat += countOffset;
+			//slicesCount = Mathf.FloorToInt(sliceCountFloat);
+
+            if(z > sliceCountOffset && z < invSliceCountOffset)
+            {
+                slicesCount++;
+
+                var tmpDicom = DicomFile.Open(fileNameList[slicesCount]);
+
+                //var di = new DicomImage(tmpDicom.Dataset);
+                //var pixeldatatest = di.PixelData; // returns DicomPixelData type
+                //Debug.Log($"{pixeldatatest.NumberOfFrames}");
+                //pixelData = PixelDataFactory.Create(pixeldatatest, 0); // returns IPixelData type
+                //Debug.Log($"{pixelData.Width}");
+                //Debug.Log($"{pixelData.Height}");
+
+                //var pixelData = DicomPixelData.Create(dataset, true);
+                //pixelData.Width
+                //pixelData.Height 
+
+                var header = DicomPixelData.Create(tmpDicom.Dataset);
+                Debug.Log($"{header.NumberOfFrames}");
+                var v = PixelDataFactory.Create(header, 0);
+                pixelData = v;
+                Debug.Log($"{pixelData.Width}");
+                Debug.Log($"{pixelData.Height}");
+
+                //tex = new DicomImage(tmpDicom.Dataset).RenderImage().As<Texture2D>();
+                /*if(scaleTexture != 0)
+                {
+                    double newWidth = tex.width*scaleTexture;
+                    double newHeight = tex.height*scaleTexture;
+                    TextureScale.Bilinear (tex, Convert.ToInt32(newWidth), Convert.ToInt32(newHeight));
+                }
+                else if (scaleTexture == 1)
+                {
+                    // do nothing
+                }*/
+            }
+
+			for(int x = 0; x < w; x++)
+			{
+				for(int y = 0; y < h; y++)
+				{
+					var idx = x + (y * w) + (z * (w * h));
+
+                    Color c = Color.clear;
+
+                    if(z > sliceCountOffset && z < invSliceCountOffset)
+                    {
+                        //c = slices[slicesCount].GetPixelBilinear(x / (float)w, y / (float)h);
+                        //c = tex.GetPixel(x, y);
+                        if (pixelData is Dicom.Imaging.Render.GrayscalePixelDataU16)
+                        {
+                            var pixel = pixelData.GetPixel(x,y);
+                            //Console.WriteLine("{0}",Convert.ToSingle(pixelData.GetPixel(i,j)));
+                            Debug.Log($"{pixel}");
+                        }
+
+                    }
+					/*else
+                    {
+                        c = Color.clear;
+                    }*/
+
+					//if (!(c.r < 0.1f && c.g < 0.1f && c.b < 0.1f))
+						colors [idx] = c;
+
+				}
+			}
+		}
+
+        Debug.Log($"Textures loaded into color array: {textureCount}");
+
+        return colors;
+    }
 
     public static Texture2D[] CreateTextureArrayFromDicomdir(string dirPath, double scaleTexture)
     {
@@ -590,8 +715,9 @@ public static class dicomImageTools
 
         /////Copy pixel data of 2D Textures in array into color array
         var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
+        //var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
 
-        Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
+        //Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
 
         /////Map 2D Texture color pixels to 3D Texture
         var cubeTexture = CreateTexture3D(colorsForCubeTexture, textureWidth, textureHeight, textureDepth);

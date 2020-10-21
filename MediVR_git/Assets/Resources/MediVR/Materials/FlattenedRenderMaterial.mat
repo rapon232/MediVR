@@ -63,6 +63,7 @@ Material:
     - _Contrast: 1
     - _ContrastMax: 3
     - _ContrastMin: 0
+    - _CutBlackPixels: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -91,6 +92,6 @@ Material:
     - _Coords: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MovingCoords: {r: 0, g: 0, b: 0, a: 1}
-    - _OutlineColor: {r: 0.6117647, g: 0.5803922, b: 0.50980395, a: 1}
+    - _OutlineColor: {r: 0.8470589, g: 0.5411765, b: 0.19215688, a: 1}
     - _StartCoords: {r: 0, g: 0, b: 0, a: 1}
     - _uv: {r: 0, g: 0, b: 0, a: 1}
