@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 using UnityEngine;
 using UnityEngine.XR;
@@ -33,6 +36,9 @@ public class duplicateQuad : MonoBehaviour
 
     private bool duplicateListen = false;
     private bool flag = false;
+
+    private GameObject dicomImageQuad = null;
+    private string savePath = null;
     //private bool duplicated = false;
 
     //private GameObject q = null;
@@ -40,6 +46,9 @@ public class duplicateQuad : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
+        savePath = dicomImageQuad.GetComponent<importDicom>().textureDestinationPath;
+
         quadRenderer = this.GetComponent<Renderer>();
         quadMaterial = quadRenderer.material;
 
@@ -116,15 +125,15 @@ public class duplicateQuad : MonoBehaviour
             {
                 if(!flag)
                 {
-                    var check = this.GetComponent<isQuadDuplicate>();
+                    //var check = this.GetComponent<isQuadDuplicate>();
 
-                    if(check == null)
+                    if(this.tag == "Duplicate")
                     {
-                        DuplicateQuad();
+                        Destroy(this.gameObject);
                     }
                     else
                     {
-                        Destroy(this.gameObject);
+                        DuplicateQuad();
                     }
                 }
 
@@ -159,6 +168,65 @@ public class duplicateQuad : MonoBehaviour
         //rend.material.SetTexture("_MainTex", tex);
     }
 
+    private void SaveTextureToPNGFile(Texture2D tex, string destinationPath, string fileName, DateTime nowTime)
+    { 
+        byte[] bytes;
+        bytes = tex.EncodeToPNG();
+
+        //DateTime nowTime = DateTime.Now;
+        string dateFormat = "yyyy|MM|dd";
+        string hourFormat = "HH";
+        string minuteFormat = "mm";
+        string dateString = nowTime.ToString(dateFormat);
+        string hourString = nowTime.ToString(hourFormat);
+        string minuteString = nowTime.ToString(minuteFormat);
+        
+        string fullDestinationPath = Path.Combine(destinationPath, dateString);
+        System.IO.Directory.CreateDirectory(fullDestinationPath);
+
+        int counter = 0;
+        string fullFileName = fileName + "_" + hourString + "h" + minuteString + "m_0" + counter + ".PNG";
+        string fullFilePath = Path.Combine(fullDestinationPath, fullFileName);
+
+        while(System.IO.File.Exists(fullFilePath))
+        {
+            counter++;
+            fullFileName = fileName + "_" + hourString + "h" + minuteString + "m_0" + counter + ".PNG";
+            fullFilePath = Path.Combine(fullDestinationPath, fullFileName);
+        }
+
+        File.WriteAllBytes(fullFilePath, bytes);
+    }
+
+    public void SaveAllDuplicates()
+    {
+        Debug.Log($"Saving produced slices.");
+
+        GameObject[] images;
+        images = GameObject.FindGameObjectsWithTag("Duplicate");
+
+        if(images.Length > 0)
+        {
+            Debug.Log($"{images.Length} Slices being saved to: {savePath}.");
+
+            DateTime nowTime = DateTime.Now;
+
+            foreach (GameObject GO in images)
+            {
+                var tex = GO.GetComponent<Renderer>().material.GetTexture("_MainTex") as Texture2D;
+                SaveTextureToPNGFile(tex, savePath, "Slice", nowTime);
+            }
+
+            Debug.Log($"Slices saved.");
+        }
+        else
+        {
+            Debug.Log($"No slices produced.");
+        }
+
+        
+    }
+
     public void SetDuplicateListen(bool state)
     {
         duplicateListen = state;
@@ -169,7 +237,9 @@ public class duplicateQuad : MonoBehaviour
     {
         GameObject newQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
 
-        Debug.Log($"{quad.name} copied!");
+        newQuad.tag = "Duplicate";
+
+        Debug.Log($"{quad.name} copied and tagged: {newQuad.tag}!");
 
         newQuad.transform.position = quad.transform.position;
         newQuad.transform.rotation = quad.transform.rotation;
@@ -194,7 +264,7 @@ public class duplicateQuad : MonoBehaviour
 
         newQuad.AddComponent<Rigidbody>();
 
-        newQuad.AddComponent<isQuadDuplicate>();
+        //newQuad.AddComponent<isQuadDuplicate>();
         newQuad.AddComponent<duplicateQuad>();
         newQuad.AddComponent<rotateQuad>();
         newQuad.AddComponent<adjustQuad>();

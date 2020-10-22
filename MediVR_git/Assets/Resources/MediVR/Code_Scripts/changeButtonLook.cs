@@ -5,13 +5,19 @@ using UnityEngine.UI;
 
 public class changeButtonLook : MonoBehaviour
 {
-    private Button button;
-    private ColorBlock buttonColor;
-    private Image buttonImage;
-    //private Color buttonImageColor;
-    private Text buttonText;
+    public float countdownSeconds = 5.0f;
 
-    private Color inactiveColor;
+    private Button button = null;
+    private ColorBlock buttonColor = ColorBlock.defaultColorBlock;
+    private Image buttonImage = null;
+    //private Color buttonImageColor;
+    private Text buttonText = null;
+
+    private Color inactiveColor = Color.clear;
+    private string inactiveText = "";
+
+    private float countdownTime = 0f;
+    private bool countdown = false;
 
     // Start is called before the first frame update
     void Start()
@@ -22,14 +28,26 @@ public class changeButtonLook : MonoBehaviour
         buttonImage = GetComponent<Image>();   
         buttonText = GetComponentInChildren<Text>();    
         
-
         inactiveColor = buttonImage.color;
+        inactiveText = buttonText.text;
 
+        countdownTime  = countdownSeconds;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(countdown)
+        {
+            countdownTime -= Time.deltaTime;
+            if(countdownTime < 0)
+            {
+                countdown = false;
+                countdownTime = countdownSeconds;
+                buttonText.text = inactiveText;
+                ToggleColor();
+            }
+        }
         
     }
 
@@ -47,6 +65,25 @@ public class changeButtonLook : MonoBehaviour
         {
             buttonImage.color = Color.black;
             buttonText.color = Color.white;
+        }
+
+        //button.colors = buttonColor;
+    }
+
+    public void ToggleColorTextOverTime(string timedText)
+    {
+        //buttonColor = button.colors;
+        //buttonImageColor = buttonImage.color;
+
+        if(countdown)
+        {
+            // do nothing
+        }
+        else
+        {
+            countdown = true;
+            buttonText.text = timedText;
+            ToggleColor();
         }
 
         //button.colors = buttonColor;

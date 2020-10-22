@@ -14,7 +14,8 @@ public class adjustQuad : MonoBehaviour
 
     public Color adjustColor = Color.yellow;
 
-    public InputFeatureUsage<bool> adjustButton = CommonUsages.secondaryButton;
+    public InputFeatureUsage<bool> adjustWindowButton = CommonUsages.secondaryButton;
+    public InputFeatureUsage<bool> adjustThresholdButton = CommonUsages.primaryButton;
     public InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
 
     public InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
@@ -37,7 +38,8 @@ public class adjustQuad : MonoBehaviour
     private Material quadMaterial = null;
 
     private bool adjustListen = false;
-    private bool adjust = false;
+    private bool adjustWindow = false;
+    private bool adjustThreshold = false;
     private bool flag = false;
 
     private float brightnessDefault = 0;
@@ -157,12 +159,23 @@ public class adjustQuad : MonoBehaviour
                 }
             }*/
 
-            if((leftController.TryGetFeatureValue(adjustButton, out bool lPress) && lPress) || (rightController.TryGetFeatureValue(adjustButton, out bool rPress) && rPress))
+            if(rightController.TryGetFeatureValue(adjustWindowButton, out bool lPress) && lPress)
             {
                 moveLocomotionScript.enabled = false;
                 snapTurnProviderScript.enabled = false;
 
-                SetAdjust(true);
+                SetAdjustWindow(true);
+
+                quadMaterial.SetColor(outlineColorName, adjustColor);
+
+                flag = true;
+            }
+            else if(rightController.TryGetFeatureValue(adjustThresholdButton, out bool rPress) && rPress)
+            {
+                moveLocomotionScript.enabled = false;
+                snapTurnProviderScript.enabled = false;
+
+                SetAdjustThreshold(true);
 
                 quadMaterial.SetColor(outlineColorName, adjustColor);
 
@@ -175,7 +188,8 @@ public class adjustQuad : MonoBehaviour
                     moveLocomotionScript.enabled = true;
                     snapTurnProviderScript.enabled = true;
 
-                    SetAdjust(false);
+                    SetAdjustWindow(false);
+                    SetAdjustThreshold(false);
 
                     quadMaterial.SetColor(outlineColorName, inactiveColor);
 
@@ -204,7 +218,7 @@ public class adjustQuad : MonoBehaviour
             ToggleAdjust();
         }*/
 
-        if(adjust)
+        if(adjustWindow)
         {
             //moveLocomotionScript.enabled = false;
 
@@ -212,7 +226,7 @@ public class adjustQuad : MonoBehaviour
 
             if (leftController.TryGetFeatureValue(joystick, out Vector2 lPosition) && lPosition != Vector2.zero)
             {
-                if(adjust)
+                if(adjustWindow)
                 {
                     //var xAxis = lPosition.x * adjustSpeed * Time.deltaTime;
                     //var yAxis = lPosition.y * adjustSpeed * Time.deltaTime;
@@ -244,9 +258,20 @@ public class adjustQuad : MonoBehaviour
                 }
             }
 
-            if (rightController.TryGetFeatureValue(joystick, out Vector2 rPosition) && rPosition != Vector2.zero)
+            if(leftController.TryGetFeatureValue(resetButton, out bool lClick) && lClick)
             {
-                if(adjust)
+                quadMaterial.SetFloat("_Contrast", contrastDefault);
+                quadMaterial.SetFloat("_Brightness", brightnessDefault);
+            }
+
+        }
+
+        if(adjustThreshold)
+        {
+
+            if (leftController.TryGetFeatureValue(joystick, out Vector2 rPosition) && rPosition != Vector2.zero)
+            {
+                if(adjustThreshold)
                 {
                     var xzAxis = rPosition.x * thresholdRange / adjustStep;
                     var zAxis = rPosition.y * thresholdRange / adjustStep;
@@ -274,13 +299,7 @@ public class adjustQuad : MonoBehaviour
                 }
             }
 
-            if(leftController.TryGetFeatureValue(resetButton, out bool lClick) && lClick)
-            {
-                quadMaterial.SetFloat("_Contrast", contrastDefault);
-                quadMaterial.SetFloat("_Brightness", brightnessDefault);
-            }
-
-            if(rightController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
+            if(leftController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
             {
                 quadMaterial.SetFloat("_Threshold", thresholdDefault);
                 quadMaterial.SetFloat("_ThresholdInv", thresholdInvDefault);   
@@ -311,17 +330,23 @@ public class adjustQuad : MonoBehaviour
         //Debug.Log($"Adjust Listener set to: {adjustListen}!");
     }
 
-    public void SetAdjust(bool state)
+    public void SetAdjustWindow(bool state)
     {
-        adjust = state;
+        adjustWindow = state;
         //Debug.Log($"Adjust set to: {adjust}!");
     }
 
-    public void ToggleAdjust()
+    public void SetAdjustThreshold(bool state)
+    {
+        adjustThreshold = state;
+        //Debug.Log($"Adjust set to: {adjust}!");
+    }
+
+    /*public void ToggleAdjust()
     {
         adjust = !adjust;
         //Debug.Log($"Adjust set to: {adjust}!");
-    }
+    }*/
 
     public void ToggleLocomotion()
     {

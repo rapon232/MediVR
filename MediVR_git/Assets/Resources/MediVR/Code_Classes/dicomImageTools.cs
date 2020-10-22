@@ -313,7 +313,7 @@ public static class dicomImageTools
             {
                 slicesCount++;
 
-                var tmpDicom = DicomFile.Open(fileNameList[slicesCount]);
+                
 
                 //var di = new DicomImage(tmpDicom.Dataset);
                 //var pixeldatatest = di.PixelData; // returns DicomPixelData type
@@ -326,10 +326,11 @@ public static class dicomImageTools
                 //pixelData.Width
                 //pixelData.Height 
 
+                var tmpDicom = DicomFile.Open(fileNameList[slicesCount]);
                 var header = DicomPixelData.Create(tmpDicom.Dataset);
                 Debug.Log($"{header.NumberOfFrames}");
-                var v = PixelDataFactory.Create(header, 0);
-                pixelData = v;
+                pixelData = PixelDataFactory.Create(header, 0);
+
                 Debug.Log($"{pixelData.Width}");
                 Debug.Log($"{pixelData.Height}");
 
@@ -714,8 +715,8 @@ public static class dicomImageTools
         //var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
-        var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
-        //var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
+        //var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
+        var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
 
         //Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
 

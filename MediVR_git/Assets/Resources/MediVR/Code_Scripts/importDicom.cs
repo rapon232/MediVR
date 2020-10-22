@@ -33,6 +33,8 @@ public class importDicom : MonoBehaviour
     public string path = null;
     public string ressourceDestinationPath = null;
     public string fileDestinationPath = null;
+    public string textureDestinationPath = null;
+    public string textureDestinationDirName = null;
 
     public int textureWidth = 0;
     public int textureHeight = 0;
@@ -56,23 +58,26 @@ public class importDicom : MonoBehaviour
         //fileName = "image-000000.dcm";
         destinationTextureDirName = "Dicom 3D Textures";
         destinationDirName = "Saved";
+        textureDestinationDirName = "Saved Slices";
 
         #if UNITY_EDITOR
             var rootPath = "Assets";
         #else
-            var rootPath = "sdcard/DCIM";
+            var rootPath = "sdcard/DCIM/MediVR";
         #endif
 
         dirPath = Path.Combine(rootPath, dirName);
         //path = Path.Combine(dirPath, fileName);
         ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", destinationTextureDirName);
         fileDestinationPath = Path.Combine(dirPath, destinationDirName);
+        textureDestinationPath = Path.Combine(rootPath, textureDestinationDirName);
         
 
         Debug.Log($"Path to Directory: {dirPath}");
         //Debug.Log($"Path to first File in Directory: {path}");
         Debug.Log($"Path to Texture Ressource Directory: {ressourceDestinationPath}");
-        Debug.Log($"Path to Array save Directory: {fileDestinationPath}");
+        //Debug.Log($"Path to Array Save Directory: {fileDestinationPath}");
+        Debug.Log($"Path to Texture Save Directory: {textureDestinationPath}");
 
 
         //////// TEXTURE SELECTION

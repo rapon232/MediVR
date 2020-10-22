@@ -27,10 +27,6 @@ public class loadQuadTexture : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        //screenPlane = GameObject.Find("Screen_Plane");
-        //var screenPlaneScript = GetComponent<importDicom>();
-
         quadTexture = this.GetComponent<importDicom>().threeDimTexture;
         
         /////Set 3D Texture to material of cube

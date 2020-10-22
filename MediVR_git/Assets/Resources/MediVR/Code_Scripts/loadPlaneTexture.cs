@@ -39,7 +39,6 @@ public class loadPlaneTexture : MonoBehaviour
     void Start()
     {
         dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
-        //var screenPlaneScript = screenPlane.GetComponent<importDicom>();
         dirPath = dicomImageQuad.GetComponent<importDicom>().dirPath;
 
         /////Load multiple slices into Texture2D Array
