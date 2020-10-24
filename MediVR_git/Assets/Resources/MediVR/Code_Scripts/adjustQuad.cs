@@ -39,10 +39,37 @@ public class adjustQuad : MonoBehaviour
 
     private bool adjustListen = false;
     private bool adjustWindow = false;
-    private bool adjustThreshold = false;
+    private bool adjustScale = false;
     private bool flag = false;
 
-    private float brightnessDefault = 0;
+    private string adjustWindowXName = "_WindowWidth";
+    private string adjustWindowXMinName = "_WindowWidthMin";
+    private string adjustWindowXMaxName = "_WindowWidthMax";
+
+    private float adjustWindowXDefault = 0;
+    private float adjustWindowXMax = 0;
+    private float adjustWindowXMin = 0;
+    private float adjustWindowXRange = 0;
+
+    private string adjustWindowYName = "_WindowCenter";
+    private string adjustWindowYMinName = "_WindowCenterMin";
+    private string adjustWindowYMaxName = "_WindowCenterMax";
+
+    private float adjustWindowYDefault = 0;
+    private float adjustWindowYMax = 0;
+    private float adjustWindowYMin = 0;
+    private float adjustWindowYRange = 0;
+
+    private string adjustScaleYName = "_Enlarge";
+    private string adjustScaleYMinName = "_EnlargeMin";
+    private string adjustScaleYMaxName = "_EnlargeMax";
+
+    private float adjustScaleYDefault = 0;
+    private float adjustScaleYMax = 0;
+    private float adjustScaleYMin = 0;
+    private float adjustScaleYRange = 0;
+
+    /*private float brightnessDefault = 0;
     private float brightnessMax = 0;
     private float brightnessMin = 0;
     private float brightnessRange = 0;
@@ -56,7 +83,7 @@ public class adjustQuad : MonoBehaviour
     private float thresholdInvDefault = 0;
     private float thresholdMax = 0;
     private float thresholdMin = 0;
-    private float thresholdRange = 0;
+    private float thresholdRange = 0;*/
 
 
     // Start is called before the first frame update
@@ -71,7 +98,22 @@ public class adjustQuad : MonoBehaviour
 
         inactiveColor = quadMaterial.GetColor(outlineColorName);
 
-        brightnessDefault = quadMaterial.GetFloat("_Brightness");
+        adjustWindowXDefault = quadMaterial.GetFloat(adjustWindowXName);
+        adjustWindowXMin = quadMaterial.GetFloat(adjustWindowXMinName);
+        adjustWindowXMax = quadMaterial.GetFloat(adjustWindowXMaxName);
+        adjustWindowXRange = adjustWindowXMax - adjustWindowXMin;
+
+        adjustWindowYDefault = quadMaterial.GetFloat(adjustWindowYName);
+        adjustWindowYMin = quadMaterial.GetFloat(adjustWindowYMinName);
+        adjustWindowYMax = quadMaterial.GetFloat(adjustWindowYMaxName);
+        adjustWindowYRange = adjustWindowYMax - adjustWindowYMin;
+
+        adjustScaleYDefault = quadMaterial.GetFloat(adjustScaleYName);
+        adjustScaleYMin = quadMaterial.GetFloat(adjustScaleYMinName);
+        adjustScaleYMax = quadMaterial.GetFloat(adjustScaleYMaxName);
+        adjustScaleYRange = adjustScaleYMax - adjustScaleYMin;
+
+        /*brightnessDefault = quadMaterial.GetFloat("_Brightness"); // Uncomment Block for use of parameters
         brightnessMax = quadMaterial.GetFloat("_BrightnessMax");
         brightnessMin = quadMaterial.GetFloat("_BrightnessMin");
         brightnessRange = brightnessMax - brightnessMin;
@@ -85,7 +127,7 @@ public class adjustQuad : MonoBehaviour
         thresholdInvDefault = quadMaterial.GetFloat("_ThresholdInv");
         thresholdMax = quadMaterial.GetFloat("_ThresholdMax");
         thresholdMin = quadMaterial.GetFloat("_ThresholdMin");
-        thresholdRange = thresholdMax - thresholdMin;
+        thresholdRange = thresholdMax - thresholdMin;*/
 
         GetControllers();
     }
@@ -175,7 +217,7 @@ public class adjustQuad : MonoBehaviour
                 moveLocomotionScript.enabled = false;
                 snapTurnProviderScript.enabled = false;
 
-                SetAdjustThreshold(true);
+                SetAdjustScale(true);
 
                 quadMaterial.SetColor(outlineColorName, adjustColor);
 
@@ -189,7 +231,7 @@ public class adjustQuad : MonoBehaviour
                     snapTurnProviderScript.enabled = true;
 
                     SetAdjustWindow(false);
-                    SetAdjustThreshold(false);
+                    SetAdjustScale(false);
 
                     quadMaterial.SetColor(outlineColorName, inactiveColor);
 
@@ -231,26 +273,26 @@ public class adjustQuad : MonoBehaviour
                     //var xAxis = lPosition.x * adjustSpeed * Time.deltaTime;
                     //var yAxis = lPosition.y * adjustSpeed * Time.deltaTime;
 
-                    var xAxis = lPosition.x * contrastRange / adjustStep;
-                    var yAxis = lPosition.y * brightnessRange / adjustStep;
+                    var xAxis = lPosition.x * adjustWindowXRange / adjustStep;
+                    var yAxis = lPosition.y * adjustWindowYRange / adjustStep;
 
                     //Debug.Log(xAxis);
                     //Debug.Log(xOrig + xAxis);
-                    var xOrig = quadMaterial.GetFloat("_Contrast");
-                    var yOrig = quadMaterial.GetFloat("_Brightness");
+                    var xOrig = quadMaterial.GetFloat(adjustWindowXName);
+                    var yOrig = quadMaterial.GetFloat(adjustWindowYName);
                     
                     float xTemp = xOrig + xAxis;
                     float yTemp = yOrig + yAxis;
 
                     //quadMaterial.SetFloat("_Contrast", xOrig + xAxis);
 
-                    if(xTemp <= contrastMax && xTemp >= contrastMin)
+                    if(xTemp <= adjustWindowXMax && xTemp >= adjustWindowXMin)
                     {
-                        quadMaterial.SetFloat("_Contrast", xTemp);
+                        quadMaterial.SetFloat(adjustWindowXName, xTemp);
                     }
-                    if(yTemp <= brightnessMax && yTemp >= brightnessMin)
+                    if(yTemp <= adjustWindowYMax && yTemp >= adjustWindowYMin)
                     {
-                        quadMaterial.SetFloat("_Brightness", yTemp);
+                        quadMaterial.SetFloat(adjustWindowYName, yTemp);
                     }
 
                     //transform.Rotate(new Vector3 (yAxis, -xAxis, 0f), Space.Self);
@@ -260,38 +302,38 @@ public class adjustQuad : MonoBehaviour
 
             if(leftController.TryGetFeatureValue(resetButton, out bool lClick) && lClick)
             {
-                quadMaterial.SetFloat("_Contrast", contrastDefault);
-                quadMaterial.SetFloat("_Brightness", brightnessDefault);
+                quadMaterial.SetFloat(adjustWindowXName, adjustWindowXDefault);
+                quadMaterial.SetFloat(adjustWindowYName, adjustWindowYDefault);
             }
 
         }
 
-        if(adjustThreshold)
+        if(adjustScale)
         {
 
             if (leftController.TryGetFeatureValue(joystick, out Vector2 rPosition) && rPosition != Vector2.zero)
             {
-                if(adjustThreshold)
+                if(adjustScale)
                 {
-                    var xzAxis = rPosition.x * thresholdRange / adjustStep;
-                    var zAxis = rPosition.y * thresholdRange / adjustStep;
+                    //var xzAxis = rPosition.x * thresholdRange / adjustStep;
+                    var zAxis = rPosition.y * adjustScaleYRange / adjustStep;
 
                     //quadMaterial.SetFloat("_Threshold", xzAxis);
                     //quadMaterial.SetFloat("_ThresholdInv", zAxis);
 
-                    var xzOrig = quadMaterial.GetFloat("_Threshold");
-                    var zOrig = quadMaterial.GetFloat("_ThresholdInv");
+                    //var xzOrig = quadMaterial.GetFloat("_Threshold");
+                    var zOrig = quadMaterial.GetFloat(adjustScaleYName);
 
-                    float xzTemp = xzOrig + xzAxis;
+                    //float xzTemp = xzOrig + xzAxis;
                     float zTemp = zOrig + zAxis;
 
-                    if(xzTemp <= thresholdMax && xzTemp >= thresholdMin)
+                    /*if(xzTemp <= thresholdMax && xzTemp >= thresholdMin)
                     {
                         quadMaterial.SetFloat("_Threshold", xzTemp);
-                    }
-                    if(zTemp <= thresholdMax && zTemp >= thresholdMin)
+                    }*/
+                    if(zTemp <= adjustScaleYMax && zTemp >= adjustScaleYMin)
                     {
-                        quadMaterial.SetFloat("_ThresholdInv", zTemp);
+                        quadMaterial.SetFloat(adjustScaleYName, zTemp);
                     }
 
                     //transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
@@ -301,8 +343,8 @@ public class adjustQuad : MonoBehaviour
 
             if(leftController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
             {
-                quadMaterial.SetFloat("_Threshold", thresholdDefault);
-                quadMaterial.SetFloat("_ThresholdInv", thresholdInvDefault);   
+                //quadMaterial.SetFloat("_Threshold", thresholdDefault);
+                quadMaterial.SetFloat(adjustScaleYName, adjustScaleYDefault);   
             }
 
             /*else
@@ -336,9 +378,9 @@ public class adjustQuad : MonoBehaviour
         //Debug.Log($"Adjust set to: {adjust}!");
     }
 
-    public void SetAdjustThreshold(bool state)
+    public void SetAdjustScale(bool state)
     {
-        adjustThreshold = state;
+        adjustScale = state;
         //Debug.Log($"Adjust set to: {adjust}!");
     }
 

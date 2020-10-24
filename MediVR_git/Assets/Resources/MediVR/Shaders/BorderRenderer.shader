@@ -88,9 +88,9 @@
 
                 if ((i.uv.x <= _MainTex_TexelSize.x || i.uv.y <= _MainTex_TexelSize.y || i.uv.x >= (1.0 - _MainTex_TexelSize.x) 
                         || i.uv.y >= (1.0 - _MainTex_TexelSize.y)))
-                col = i.color;
+                    col = i.color;
                 else
-                discard;
+                    discard;
 
                 return col;
             }

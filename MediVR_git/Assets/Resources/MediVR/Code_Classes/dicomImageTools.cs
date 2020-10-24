@@ -5,11 +5,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq; 
 
 using UnityEngine;
 
 using Dicom;
 using Dicom.Imaging;
+using Dicom.Imaging.Codec;
 using Dicom.Imaging.Render;
 using Dicom.Log;
 using Dicom.Network;
@@ -258,6 +260,18 @@ public static class dicomImageTools
         return colors;
     }
 
+    public static short BAToInt16(byte[ ] bytes, int index)
+    {
+        short value = BitConverter.ToInt16( bytes, index );
+        return value;
+    }
+
+    public static ushort BAToUInt16(byte[ ] bytes, int index)
+    {
+        ushort value = BitConverter.ToUInt16( bytes, index );
+        return value;
+    }
+
     public static Color[] CreateColorArrayFromDicomdir(string dirPath, double scaleTexture, int textureWidth, int textureHeight, int textureDepth)
     {
         var dicomDirectoryInfo = new DirectoryInfo(dirPath);
@@ -299,9 +313,62 @@ public static class dicomImageTools
         var invSliceCountOffset = sliceCountOffset + validFileCount;
 
         //Texture2D tex = null;
-        IPixelData pixelData = null;
+        //IPixelData pixelData = null;
         
-          
+        //ushort dicomFileMinimumIntensity = ushort.MaxValue;
+        //ushort dicomFileMaximumIntensity = ushort.MinValue;
+
+        short hounsfieldUnitMaximumIntenisty = 3071;
+        short hounsfieldUnitMinimumIntenisty = -1024;
+        short hounsfieldUnitRange = (short)(hounsfieldUnitMaximumIntenisty - hounsfieldUnitMinimumIntenisty);
+        //short dicomFileIntensityRange = dicomFileMaximumIntensity - dicomFileMinimumIntensity;
+
+        var dicomFile = DicomFile.Open(fileNameList[0]);
+
+        var dicomFilePixelData = DicomPixelData.Create(dicomFile.Dataset);
+
+        //var fileFrame = filePixelData.GetFrame(0);
+
+        int dicomFrameWidth = dicomFilePixelData.Width;
+        int dicomFrameHeight = dicomFilePixelData.Height;
+
+        Debug.Log($"Image frame width: {dicomFrameWidth} pixels and frame height: {dicomFrameHeight} pixels.");
+
+        short[,] dicomFilePixelHUIntensities = new short[dicomFrameWidth, dicomFrameHeight];
+
+        //var dts  = DicomTransferSyntax.Parse( compressed.Dataset.Get ( DicomTag.TransferSyntaxUID, compressed.Dataset.InternalTransferSyntax.ToString ( ) ) ) ;
+
+        var dicomFileTransferSyntax = dicomFile.Dataset.InternalTransferSyntax.ToString();
+
+        DicomTransferSyntax defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
+
+        Debug.Log($"Image Transfer Syntax: {dicomFileTransferSyntax}. Applying Decompression Transfer Syntax: {defaultDicomTransferSyntax}");
+
+        short rescaleSlope, rescaleIntercept;
+
+        if(dicomFile.Dataset.Contains(DicomTag.RescaleSlope))
+        {
+            rescaleSlope = (short)dicomFile.Dataset.Get<int>(DicomTag.RescaleSlope);
+            Debug.Log($"Rescale Slope found in dataset.");
+        }
+        else
+        {
+            rescaleSlope = 1;
+            Debug.Log($"Rescale Slope NOT found in dataset. Defaulting to 1.");
+        }
+
+        if(dicomFile.Dataset.Contains(DicomTag.RescaleIntercept))
+        {
+            rescaleIntercept = (short)dicomFile.Dataset.Get<int>(DicomTag.RescaleIntercept);
+            Debug.Log($"Rescale Intercept found in dataset.");
+        }
+        else
+        {
+            rescaleIntercept = -1024;
+            Debug.Log($"Rescale Intercept NOT found in dataset. Defaulting to -1024.");
+        }
+
+        Debug.Log($"Image Rescale Slope: {rescaleSlope} and Rescale Intercept: {rescaleIntercept}");
 
 		for(int z = 0; z < d; z++)
 		{
@@ -326,13 +393,79 @@ public static class dicomImageTools
                 //pixelData.Width
                 //pixelData.Height 
 
-                var tmpDicom = DicomFile.Open(fileNameList[slicesCount]);
-                var header = DicomPixelData.Create(tmpDicom.Dataset);
+                //var tmpDicom = DicomFile.Open(fileNameList[slicesCount]);
+                /*var header = DicomPixelData.Create(tmpDicom.Dataset);
                 Debug.Log($"{header.NumberOfFrames}");
                 pixelData = PixelDataFactory.Create(header, 0);
 
                 Debug.Log($"{pixelData.Width}");
-                Debug.Log($"{pixelData.Height}");
+                Debug.Log($"{pixelData.Height}");*/
+
+                var dicomFileCompressed = DicomFile.Open(fileNameList[slicesCount]);
+
+                var dicomFileUncompressed = dicomFileCompressed.Clone(defaultDicomTransferSyntax);
+
+                var dicomFramePixelData = DicomPixelData.Create(dicomFileUncompressed.Dataset);
+
+                var dicomFrame = dicomFramePixelData.GetFrame(0);
+
+                var dicomFrameByteArray = dicomFrame.Data;
+
+                //ushort[] shorts = new ushort[bytes.Length/2];
+                //short[,] shorts = new short[pixel_data.Width, pixel_data.Height];
+
+                int count = 0;
+
+                /*for(int x = 0; x < bytes.Length; x+=2)
+                {
+                    shorts[count] = BAToInt16(bytes, x);
+                    count++;
+                }*/
+
+                //Debug.Log($"byte array lentgh: {bytes.Length} and short array length: {shorts.Length}");
+
+                for(int y = dicomFramePixelData.Height - 1; y >= 0 ; y--)
+                {
+                    for(int x = 0; x < dicomFramePixelData.Width ; x++)
+                    {
+                        var dicomFilePixel = BAToInt16(dicomFrameByteArray, count);
+                        var dicomFileHUPixel = (dicomFilePixel * rescaleSlope) + rescaleIntercept;
+                        dicomFilePixelHUIntensities[x,y] = (short)dicomFileHUPixel;
+
+                        //Debug.Log($"byte:{bytes[count]} and byte:{bytes[count+1]} make short: {shorts[x,y]} ");
+
+                        /*if(dicomFilePixel > dicomFileMaximumIntensity)
+                        {
+                            dicomFileMaximumIntensity = dicomFilePixel;
+                        }
+                        if(dicomFilePixel < dicomFileMinimumIntensity)
+                        {
+                            dicomFileMinimumIntensity = dicomFilePixel;
+                        }*/
+
+                        count+=2;
+                    }
+                }
+
+                //Debug.Log($"Minimum intensity: {min} and maximum intenisty in frame: {max}.");
+
+
+                //var shorts = Array.ConvertAll(bytes, b => (short)b);
+
+                //count = 0;
+
+                
+
+                /*for(int x = 0; x < bytes.Length; x+=2)
+			    {
+                    Debug.Log($"byte:{bytes[x]} and byte:{bytes[x+1]} make short: {shorts[count]} ");
+                    count++;
+                }*/
+
+                /*for(int x = 0; x < bytes.Length; x+=2)
+                {
+                    BAToInt16(bytes, x);
+                }*/
 
                 //tex = new DicomImage(tmpDicom.Dataset).RenderImage().As<Texture2D>();
                 /*if(scaleTexture != 0)
@@ -359,12 +492,18 @@ public static class dicomImageTools
                     {
                         //c = slices[slicesCount].GetPixelBilinear(x / (float)w, y / (float)h);
                         //c = tex.GetPixel(x, y);
-                        if (pixelData is Dicom.Imaging.Render.GrayscalePixelDataU16)
+                       /* if (pixelData is Dicom.Imaging.Render.GrayscalePixelDataU16)
                         {
                             var pixel = pixelData.GetPixel(x,y);
                             //Console.WriteLine("{0}",Convert.ToSingle(pixelData.GetPixel(i,j)));
                             Debug.Log($"{pixel}");
-                        }
+                        }*/
+
+                        float dicomFileRescaledHUIntensity = ((float)dicomFilePixelHUIntensities[x, y] - (float)hounsfieldUnitMinimumIntenisty) / hounsfieldUnitRange;
+                        //Debug.Log($"Minimum intensity: {min} and maximum intenisty in frame: {max}.");
+                        //Debug.Log($"Intenisty {hus[x,y]} at position {x}, {y} has color: {rescaledIntensity.ToString("0.000000000")}");
+                        Color readyRescaledHUColor = new Color(dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity);
+                        c = readyRescaledHUColor;
 
                     }
 					/*else
@@ -521,7 +660,7 @@ public static class dicomImageTools
         // Save the texture Asset to your Unity Project - ONLY WORKS IN EDITOR, NOT ON OCULUS
         #if UNITY_EDITOR
 
-            string assetName = "Assets/Ressources" + textureRessourceName + ".asset";
+            string assetName = Path.Combine(ressourceDestinationPath, (textureRessourceName + ".asset"));
 
             UnityEditor.AssetDatabase.CreateAsset(texture, assetName);
 
@@ -725,7 +864,7 @@ public static class dicomImageTools
         Debug.Log($"3D Texture created from path {dirPath}");
 
         /////Save 3D Texture as Asset in Unity Editor
-        //dicomImageTools.exportTexture3DToAsset(cubeTexture, ressourceDestinationPath, textureRessourceName);
+        dicomImageTools.exportTexture3DToAsset(cubeTexture, ressourceDestinationPath, textureRessourceName);
 
         return cubeTexture;
     }
@@ -807,6 +946,38 @@ public static class dicomImageTools
 		return x;
 
 	}
+
+    public static void SaveTextureToPNGFile(Texture2D tex, string destinationPath, string fileName, DateTime nowTime)
+    { 
+        byte[] bytes;
+        bytes = tex.EncodeToPNG();
+
+        //DateTime nowTime = DateTime.Now;
+        string dateFormat = "yyyy|MM|dd";
+        string hourFormat = "HH";
+        string minuteFormat = "mm";
+        string dateString = nowTime.ToString(dateFormat);
+        string hourString = nowTime.ToString(hourFormat);
+        string minuteString = nowTime.ToString(minuteFormat);
+        
+        string fullDestinationPath = Path.Combine(destinationPath, dateString);
+        System.IO.Directory.CreateDirectory(fullDestinationPath);
+
+        int counter = 0;
+        string fullFileName = fileName + "_" + hourString + "h" + minuteString + "m_0" + counter + ".PNG";
+        string fullFilePath = Path.Combine(fullDestinationPath, fullFileName);
+
+        while(System.IO.File.Exists(fullFilePath))
+        {
+            counter++;
+            fullFileName = fileName + "_" + hourString + "h" + minuteString + "m_0" + counter + ".PNG";
+            fullFilePath = Path.Combine(fullDestinationPath, fullFileName);
+        }
+
+        File.WriteAllBytes(fullFilePath, bytes);
+    }
+
+    
 
     /*public static string getTag(DicomFile _file, DicomTag _tag)
     { 

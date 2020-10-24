@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: FlattenedRenderMaterial
   m_Shader: {fileID: 4800000, guid: 717d64c69a0884b2bb8b70fbd7c32c52, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _CUTBLACKPIXELS_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -64,6 +64,9 @@ Material:
     - _ContrastMax: 3
     - _ContrastMin: 0
     - _CutBlackPixels: 1
+    - _CutLowerBorder: 0.05
+    - _CutUpperBorder: 0.95
+    - _CutWhitePixels: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -86,6 +89,10 @@ Material:
     - _ThresholdMax: 1
     - _ThresholdMin: 0
     - _UVSec: 0
+    - _WindowCenter: 50
+    - _WindowMax: 225
+    - _WindowMin: -125
+    - _WindowWidth: 350
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

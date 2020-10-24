@@ -35,6 +35,7 @@ public class importDicom : MonoBehaviour
     public string fileDestinationPath = null;
     public string textureDestinationPath = null;
     public string textureDestinationDirName = null;
+    // string threeDimTexturePath = null;
 
     public int textureWidth = 0;
     public int textureHeight = 0;
@@ -82,10 +83,12 @@ public class importDicom : MonoBehaviour
 
         //////// TEXTURE SELECTION
 
-        textureWidth = textureHeight = 256;
+        textureWidth = textureHeight = 512;
         textureDepth = 512;
-        textureRessourceName = "MediVR/Textures/Dicom 3D Textures/" + dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
+        textureRessourceName = dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
         textureArrayName = fileDestinationPath + "/" + dirName + "_3DTexture_Color_Array" + textureWidth + "x" + textureHeight + "x" + textureDepth + ".bytes";
+
+        //threeDimTexturePath = Path.Combine(ressourceDestinationPath, textureRessourceName);
 
 
         ///////// 2D
@@ -98,11 +101,11 @@ public class importDicom : MonoBehaviour
         /////Create 3D Texture from Dicomfiles
         
         /////Load 3DTexture as Asset
-        threeDimTexture = Resources.Load<Texture3D>(textureRessourceName); 
+        threeDimTexture = Resources.Load<Texture3D>("MediVR/Textures/" + destinationTextureDirName + "/" + textureRessourceName); 
         
         if(threeDimTexture != null)
         {
-            Debug.Log($"3D texture exists as Ressource. {textureRessourceName} loaded from Ressources/Textures/Dicom 3D Textures.");
+            Debug.Log($"3D texture exists as Ressource. {textureRessourceName} loaded from {ressourceDestinationPath}.");
         }
         else
         {

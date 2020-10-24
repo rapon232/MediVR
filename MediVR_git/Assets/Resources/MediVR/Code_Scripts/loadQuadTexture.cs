@@ -44,17 +44,17 @@ public class loadQuadTexture : MonoBehaviour
         
     }
 
-    public void ToggleCutBlackPixels()
+    public void ToggleShaderIntParam(string parameter)
     {
-        int set = quadRenderer.material.GetInt("_CutBlackPixels");
+        int set = quadRenderer.material.GetInt(parameter);
 
         if(set == 1)
         {
-            quadRenderer.material.SetInt("_CutBlackPixels", 0);
+            quadRenderer.material.SetInt(parameter, 0);
         }
         else
         {
-            quadRenderer.material.SetInt("_CutBlackPixels", 1);
+            quadRenderer.material.SetInt(parameter, 1);
         }
     }
 }

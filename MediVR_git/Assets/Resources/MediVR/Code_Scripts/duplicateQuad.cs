@@ -168,36 +168,6 @@ public class duplicateQuad : MonoBehaviour
         //rend.material.SetTexture("_MainTex", tex);
     }
 
-    private void SaveTextureToPNGFile(Texture2D tex, string destinationPath, string fileName, DateTime nowTime)
-    { 
-        byte[] bytes;
-        bytes = tex.EncodeToPNG();
-
-        //DateTime nowTime = DateTime.Now;
-        string dateFormat = "yyyy|MM|dd";
-        string hourFormat = "HH";
-        string minuteFormat = "mm";
-        string dateString = nowTime.ToString(dateFormat);
-        string hourString = nowTime.ToString(hourFormat);
-        string minuteString = nowTime.ToString(minuteFormat);
-        
-        string fullDestinationPath = Path.Combine(destinationPath, dateString);
-        System.IO.Directory.CreateDirectory(fullDestinationPath);
-
-        int counter = 0;
-        string fullFileName = fileName + "_" + hourString + "h" + minuteString + "m_0" + counter + ".PNG";
-        string fullFilePath = Path.Combine(fullDestinationPath, fullFileName);
-
-        while(System.IO.File.Exists(fullFilePath))
-        {
-            counter++;
-            fullFileName = fileName + "_" + hourString + "h" + minuteString + "m_0" + counter + ".PNG";
-            fullFilePath = Path.Combine(fullDestinationPath, fullFileName);
-        }
-
-        File.WriteAllBytes(fullFilePath, bytes);
-    }
-
     public void SaveAllDuplicates()
     {
         Debug.Log($"Saving produced slices.");
@@ -214,7 +184,7 @@ public class duplicateQuad : MonoBehaviour
             foreach (GameObject GO in images)
             {
                 var tex = GO.GetComponent<Renderer>().material.GetTexture("_MainTex") as Texture2D;
-                SaveTextureToPNGFile(tex, savePath, "Slice", nowTime);
+                dicomImageTools.SaveTextureToPNGFile(tex, savePath, "Slice", nowTime);
             }
 
             Debug.Log($"Slices saved.");
@@ -278,7 +248,6 @@ public class duplicateQuad : MonoBehaviour
         return newQuad;
     }
 
-
     public Texture2D GetTextureFromShader(GameObject quad, int width, int height)
     {
         //Create render texture:
@@ -337,5 +306,8 @@ public class duplicateQuad : MonoBehaviour
  
         return newTex;
     }
+
+
+    
 
 }
