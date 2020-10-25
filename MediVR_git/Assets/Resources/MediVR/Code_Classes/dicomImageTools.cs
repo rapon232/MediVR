@@ -164,30 +164,8 @@ public static class dicomImageTools
         return slices;
     }
 
-    public static Color[] CreateTextureFromDicomdir(string dirPath, double scaleTexture, int textureWidth, int textureHeight, int textureDepth)
+    public static Color[] CreateTextureFromDicomdir(string dirPath, double scaleTexture, List<string> fileNameList, int textureWidth, int textureHeight, int textureDepth)
     {
-        var dicomDirectoryInfo = new DirectoryInfo(dirPath);
-
-        int fileCount = dicomDirectoryInfo.GetFiles().Length;
-
-        Debug.Log($"Files found in Directory: {fileCount}");
-        Debug.Log($"Loading Dicom files from Directory {dirPath} into Array");
-
-        int validFileCount = 0;
-
-        List<string> fileNameList = new List<string>();
-
-        foreach (var file in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
-        {
-            if (DicomFile.HasValidHeader(file.FullName))
-            {
-                fileNameList.Add(file.FullName);
-                validFileCount++;
-            }
-        }
-
-        Debug.Log($"Valid Dicom files found in Directory: {validFileCount}. File names loaded onto list.");
-
         var w = textureWidth;
 		var h = textureHeight;
 		var d = textureDepth;
@@ -201,8 +179,8 @@ public static class dicomImageTools
 		var slicesCount = -1;
 		//var sliceCountFloat = 0f;
 
-        var sliceCountOffset = Mathf.FloorToInt(d - validFileCount) / 2;
-        var invSliceCountOffset = sliceCountOffset + validFileCount;
+        var sliceCountOffset = Mathf.FloorToInt(d - fileNameList.Count) / 2;
+        var invSliceCountOffset = sliceCountOffset + fileNameList.Count;
 
         Texture2D tex = null;
 
@@ -272,29 +250,9 @@ public static class dicomImageTools
         return value;
     }
 
-    public static Color[] CreateColorArrayFromDicomdir(string dirPath, double scaleTexture, int textureWidth, int textureHeight, int textureDepth)
+    public static Color[] CreateColorArrayFromDicomdir(string dirPath, List<string> fileNameList, int textureWidth, int textureHeight, int textureDepth)
     {
-        var dicomDirectoryInfo = new DirectoryInfo(dirPath);
-
-        int fileCount = dicomDirectoryInfo.GetFiles().Length;
-
-        Debug.Log($"Files found in Directory: {fileCount}");
-        Debug.Log($"Loading Dicom files from Directory {dirPath} into Array");
-
-        int validFileCount = 0;
-
-        List<string> fileNameList = new List<string>();
-
-        foreach (var file in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
-        {
-            if (DicomFile.HasValidHeader(file.FullName))
-            {
-                fileNameList.Add(file.FullName);
-                validFileCount++;
-            }
-        }
-
-        Debug.Log($"Valid Dicom files found in Directory: {validFileCount}. File names loaded onto list.");
+        Debug.Log($"Preparing stuff for color array creation.");
 
         var w = textureWidth;
 		var h = textureHeight;
@@ -309,8 +267,8 @@ public static class dicomImageTools
 		var slicesCount = -1;
 		//var sliceCountFloat = 0f;
 
-        var sliceCountOffset = Mathf.FloorToInt(d - validFileCount) / 2;
-        var invSliceCountOffset = sliceCountOffset + validFileCount;
+        var sliceCountOffset = Mathf.FloorToInt(d - fileNameList.Count) / 2;
+        var invSliceCountOffset = sliceCountOffset + fileNameList.Count;
 
         //Texture2D tex = null;
         //IPixelData pixelData = null;
@@ -334,7 +292,10 @@ public static class dicomImageTools
 
         Debug.Log($"Image frame width: {dicomFrameWidth} pixels and frame height: {dicomFrameHeight} pixels.");
 
-        short[,] dicomFilePixelHUIntensities = new short[dicomFrameWidth, dicomFrameHeight];
+        Texture2D newDicomTex = null;
+
+        //short[,] dicomFilePixelHUIntensities = new short[dicomFrameWidth, dicomFrameHeight];
+        Color[] dicomOriginalTextureRescaledHU = new Color[dicomFrameWidth * dicomFrameHeight];
 
         //var dts  = DicomTransferSyntax.Parse( compressed.Dataset.Get ( DicomTag.TransferSyntaxUID, compressed.Dataset.InternalTransferSyntax.ToString ( ) ) ) ;
 
@@ -370,6 +331,9 @@ public static class dicomImageTools
 
         Debug.Log($"Image Rescale Slope: {rescaleSlope} and Rescale Intercept: {rescaleIntercept}");
 
+        Debug.Log($"Done peparing stuff for color array creation.");
+
+
 		for(int z = 0; z < d; z++)
 		{
             textureCount++;
@@ -401,6 +365,8 @@ public static class dicomImageTools
                 Debug.Log($"{pixelData.Width}");
                 Debug.Log($"{pixelData.Height}");*/
 
+                Debug.Log($"Opening Dicom File Nr. {z - sliceCountOffset}.");
+
                 var dicomFileCompressed = DicomFile.Open(fileNameList[slicesCount]);
 
                 var dicomFileUncompressed = dicomFileCompressed.Clone(defaultDicomTransferSyntax);
@@ -409,7 +375,22 @@ public static class dicomImageTools
 
                 var dicomFrame = dicomFramePixelData.GetFrame(0);
 
-                var dicomFrameByteArray = dicomFrame.Data;
+                Debug.Log($"Copying Bytes into Array.");
+
+                byte[] dicomFrameByteArray = dicomFrame.Data;
+
+                Debug.Log($"Transforming Bytes to Shorts.");
+
+                short[] dicomFrameShortArray = new short[(int)Math.Ceiling((double)(dicomFrameByteArray.Length / 2))];
+                Buffer.BlockCopy(dicomFrameByteArray, 0, dicomFrameShortArray, 0, dicomFrameByteArray.Length);
+
+                Debug.Log($"Transforming complete.");
+
+                Debug.Log($"Reversing short array.");
+
+                Array.Reverse(dicomFrameShortArray);
+
+                Debug.Log($"Short Array reversed. Begining transform to color array.");
 
                 //ushort[] shorts = new ushort[bytes.Length/2];
                 //short[,] shorts = new short[pixel_data.Width, pixel_data.Height];
@@ -424,13 +405,18 @@ public static class dicomImageTools
 
                 //Debug.Log($"byte array lentgh: {bytes.Length} and short array length: {shorts.Length}");
 
-                for(int y = dicomFramePixelData.Height - 1; y >= 0 ; y--)
-                {
-                    for(int x = 0; x < dicomFramePixelData.Width ; x++)
+                //for(int y = dicomFramePixelData.Height - 1; y >= 0 ; y--)
+                //{
+                    for(int x = 0; x < dicomFramePixelData.Width * dicomFramePixelData.Height ; x++)
                     {
-                        var dicomFilePixel = BAToInt16(dicomFrameByteArray, count);
-                        var dicomFileHUPixel = (dicomFilePixel * rescaleSlope) + rescaleIntercept;
-                        dicomFilePixelHUIntensities[x,y] = (short)dicomFileHUPixel;
+                        //var dicomFilePixel = BAToInt16(dicomFrameByteArray, count);
+                        //var dicomFilePixel = (short)(dicomFrameShortArray[count] | (dicomFrameByteArray[count+1] << 8));
+                        var dicomFileHUPixel = (dicomFrameShortArray[x] * rescaleSlope) + rescaleIntercept;
+                        float dicomFileRescaledHUIntensity = ((float)dicomFileHUPixel - (float)hounsfieldUnitMinimumIntenisty) / hounsfieldUnitRange;
+                        Color readyRescaledHUColor = new Color(dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity);
+                        dicomOriginalTextureRescaledHU[x] = readyRescaledHUColor;
+
+                        //dicomFilePixelHUIntensities[x,y] = (short)dicomFileHUPixel;
 
                         //Debug.Log($"byte:{bytes[count]} and byte:{bytes[count+1]} make short: {shorts[x,y]} ");
 
@@ -445,7 +431,7 @@ public static class dicomImageTools
 
                         count+=2;
                     }
-                }
+                //}
 
                 //Debug.Log($"Minimum intensity: {min} and maximum intenisty in frame: {max}.");
 
@@ -454,7 +440,20 @@ public static class dicomImageTools
 
                 //count = 0;
 
-                
+                Debug.Log($"Creating 2D Texture from colors.");
+
+                newDicomTex = new Texture2D(dicomFramePixelData.Width, dicomFramePixelData.Height, TextureFormat.ARGB32, true, true);
+                newDicomTex.SetPixels(dicomOriginalTextureRescaledHU);
+                newDicomTex.Apply();
+
+                Debug.Log($"Texture created. Rescaling texture.");
+
+                if(w < dicomFramePixelData.Width || h < dicomFramePixelData.Height)
+                {
+                    TextureScale.Bilinear (newDicomTex, w, h);
+                }
+
+                Debug.Log($"Texture rescaled.");
 
                 /*for(int x = 0; x < bytes.Length; x+=2)
 			    {
@@ -480,6 +479,8 @@ public static class dicomImageTools
                 }*/
             }
 
+            Debug.Log($"Building color slice from texture.");
+
 			for(int x = 0; x < w; x++)
 			{
 				for(int y = 0; y < h; y++)
@@ -491,7 +492,7 @@ public static class dicomImageTools
                     if(z > sliceCountOffset && z < invSliceCountOffset)
                     {
                         //c = slices[slicesCount].GetPixelBilinear(x / (float)w, y / (float)h);
-                        //c = tex.GetPixel(x, y);
+                        c = newDicomTex.GetPixel(x, y);
                        /* if (pixelData is Dicom.Imaging.Render.GrayscalePixelDataU16)
                         {
                             var pixel = pixelData.GetPixel(x,y);
@@ -499,11 +500,11 @@ public static class dicomImageTools
                             Debug.Log($"{pixel}");
                         }*/
 
-                        float dicomFileRescaledHUIntensity = ((float)dicomFilePixelHUIntensities[x, y] - (float)hounsfieldUnitMinimumIntenisty) / hounsfieldUnitRange;
+                        //float dicomFileRescaledHUIntensity = ((float)dicomFilePixelHUIntensities[x, y] - (float)hounsfieldUnitMinimumIntenisty) / hounsfieldUnitRange;
                         //Debug.Log($"Minimum intensity: {min} and maximum intenisty in frame: {max}.");
                         //Debug.Log($"Intenisty {hus[x,y]} at position {x}, {y} has color: {rescaledIntensity.ToString("0.000000000")}");
-                        Color readyRescaledHUColor = new Color(dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity);
-                        c = readyRescaledHUColor;
+                        //Color readyRescaledHUColor = new Color(dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity);
+                        //c = readyRescaledHUColor;
 
                     }
 					/*else
@@ -516,6 +517,8 @@ public static class dicomImageTools
 
 				}
 			}
+
+            Debug.Log($"Slice added to color array.");
 		}
 
         Debug.Log($"Textures loaded into color array: {textureCount}");
@@ -848,14 +851,14 @@ public static class dicomImageTools
         return texture;
     }
 
-    public static Texture3D createTexture3DAsAssetScript(string dirPath, string dirName, string ressourceDestinationPath, double scaleTexture, string textureRessourceName, int textureWidth, int textureHeight, int textureDepth)
+    public static Texture3D createTexture3DAsAssetScript(string dirPath, string ressourceDestinationPath, string textureRessourceName, List<string> fileNameList, int textureWidth, int textureHeight, int textureDepth)
     {
         /////Load all slices from directory into array of 2D Textures
         //var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
-        //var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
-        var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
+        //var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, fileNameList, textureWidth, textureHeight, textureDepth);
+        var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, fileNameList, textureWidth, textureHeight, textureDepth);
 
         //Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
 
@@ -869,14 +872,14 @@ public static class dicomImageTools
         return cubeTexture;
     }
 
-    public static Texture3D createTexture3DAsFileScript(string dirPath, string dirName, string fileDestinationPath, double scaleTexture, string textureArrayName, int textureWidth, int textureHeight, int textureDepth)
+    public static Texture3D createTexture3DAsFileScript(string dirPath, string dirName, string fileDestinationPath, double scaleTexture, string textureArrayName, List<string> fileNameList, int textureWidth, int textureHeight, int textureDepth)
     {
         /////Load all slices from directory into array of 2D Textures
         //var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
         //var colorsForCubeTexture = CreateTexture3DColorArray(textureArray);
-        var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, textureWidth, textureHeight, textureDepth);
+        var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, fileNameList, textureWidth, textureHeight, textureDepth);
 
         /////Save Color array as file
         dicomImageTools.exportTexture3DToFile(colorsForCubeTexture, fileDestinationPath, textureArrayName);
@@ -916,7 +919,7 @@ public static class dicomImageTools
         return texture2DArray;
     }
 
-    public static Texture2D rotate(this Texture2D t)
+    public static Texture2D rotateTexture(this Texture2D t)
     {
         Texture2D newTexture = new Texture2D(t.height, t.width, t.format, false);
 

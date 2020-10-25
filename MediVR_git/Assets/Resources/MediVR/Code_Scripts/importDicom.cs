@@ -19,7 +19,7 @@ using TMPro;
 
 public class importDicom : MonoBehaviour
 {
-    private Texture2D singleTexture = null;
+    //private Texture2D singleTexture = null;
 
     private dicomInfoTools dicomInformation  = new dicomInfoTools();
 
@@ -80,11 +80,36 @@ public class importDicom : MonoBehaviour
         //Debug.Log($"Path to Array Save Directory: {fileDestinationPath}");
         Debug.Log($"Path to Texture Save Directory: {textureDestinationPath}");
 
+        //////// FILES AT PATH
+
+        var dicomDirectoryInfo = new DirectoryInfo(dirPath);
+
+        int dicomFileCount = dicomDirectoryInfo.GetFiles().Length;
+        Debug.Log($"Files found in Directory: {dicomFileCount}");
+        Debug.Log($"Loading Dicom files from Directory {dirPath} into Array");
+
+        List<string> dicomFileNameList = new List<string>();
+
+        foreach (var dicomFile in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
+        {
+            if (DicomFile.HasValidHeader(dicomFile.FullName))
+            {
+                dicomFileNameList.Add(dicomFile.FullName);
+            }
+        }
+
+        Debug.Log($"Valid Dicom files found in Directory: {dicomFileNameList.Count}. File names loaded onto list.");
+
+        var file = DicomFile.Open(dicomFileNameList[0]);
+        dicomInformation.setDicomInfo(file);
+
+        Debug.Log($"Metadata loaded from file: {dicomFileNameList[0]}");
+
 
         //////// TEXTURE SELECTION
 
-        textureWidth = textureHeight = 512;
-        textureDepth = 512;
+        textureWidth = textureHeight = 256;
+        textureDepth = dicomImageTools.NextPow2(dicomFileNameList.Count);
         textureRessourceName = dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
         textureArrayName = fileDestinationPath + "/" + dirName + "_3DTexture_Color_Array" + textureWidth + "x" + textureHeight + "x" + textureDepth + ".bytes";
 
@@ -94,7 +119,7 @@ public class importDicom : MonoBehaviour
         ///////// 2D
 
         //singleTexture = dicomImageTools.CreateTextureFromDicom (path, false, ref dicomInformation);
-        singleTexture = dicomImageTools.CreateTextureFromFirstDicom (dirPath, false, ref dicomInformation);
+        //singleTexture = dicomImageTools.CreateTextureFromFirstDicom (dirPath, false, ref dicomInformation);
 
         ///////// 3D 
 
@@ -117,10 +142,10 @@ public class importDicom : MonoBehaviour
             else
             {*/
                 Debug.Log($"3D Texture does not exist. Initializing 3D Texture from {dirPath}.");
-                double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
-                Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
+                //double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
+                //Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
 
-                threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, dirName, ressourceDestinationPath, scaleTexture, textureRessourceName, textureWidth, textureHeight, textureDepth);
+                threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, ressourceDestinationPath, textureRessourceName, dicomFileNameList, textureWidth, textureHeight, textureDepth);
                 //threeDimTexture = dicomImageTools.createTexture3DAsFileScript(dirPath, dirName, fileDestinationPath, scaleTexture, textureArrayName, textureWidth, textureHeight, textureDepth);
             //}
         }

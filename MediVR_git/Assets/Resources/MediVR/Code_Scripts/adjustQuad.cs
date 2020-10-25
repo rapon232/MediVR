@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 
+using TMPro;
+
 public class adjustQuad : MonoBehaviour
 {
     public float adjustStep = 1000.0f;
@@ -85,6 +87,12 @@ public class adjustQuad : MonoBehaviour
     private float thresholdMin = 0;
     private float thresholdRange = 0;*/
 
+    private GameObject WW = null;
+    private GameObject WL = null;
+    private GameObject WMin = null;
+    private GameObject WMax = null;
+    private GameObject WScale = null;
+
 
     // Start is called before the first frame update
     void Start()
@@ -128,6 +136,15 @@ public class adjustQuad : MonoBehaviour
         thresholdMax = quadMaterial.GetFloat("_ThresholdMax");
         thresholdMin = quadMaterial.GetFloat("_ThresholdMin");
         thresholdRange = thresholdMax - thresholdMin;*/
+
+        WL = GameObject.Find("WL_Value");
+        WW = GameObject.Find("WW_Value");
+        WMin = GameObject.Find("WMin_Value");
+        WMax = GameObject.Find("WMax_Value");
+        WScale = GameObject.Find("WScale_Value");
+
+       UpdateWindowScreenDisplay(adjustWindowYDefault, adjustWindowXDefault);
+       UpdateScaleScreenDisplay(adjustScaleYDefault);
 
         GetControllers();
     }
@@ -295,6 +312,8 @@ public class adjustQuad : MonoBehaviour
                         quadMaterial.SetFloat(adjustWindowYName, yTemp);
                     }
 
+                    UpdateWindowScreenDisplay(yTemp, xTemp);
+
                     //transform.Rotate(new Vector3 (yAxis, -xAxis, 0f), Space.Self);
                     //Debug.Log(lPosition);
                 }
@@ -304,6 +323,8 @@ public class adjustQuad : MonoBehaviour
             {
                 quadMaterial.SetFloat(adjustWindowXName, adjustWindowXDefault);
                 quadMaterial.SetFloat(adjustWindowYName, adjustWindowYDefault);
+
+                UpdateWindowScreenDisplay(adjustWindowYDefault, adjustWindowXDefault);
             }
 
         }
@@ -336,6 +357,8 @@ public class adjustQuad : MonoBehaviour
                         quadMaterial.SetFloat(adjustScaleYName, zTemp);
                     }
 
+                    UpdateScaleScreenDisplay(zTemp);
+
                     //transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
                     //Debug.Log(rPosition);
                 }
@@ -344,7 +367,9 @@ public class adjustQuad : MonoBehaviour
             if(leftController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
             {
                 //quadMaterial.SetFloat("_Threshold", thresholdDefault);
-                quadMaterial.SetFloat(adjustScaleYName, adjustScaleYDefault);   
+                quadMaterial.SetFloat(adjustScaleYName, adjustScaleYDefault); 
+
+                UpdateScaleScreenDisplay(adjustScaleYDefault);  
             }
 
             /*else
@@ -394,6 +419,19 @@ public class adjustQuad : MonoBehaviour
     {
         moveLocomotionScript.enabled  = !moveLocomotionScript.enabled;
         //Debug.Log($"Locomotion set to: {moveLocomotionScript.enabled}!");
+    }
+
+    public void UpdateWindowScreenDisplay(float wl, float ww)
+    {
+        WL.GetComponent<TextMeshProUGUI>().text = wl.ToString("F0");
+        WW.GetComponent<TextMeshProUGUI>().text = ww.ToString("F0");
+        WMin.GetComponent<TextMeshProUGUI>().text = (wl - (ww / 2)).ToString("F0");
+        WMax.GetComponent<TextMeshProUGUI>().text = (wl + (ww / 2)).ToString("F0");
+    }
+
+    public void UpdateScaleScreenDisplay(float wscale)
+    {
+        WScale.GetComponent<TextMeshProUGUI>().text = (wscale / adjustScaleYDefault * 100).ToString("F0") + "%";
     }
 
 }

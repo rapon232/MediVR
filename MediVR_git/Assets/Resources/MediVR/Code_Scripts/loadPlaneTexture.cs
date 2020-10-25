@@ -66,9 +66,9 @@ public class loadPlaneTexture : MonoBehaviour
         dicomImagePlaneRenderer5.material.mainTexture = planeTextureArray[4];
         
         /////Assign slice dicom information to Canvas
-        studyText = GameObject.Find("Dicom_Info_Text_Study (TMP)");
-        patientText = GameObject.Find("Dicom_Info_Text_Patient (TMP)");
-        modalityText = GameObject.Find("Dicom_Info_Text_Modality (TMP)");
+        studyText = GameObject.Find("Dicom_Info_Text_Study");
+        patientText = GameObject.Find("Dicom_Info_Text_Patient");
+        modalityText = GameObject.Find("Dicom_Info_Text_Modality");
 
         studyText.GetComponent<TextMeshProUGUI>().text = dicomInformation.Strings.studyInfo;
         patientText.GetComponent<TextMeshProUGUI>().text = dicomInformation.Strings.patientInfo;

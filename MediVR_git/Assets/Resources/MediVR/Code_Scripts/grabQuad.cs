@@ -34,10 +34,12 @@ public class grabQuad : XRGrabInteractable
     public Color selectColorForJoystickMode = Color.magenta;
     public Color activateColorForJoystickMode = Color.cyan;
 
+    public float moveSpeedWhileSelected = 0.8f;
     
     //public Color activateColorForJoystickMode = Color.cyan;
 
     private Color inactiveColor = Color.white;
+    private float inactiveMoveSpeed = 0f;
 
     private bool selected = false;
     //private bool activated = false;
@@ -63,6 +65,8 @@ public class grabQuad : XRGrabInteractable
         moveLocomotionScript = xrRig.GetComponent<moveLocomotion>();
         snapTurnProviderScript = xrRig.GetComponent<SnapTurnProvider>();
 
+        inactiveMoveSpeed = moveLocomotionScript.moveSpeed;
+
         rotateQuadScript = this.GetComponent<rotateQuad>();
         adjustQuadScript = this.GetComponent<adjustQuad>();
         duplicateQuadScript = this.GetComponent<duplicateQuad>();
@@ -81,6 +85,7 @@ public class grabQuad : XRGrabInteractable
             StoreInteractor(interactor);
             MatchAttachmentPoints(interactor);
 
+            moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
             adjustQuadScript.SetAdjustListen(false);
 
             quadMaterial.SetColor(outlineColorName, selectColorForHandMode);
@@ -112,6 +117,8 @@ public class grabQuad : XRGrabInteractable
 
             ResetAttachmentPoints(interactor);
             ClearInteractor(interactor);
+
+            moveLocomotionScript.moveSpeed = inactiveMoveSpeed;
         }
         else if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
@@ -135,6 +142,7 @@ public class grabQuad : XRGrabInteractable
 
             MatchAttachmentPoints(interactor);
 
+            moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
             adjustQuadScript.SetAdjustListen(false);
 
             quadMaterial.SetColor(outlineColorName, activateColorForHandMode);
@@ -173,6 +181,8 @@ public class grabQuad : XRGrabInteractable
             }
             else
             {
+                moveLocomotionScript.moveSpeed = inactiveMoveSpeed;
+
                 adjustQuadScript.SetAdjustListen(true);
 
                 quadMaterial.SetColor(outlineColorName, inactiveColor);
