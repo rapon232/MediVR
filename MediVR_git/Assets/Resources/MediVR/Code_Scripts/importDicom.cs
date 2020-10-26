@@ -145,7 +145,7 @@ public class importDicom : MonoBehaviour
                 //double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
                 //Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
 
-                threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, ressourceDestinationPath, textureRessourceName, dicomFileNameList, textureWidth, textureHeight, textureDepth);
+                threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, ressourceDestinationPath, textureRessourceName, dicomFileNameList, dicomInformation, textureWidth, textureHeight, textureDepth);
                 //threeDimTexture = dicomImageTools.createTexture3DAsFileScript(dirPath, dirName, fileDestinationPath, scaleTexture, textureArrayName, textureWidth, textureHeight, textureDepth);
             //}
         }

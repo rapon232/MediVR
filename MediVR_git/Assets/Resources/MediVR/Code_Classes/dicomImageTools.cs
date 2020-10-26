@@ -250,7 +250,7 @@ public static class dicomImageTools
         return value;
     }
 
-    public static Color[] CreateColorArrayFromDicomdir(string dirPath, List<string> fileNameList, int textureWidth, int textureHeight, int textureDepth)
+    public static Color[] CreateColorArrayFromDicomdir(string dirPath, List<string> fileNameList, dicomInfoTools dicomInformation, int textureWidth, int textureHeight, int textureDepth)
     {
         Debug.Log($"Preparing stuff for color array creation.");
 
@@ -281,7 +281,26 @@ public static class dicomImageTools
         short hounsfieldUnitRange = (short)(hounsfieldUnitMaximumIntenisty - hounsfieldUnitMinimumIntenisty);
         //short dicomFileIntensityRange = dicomFileMaximumIntensity - dicomFileMinimumIntensity;
 
-        var dicomFile = DicomFile.Open(fileNameList[0]);
+        int dicomFrameWidth = dicomInformation.ImageWidth;
+        int dicomFrameHeight = dicomInformation.ImageHeight;
+
+        Texture2D newDicomTex = null;
+
+        //short[,] dicomFilePixelHUIntensities = new short[dicomFrameWidth, dicomFrameHeight];
+        Color[] dicomOriginalTextureRescaledHU = new Color[dicomFrameWidth * dicomFrameHeight];
+
+        DicomTransferSyntax dicomFileTransferSyntax = dicomInformation.ImageTransferSyntax;
+
+        DicomTransferSyntax defaultDicomTransferSyntax = dicomInformation.DefaultDicomTransferSyntax;
+
+        short rescaleSlope = (short)dicomInformation.ImageRescaleSlope;
+        short rescaleIntercept = (short)dicomInformation.ImageRescaleIntercept;
+
+        Debug.Log($"Image frame width: {dicomFrameWidth} pixels and frame height: {dicomFrameHeight} pixels.");
+        Debug.Log($"Image Transfer Syntax: {dicomFileTransferSyntax}. Applying Decompression Transfer Syntax: {defaultDicomTransferSyntax}");
+        Debug.Log($"Image Rescale Slope: {rescaleSlope} and Rescale Intercept: {rescaleIntercept}");
+
+        /*var dicomFile = DicomFile.Open(fileNameList[0]);
 
         var dicomFilePixelData = DicomPixelData.Create(dicomFile.Dataset);
 
@@ -329,7 +348,7 @@ public static class dicomImageTools
             Debug.Log($"Rescale Intercept NOT found in dataset. Defaulting to -1024.");
         }
 
-        Debug.Log($"Image Rescale Slope: {rescaleSlope} and Rescale Intercept: {rescaleIntercept}");
+        Debug.Log($"Image Rescale Slope: {rescaleSlope} and Rescale Intercept: {rescaleIntercept}");*/
 
         Debug.Log($"Done peparing stuff for color array creation.");
 
@@ -369,7 +388,18 @@ public static class dicomImageTools
 
                 var dicomFileCompressed = DicomFile.Open(fileNameList[slicesCount]);
 
-                var dicomFileUncompressed = dicomFileCompressed.Clone(defaultDicomTransferSyntax);
+                var dicomFileUncompressed = new DicomFile();
+
+                if(dicomFileCompressed.Dataset.InternalTransferSyntax.IsEncapsulated)
+                {
+                    dicomFileUncompressed = dicomFileCompressed.Clone(defaultDicomTransferSyntax);
+                }
+                else
+                {
+                    dicomFileUncompressed = dicomFileCompressed;
+                }
+
+                dicomFileUncompressed = dicomFileCompressed.Clone(defaultDicomTransferSyntax);
 
                 var dicomFramePixelData = DicomPixelData.Create(dicomFileUncompressed.Dataset);
 
@@ -851,14 +881,14 @@ public static class dicomImageTools
         return texture;
     }
 
-    public static Texture3D createTexture3DAsAssetScript(string dirPath, string ressourceDestinationPath, string textureRessourceName, List<string> fileNameList, int textureWidth, int textureHeight, int textureDepth)
+    public static Texture3D createTexture3DAsAssetScript(string dirPath, string ressourceDestinationPath, string textureRessourceName, List<string> fileNameList, dicomInfoTools dicomInformation, int textureWidth, int textureHeight, int textureDepth)
     {
         /////Load all slices from directory into array of 2D Textures
         //var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
         //var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, fileNameList, textureWidth, textureHeight, textureDepth);
-        var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, fileNameList, textureWidth, textureHeight, textureDepth);
+        var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, fileNameList, dicomInformation, textureWidth, textureHeight, textureDepth);
 
         //Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
 

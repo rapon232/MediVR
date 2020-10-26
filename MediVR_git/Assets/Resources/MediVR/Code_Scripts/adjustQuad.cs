@@ -9,7 +9,7 @@ using TMPro;
 
 public class adjustQuad : MonoBehaviour
 {
-    public float adjustStep = 1000.0f;
+    public float adjustStep = 2000.0f;
 
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;

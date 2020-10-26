@@ -446,7 +446,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 78870378}
-  m_LocalRotation: {x: -0, y: -0.01156602, z: 4.7740345e-10, w: 0.9999331}
+  m_LocalRotation: {x: -0, y: -0.012808329, z: 5.286815e-10, w: 0.9999179}
   m_LocalPosition: {x: -0.022869129, y: 1.3201648, z: 0.46142054}
   m_LocalScale: {x: 0.27572, y: 0.47719002, z: 0.26394004}
   m_Children:
@@ -720,7 +720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8739813b7d5274c9ab401aa34f5c7155, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  adjustStep: 1000
+  adjustStep: 2000
   leftControllerNode: 4
   rightControllerNode: 5
   adjustColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

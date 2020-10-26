@@ -10,6 +10,8 @@ using UnityEngine;
 
 using Dicom;
 using Dicom.Imaging;
+using Dicom.Imaging.Codec;
+using Dicom.Imaging.Render;
 using Dicom.Log;
 using Dicom.Network;
 using Dicom.Media;
@@ -21,6 +23,13 @@ public class dicomInfoTools
 
     private string dateFormat = "N/A";
     private string timeFormat = "N/A";
+
+    private int imageWidth = 0;
+    private int imageHeight = 0;
+    private DicomTransferSyntax imageTransferSyntax = null;
+    private DicomTransferSyntax defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
+    private int imageRescaleSlope = 0;
+    private int imageRescaleIntercept = 0;
 
     private int patientId = 0;
     private int patientAge = 0;
@@ -39,6 +48,95 @@ public class dicomInfoTools
 
     private string modality = "N/A";
     private string modalityManufacturer = "N/A";
+
+    
+    public int ImageWidth
+    {
+        get { return imageWidth; }
+    }
+    public int ImageHeight
+    {
+        get { return imageHeight; }
+    }
+    public DicomTransferSyntax ImageTransferSyntax
+    {
+        get { return imageTransferSyntax; }
+    }
+    public DicomTransferSyntax DefaultDicomTransferSyntax
+    {
+        get { return defaultDicomTransferSyntax; }
+    }
+    public int ImageRescaleSlope
+    {
+        get { return imageRescaleSlope; }
+    }
+    public int ImageRescaleIntercept
+    {
+        get { return imageRescaleIntercept; }
+    }
+
+    public int PatientId
+    {
+        get { return patientId; }
+    }
+    public int PatientAge
+    {
+        get { return patientAge; }
+    }
+    public DateTime PatientBd
+    {
+        get { return patientBd; }
+    }
+    public string PatientSex
+    {
+        get { return patientSex; }
+    }
+    public string PatientName
+    {
+        get { return patientName; }
+    }
+
+    public int StudyId
+    {
+        get { return studyId; }
+    }
+    public DateTime StudyTime
+    {
+        get { return studyTime; }
+    }
+    public DateTime StudyDate
+    {
+        get { return studyDate; }
+    }
+    public string StudyDescription
+    {
+        get { return studyDescription; }
+    }
+    public string StudySeriesDescription
+    {
+        get { return studySeriesDescription; }
+    }
+    public string StudyProtocolName
+    {
+        get { return studyProtocolName; }
+    }
+    public float StudySliceThickness
+    {
+        get { return studySliceThickness; }
+    }
+    public string StudyDoctorName
+    {
+        get { return studyDoctorName; }
+    }
+
+    public string Modality
+    {
+        get { return modality; }
+    }
+    public string ModalityManufacturer
+    {
+        get { return modalityManufacturer; }
+    }
 
     public struct dicomInfoString
     {
@@ -60,6 +158,51 @@ public class dicomInfoTools
     {
         dateFormat = "dd.MM.yyyy";
         timeFormat = "HH:mm:ss";
+
+        if(file.Dataset.Contains(DicomTag.Columns))
+        {
+            imageWidth = file.Dataset.Get<int>(DicomTag.Columns);
+        }
+        else
+        {
+            imageWidth = 512;
+            Debug.Log($"Image Width NOT found in dataset. Defaulting to 512.");
+        }
+
+        imageTransferSyntax = file.Dataset.InternalTransferSyntax;
+
+        if(file.Dataset.Contains(DicomTag.Rows))
+        {
+            imageHeight = file.Dataset.Get<int>(DicomTag.Rows);
+        }
+        else
+        {
+            imageHeight = 512;
+            Debug.Log($"Image Height NOT found in dataset. Defaulting to 512.");
+        }
+
+        if(file.Dataset.Contains(DicomTag.RescaleSlope))
+        {
+            imageRescaleSlope = file.Dataset.Get<int>(DicomTag.RescaleSlope);
+            //Debug.Log($"Rescale Slope found in dataset.");
+        }
+        else
+        {
+            imageRescaleSlope = 1;
+            Debug.Log($"Image Rescale Slope NOT found in dataset. Defaulting to 1.");
+        }
+
+        if(file.Dataset.Contains(DicomTag.RescaleIntercept))
+        {
+            imageRescaleIntercept = file.Dataset.Get<int>(DicomTag.RescaleIntercept);
+            //Debug.Log($"Rescale Intercept found in dataset.");
+        }
+        else
+        {
+            imageRescaleIntercept = -1024;
+            Debug.Log($"Image Rescale Intercept NOT found in dataset. Defaulting to -1024.");
+        }
+
 
         if(file.Dataset.Contains(DicomTag.PatientID))
         {
@@ -290,6 +433,10 @@ public class dicomInfoTools
         }
 
         Strings = getDicomInfoString();
+
+        //Debug.Log($"Image frame width: {imageWidth} pixels and frame height: {imageHeight} pixels.");
+        //Debug.Log($"Image Transfer Syntax: {imageTransferSyntax.ToString()}. Applying Decompression Transfer Syntax: {defaultDicomTransferSyntax.ToString()}");
+        //Debug.Log($"Image Rescale Slope: {imageRescaleSlope} and Rescale Intercept: {imageRescaleIntercept}");
     }
 
     private dicomInfoString getDicomInfoString()
