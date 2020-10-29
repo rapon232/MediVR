@@ -13,12 +13,12 @@
         _WindowWidthMin("Window Width Minimum", Int) = 1
         [HideInInspector]
         _WindowWidthMax("Window Width Maximum", Int) = 4095
-        _WindowWidth("Window Width", Range(1, 4095)) = 350
+        _WindowWidth("Window Width", Range(1, 4095)) = 300
         [HideInInspector]
         _WindowCenterMin("Window Center Minimum", Int) = -1024
         [HideInInspector]
         _WindowCenterMax("Window Center Maximum", Int) = 3071
-        _WindowCenter("Window Center", Range(-1024, 3071)) = 50
+        _WindowCenter("Window Center", Range(-1024, 3071)) = 100
 
         [Toggle]
         _CutBlackPixelsBefore("Cut Black Background", Int) = 1

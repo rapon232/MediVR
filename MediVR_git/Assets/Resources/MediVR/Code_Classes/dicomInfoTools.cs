@@ -30,6 +30,10 @@ public class dicomInfoTools
     private DicomTransferSyntax defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
     private int imageRescaleSlope = 0;
     private int imageRescaleIntercept = 0;
+    private int imageWindowWidth = 0;
+    private int imageWindowCenter = 0;
+    private double[] imageOrientationPatient = new double[6];
+    private string orientationPatient = null;
 
     private int patientId = 0;
     private int patientAge = 0;
@@ -73,6 +77,22 @@ public class dicomInfoTools
     public int ImageRescaleIntercept
     {
         get { return imageRescaleIntercept; }
+    }
+    public int ImageWindowWidth
+    {
+        get { return imageWindowWidth; }
+    }
+    public int ImageWindowCenter
+    {
+        get { return imageWindowCenter; }
+    }
+    public double[] ImageOrientationPatient
+    {
+        get { return imageOrientationPatient; }
+    }
+    public string OrientationPatient
+    {
+        get { return orientationPatient; }
     }
 
     public int PatientId
@@ -162,11 +182,12 @@ public class dicomInfoTools
         if(file.Dataset.Contains(DicomTag.Columns))
         {
             imageWidth = file.Dataset.Get<int>(DicomTag.Columns);
+            //Debug.Log($"Image Width found in dataset: {imageWidth}.");
         }
         else
         {
             imageWidth = 512;
-            Debug.Log($"Image Width NOT found in dataset. Defaulting to 512.");
+            Debug.Log($"Image Width NOT found in dataset. Defaulting to: {imageWidth}.");
         }
 
         imageTransferSyntax = file.Dataset.InternalTransferSyntax;
@@ -174,33 +195,67 @@ public class dicomInfoTools
         if(file.Dataset.Contains(DicomTag.Rows))
         {
             imageHeight = file.Dataset.Get<int>(DicomTag.Rows);
+            //Debug.Log($"Image Height found in dataset: {imageHeight}.");
         }
         else
         {
             imageHeight = 512;
-            Debug.Log($"Image Height NOT found in dataset. Defaulting to 512.");
+            Debug.Log($"Image Height NOT found in dataset. Defaulting to: {imageHeight}.");
         }
 
         if(file.Dataset.Contains(DicomTag.RescaleSlope))
         {
             imageRescaleSlope = file.Dataset.Get<int>(DicomTag.RescaleSlope);
-            //Debug.Log($"Rescale Slope found in dataset.");
+            //Debug.Log($"Image Rescale Slope found in dataset: {imageRescaleSlope}.");
         }
         else
         {
             imageRescaleSlope = 1;
-            Debug.Log($"Image Rescale Slope NOT found in dataset. Defaulting to 1.");
+            Debug.Log($"Image Rescale Slope NOT found in dataset. Defaulting to: {imageRescaleSlope}.");
         }
 
         if(file.Dataset.Contains(DicomTag.RescaleIntercept))
         {
             imageRescaleIntercept = file.Dataset.Get<int>(DicomTag.RescaleIntercept);
-            //Debug.Log($"Rescale Intercept found in dataset.");
+            //Debug.Log($"Image Rescale Intercept found in dataset: {imageRescaleIntercept}.");
         }
         else
         {
             imageRescaleIntercept = -1024;
-            Debug.Log($"Image Rescale Intercept NOT found in dataset. Defaulting to -1024.");
+            Debug.Log($"Image Rescale Intercept NOT found in dataset. Defaulting to: {imageRescaleIntercept}.");
+        }
+
+        if(file.Dataset.Contains(DicomTag.WindowWidth))
+        {
+            imageWindowWidth = file.Dataset.Get<int>(DicomTag.WindowWidth);
+            //Debug.Log($"Image Window Width found in dataset: {imageWindowWidth}.");
+        }
+        else
+        {
+            imageWindowWidth = 300;
+            Debug.Log($"Image Window Width NOT found in dataset. Defaulting to: {imageWindowWidth}.");
+        }
+
+        if(file.Dataset.Contains(DicomTag.WindowCenter))
+        {
+            imageWindowCenter = file.Dataset.Get<int>(DicomTag.WindowCenter);
+            //Debug.Log($"Image Window Center found in dataset: {imageWindowCenter}.");
+        }
+        else
+        {
+            imageWindowCenter = 100;
+            Debug.Log($"Image Window Center NOT found in dataset. Defaulting to: {imageWindowCenter}.");
+        }
+
+        if(file.Dataset.Contains(DicomTag.ImageOrientationPatient))
+        {
+            imageOrientationPatient = file.Dataset.Get<double[]>(DicomTag.ImageOrientationPatient);
+            //Debug.Log($"Image Orientation of Patient found in dataset: {imageOrientationPatient}.");
+        }
+        else
+        {
+            imageOrientationPatient = null;
+            Debug.Log($"Image Orientation of Patient NOT found in dataset. Defaulting to: {imageOrientationPatient}.");
         }
 
 
@@ -432,6 +487,9 @@ public class dicomInfoTools
             modalityManufacturer = "N/A";
         }
 
+        orientationPatient = GetPatientOrientationString(imageOrientationPatient);
+        //Debug.Log($"Patient orientation: {orientationPatient}");
+
         Strings = getDicomInfoString();
 
         //Debug.Log($"Image frame width: {imageWidth} pixels and frame height: {imageHeight} pixels.");
@@ -518,7 +576,7 @@ public class dicomInfoTools
 
         string styInfo =    "<b>Study Info:</b>\n\n" +
                             $"ID: {studyIdString}\nDescription: {studyDescription}\n" +
-                            $"Series: {studySeriesDescription}\nThickness: {studySliceThicknessString} mm\n" +
+                            $"Series: {studySeriesDescription}\nThickness: {studySliceThicknessString} mm\nOrientation: {orientationPatient}\n" +
                             $"Date: {studyDateString}\nTime: {studyTimeString}\n" +
                             $"Referring Physician: {studyDoctorName}\n";
 
@@ -541,5 +599,51 @@ public class dicomInfoTools
         Debug.Log(dumpModalityManufacturer);*/
 
         return info;
+    }
+
+    private string GetPatientOrientationString(double[] orientations)
+    {
+        string orientation = null;
+
+        if(orientations != null)
+        {
+            //var orientations = file.Dataset.GetValues<double>(DicomTag.ImageOrientationPatient); // this array has length 6
+            var rowDirection = new Dicom.Imaging.Mathematics.Vector3D(orientations, 0); // take 3 values starting from index 0
+            var colDirection = new Dicom.Imaging.Mathematics.Vector3D(orientations, 3); // take 3 values starting from index 3
+            var normalvector = colDirection.CrossProduct(rowDirection);
+            var nearestAxis = normalvector.NearestAxis();
+            var nearestAxisString = nearestAxis.ToString().Replace(" ", "");
+
+            switch(nearestAxisString)
+            {
+                case ("(0,1,0)"):
+                    orientation = "Coronal AP";
+                    break;
+                case ("(0,-1,0)"):
+                    orientation = "Coronal PA";
+                    break;
+                case ("(0,0,1)"):
+                    orientation = "Axial SI";
+                    break;
+                case ("(0,0,-1)"):
+                    orientation = "Axial IS";
+                    break;
+                case ("(1,0,0)"):
+                    orientation = "Saggital LR";
+                    break;
+                case ("(-1,0,0)"):
+                    orientation = "Saggital RL";
+                    break;
+                default:
+                    orientation = "N/A";
+                    break;
+            }
+        }
+        else
+        {
+            orientation = "N/A";
+        }
+
+        return orientation;
     }
 }

@@ -7,6 +7,25 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class grabQuad : XRGrabInteractable
 {
+    public XRNode handController = UnityEngine.XR.XRNode.RightHand;
+    public XRNode joystickController = UnityEngine.XR.XRNode.LeftHand;
+
+    public Color selectColorForHandMode = Color.clear;
+    public Color activateColorForHandMode = Color.clear;
+
+    public Color selectColorForJoystickMode = Color.clear;
+    public Color activateColorForJoystickMode = Color.clear;
+
+    public float moveSpeedWhileSelected = 0.8f;
+    
+    //public Color activateColorForJoystickMode = Color.cyan;
+
+    private Color inactiveColor = Color.clear;
+    private float inactiveMoveSpeed = 0f;
+
+    private bool selected = false;
+    //private bool activated = false;
+
     private Vector3 interactorPosition = Vector3.zero;
     private Quaternion interactorRotation = Quaternion.identity;
 
@@ -25,24 +44,12 @@ public class grabQuad : XRGrabInteractable
     private adjustQuad adjustQuadScript = null;
     private duplicateQuad duplicateQuadScript = null;
 
-    public XRNode handController = UnityEngine.XR.XRNode.RightHand;
-    public XRNode joystickController = UnityEngine.XR.XRNode.LeftHand;
+    private GameObject dicomImageQuad = null;
 
-    public Color selectColorForHandMode = Color.red;
-    public Color activateColorForHandMode = Color.blue;
-
-    public Color selectColorForJoystickMode = Color.magenta;
-    public Color activateColorForJoystickMode = Color.cyan;
-
-    public float moveSpeedWhileSelected = 0.8f;
-    
-    //public Color activateColorForJoystickMode = Color.cyan;
-
-    private Color inactiveColor = Color.white;
-    private float inactiveMoveSpeed = 0f;
-
-    private bool selected = false;
-    //private bool activated = false;
+    public bool Selected
+    {
+        get { return selected; }
+    }
 
     protected override void Awake()
     {
@@ -59,6 +66,12 @@ public class grabQuad : XRGrabInteractable
         quadRenderer = this.GetComponent<Renderer>();
         quadMaterial = quadRenderer.material;
 
+        dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
+        selectColorForHandMode = dicomImageQuad.GetComponent<setQuadFrameColors>().handTranslate;
+        activateColorForHandMode = dicomImageQuad.GetComponent<setQuadFrameColors>().handRotate;
+        selectColorForJoystickMode = dicomImageQuad.GetComponent<setQuadFrameColors>().joystickTranslate;
+        activateColorForJoystickMode = dicomImageQuad.GetComponent<setQuadFrameColors>().joystickRotate;
+
         inactiveColor = quadMaterial.GetColor(outlineColorName);
 
         xrRig = GameObject.Find("XR Rig");
@@ -68,8 +81,12 @@ public class grabQuad : XRGrabInteractable
         inactiveMoveSpeed = moveLocomotionScript.moveSpeed;
 
         rotateQuadScript = this.GetComponent<rotateQuad>();
-        adjustQuadScript = this.GetComponent<adjustQuad>();
         duplicateQuadScript = this.GetComponent<duplicateQuad>();
+
+        if(this.gameObject.tag != "Duplicate")
+        {
+            adjustQuadScript = this.GetComponent<adjustQuad>();
+        }
         //textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
 
     }
@@ -85,8 +102,15 @@ public class grabQuad : XRGrabInteractable
             StoreInteractor(interactor);
             MatchAttachmentPoints(interactor);
 
-            moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
-            adjustQuadScript.SetAdjustListen(false);
+            if(this.gameObject.tag != "Duplicate")
+            {
+                moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
+                adjustQuadScript.SetAdjustListen(false);
+            }
+            else
+            {
+                base.trackRotation = true;
+            }
 
             quadMaterial.SetColor(outlineColorName, selectColorForHandMode);
         }
@@ -98,7 +122,10 @@ public class grabQuad : XRGrabInteractable
             rotateQuadScript.SetTranslate(true);
             rotateQuadScript.SetRotate(false);
 
-            adjustQuadScript.SetAdjustListen(false);
+            if(this.gameObject.tag != "Duplicate")
+            {
+                adjustQuadScript.SetAdjustListen(false);
+            }
 
             quadMaterial.SetColor(outlineColorName, selectColorForJoystickMode);
         }
@@ -118,7 +145,14 @@ public class grabQuad : XRGrabInteractable
             ResetAttachmentPoints(interactor);
             ClearInteractor(interactor);
 
-            moveLocomotionScript.moveSpeed = inactiveMoveSpeed;
+            if(this.gameObject.tag != "Duplicate")
+            {
+                moveLocomotionScript.moveSpeed = inactiveMoveSpeed;
+            }
+            else
+            {
+                base.trackRotation = false;
+            }
         }
         else if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
@@ -142,8 +176,11 @@ public class grabQuad : XRGrabInteractable
 
             MatchAttachmentPoints(interactor);
 
-            moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
-            adjustQuadScript.SetAdjustListen(false);
+            if(this.gameObject.tag != "Duplicate")
+            {
+                moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
+                adjustQuadScript.SetAdjustListen(false);
+            }
 
             quadMaterial.SetColor(outlineColorName, activateColorForHandMode);
 
@@ -155,7 +192,10 @@ public class grabQuad : XRGrabInteractable
             rotateQuadScript.SetTranslate(false);
             rotateQuadScript.SetRotate(true);
 
-            adjustQuadScript.SetAdjustListen(false);
+            if(this.gameObject.tag != "Duplicate")
+            {
+                adjustQuadScript.SetAdjustListen(false);
+            }
 
             quadMaterial.SetColor(outlineColorName, activateColorForJoystickMode);
         }
@@ -175,15 +215,20 @@ public class grabQuad : XRGrabInteractable
 
             if(selected)
             {
-                adjustQuadScript.SetAdjustListen(false);
+                if(this.gameObject.tag != "Duplicate")
+                {
+                    adjustQuadScript.SetAdjustListen(false);
+                }
 
                 quadMaterial.SetColor(outlineColorName, selectColorForHandMode);
             }
             else
             {
-                moveLocomotionScript.moveSpeed = inactiveMoveSpeed;
-
-                adjustQuadScript.SetAdjustListen(true);
+                if(this.gameObject.tag != "Duplicate")
+                {
+                    moveLocomotionScript.moveSpeed = inactiveMoveSpeed;
+                    adjustQuadScript.SetAdjustListen(true);
+                }
 
                 quadMaterial.SetColor(outlineColorName, inactiveColor);
             }
@@ -198,7 +243,10 @@ public class grabQuad : XRGrabInteractable
                 rotateQuadScript.SetTranslate(true);
                 rotateQuadScript.SetRotate(false);
 
-                adjustQuadScript.SetAdjustListen(false);
+                if(this.gameObject.tag != "Duplicate")
+                {
+                    adjustQuadScript.SetAdjustListen(false);
+                }
 
                 quadMaterial.SetColor(outlineColorName, selectColorForJoystickMode);
             }
@@ -207,7 +255,10 @@ public class grabQuad : XRGrabInteractable
                 rotateQuadScript.SetTranslate(false);
                 rotateQuadScript.SetRotate(false);
 
-                adjustQuadScript.SetAdjustListen(true);
+                if(this.gameObject.tag != "Duplicate")
+                {
+                    adjustQuadScript.SetAdjustListen(true);
+                }
 
                 quadMaterial.SetColor(outlineColorName, inactiveColor);
             }
@@ -218,7 +269,10 @@ public class grabQuad : XRGrabInteractable
     {
         base.OnHoverEnter(interactor);
 
-        adjustQuadScript.SetAdjustListen(true);
+        if(this.gameObject.tag != "Duplicate")
+        {
+            adjustQuadScript.SetAdjustListen(true);
+        }
 
         if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
@@ -230,7 +284,10 @@ public class grabQuad : XRGrabInteractable
     {
         base.OnHoverExit(interactor);
 
-        adjustQuadScript.SetAdjustListen(false);
+        if(this.gameObject.tag != "Duplicate")
+        {
+            adjustQuadScript.SetAdjustListen(false);
+        }
 
         if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {

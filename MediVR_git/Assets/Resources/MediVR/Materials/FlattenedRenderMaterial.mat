@@ -64,9 +64,13 @@ Material:
     - _ContrastMax: 3
     - _ContrastMin: 0
     - _CutBlackPixels: 1
+    - _CutBlackPixelsAfter: 0
+    - _CutBlackPixelsBefore: 1
     - _CutLowerBorder: 0.05
     - _CutUpperBorder: 0.95
     - _CutWhitePixels: 0
+    - _CutWhitePixelsAfter: 0
+    - _CutWhitePixelsBefore: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -89,16 +93,20 @@ Material:
     - _ThresholdMax: 1
     - _ThresholdMin: 0
     - _UVSec: 0
-    - _WindowCenter: 50
+    - _WindowCenter: 100
+    - _WindowCenterMax: 3071
+    - _WindowCenterMin: -1024
     - _WindowMax: 225
     - _WindowMin: -125
-    - _WindowWidth: 350
+    - _WindowWidth: 400
+    - _WindowWidthMax: 4095
+    - _WindowWidthMin: 1
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Coords: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MovingCoords: {r: 0, g: 0, b: 0, a: 1}
-    - _OutlineColor: {r: 0.8470589, g: 0.5411765, b: 0.19215688, a: 1}
+    - _OutlineColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0}
     - _StartCoords: {r: 0, g: 0, b: 0, a: 1}
     - _uv: {r: 0, g: 0, b: 0, a: 1}

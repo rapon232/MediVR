@@ -14,7 +14,8 @@ public class adjustQuad : MonoBehaviour
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
-    public Color adjustColor = Color.yellow;
+    public Color adjustWindowColor = Color.clear;
+    public Color adjustScaleColor = Color.clear;
 
     public InputFeatureUsage<bool> adjustWindowButton = CommonUsages.secondaryButton;
     public InputFeatureUsage<bool> adjustThresholdButton = CommonUsages.primaryButton;
@@ -35,6 +36,8 @@ public class adjustQuad : MonoBehaviour
     private GameObject xrRig = null;
     private moveLocomotion moveLocomotionScript = null;
     private SnapTurnProvider snapTurnProviderScript = null;
+
+    private GameObject dicomImageQuad = null;
 
     private Renderer quadRenderer = null;
     private Material quadMaterial = null;
@@ -100,6 +103,10 @@ public class adjustQuad : MonoBehaviour
         xrRig = GameObject.Find("XR Rig");
         moveLocomotionScript = xrRig.GetComponent<moveLocomotion>();
         snapTurnProviderScript = xrRig.GetComponent<SnapTurnProvider>();
+
+        dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
+        adjustWindowColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setWindow;
+        adjustScaleColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setScale;
 
         quadRenderer = this.GetComponent<Renderer>();
         quadMaterial = quadRenderer.material;
@@ -225,7 +232,7 @@ public class adjustQuad : MonoBehaviour
 
                 SetAdjustWindow(true);
 
-                quadMaterial.SetColor(outlineColorName, adjustColor);
+                quadMaterial.SetColor(outlineColorName, adjustWindowColor);
 
                 flag = true;
             }
@@ -236,7 +243,7 @@ public class adjustQuad : MonoBehaviour
 
                 SetAdjustScale(true);
 
-                quadMaterial.SetColor(outlineColorName, adjustColor);
+                quadMaterial.SetColor(outlineColorName, adjustScaleColor);
 
                 flag = true;
             }
@@ -355,9 +362,10 @@ public class adjustQuad : MonoBehaviour
                     if(zTemp <= adjustScaleYMax && zTemp >= adjustScaleYMin)
                     {
                         quadMaterial.SetFloat(adjustScaleYName, zTemp);
+                        UpdateScaleScreenDisplay(zTemp);
                     }
 
-                    UpdateScaleScreenDisplay(zTemp);
+                    
 
                     //transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
                     //Debug.Log(rPosition);

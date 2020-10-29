@@ -21,7 +21,7 @@ public class importDicom : MonoBehaviour
 {
     //private Texture2D singleTexture = null;
 
-    private dicomInfoTools dicomInformation  = new dicomInfoTools();
+    public dicomInfoTools dicomInformation  = new dicomInfoTools();
 
     public Texture3D threeDimTexture = null;
 
@@ -97,6 +97,8 @@ public class importDicom : MonoBehaviour
                 dicomFileNameList.Add(dicomFile.FullName);
             }
         }
+
+        dicomFileNameList.Reverse();
 
         Debug.Log($"Valid Dicom files found in Directory: {dicomFileNameList.Count}. File names loaded onto list.");
 

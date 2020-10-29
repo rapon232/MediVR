@@ -16,11 +16,11 @@ public class duplicateQuad : MonoBehaviour
 
     public bool cutBlackPixels = false;
 
-    public Color duplicateColor = Color.green;
+    public Color duplicateColor = Color.clear;
 
     public InputFeatureUsage<bool> duplicateButton = CommonUsages.menuButton;
 
-    private Color inactiveColor = Color.white;
+    private Color inactiveColor = Color.clear;
     private Color snapshotColor = Color.black;
 
     private string outlineColorName = "_OutlineColor";
@@ -49,8 +49,10 @@ public class duplicateQuad : MonoBehaviour
         dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
         savePath = dicomImageQuad.GetComponent<importDicom>().textureDestinationPath;
 
+        duplicateColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setDuplicate;
+
         quadRenderer = this.GetComponent<Renderer>();
-        quadMaterial = quadRenderer.material;
+        quadMaterial = quadRenderer.material;        
 
         inactiveColor = quadMaterial.GetColor(outlineColorName);
 
@@ -208,13 +210,14 @@ public class duplicateQuad : MonoBehaviour
         GameObject newQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
 
         newQuad.tag = "Duplicate";
+        newQuad.layer = LayerMask.NameToLayer("Quad");
 
         Debug.Log($"{quad.name} copied and tagged: {newQuad.tag}!");
 
         newQuad.transform.position = quad.transform.position;
         newQuad.transform.rotation = quad.transform.rotation;
         newQuad.transform.localScale = quad.transform.localScale;
-        newQuad.transform.Translate(Vector3.left * 3, Space.Self);
+        newQuad.transform.Translate(Vector3.right * 3, Space.Self);
 
         var newQuadRend = newQuad.GetComponent<Renderer>();
 
@@ -233,17 +236,25 @@ public class duplicateQuad : MonoBehaviour
         
 
         newQuad.AddComponent<Rigidbody>();
+        newQuad.AddComponent<BoxCollider>();
+        //newQuad.AddComponent<CharacterController>();
+        //newQuad.AddComponent<SphereCollider>();
 
         //newQuad.AddComponent<isQuadDuplicate>();
         newQuad.AddComponent<duplicateQuad>();
         newQuad.AddComponent<rotateQuad>();
-        newQuad.AddComponent<adjustQuad>();
+        //newQuad.AddComponent<adjustQuad>();
         newQuad.AddComponent<grabQuad>();
 
         var newQuadRb = newQuad.GetComponent<Rigidbody>();
 
         newQuadRb.useGravity = false;
         newQuadRb.isKinematic = true;
+        //newQuadRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+
+        //var newQuadGQ = newQuad.GetComponent<grabQuad>();
+        //newQuadGQ.trackRotation = true;
+        //newQuadGQ.
 
         return newQuad;
     }

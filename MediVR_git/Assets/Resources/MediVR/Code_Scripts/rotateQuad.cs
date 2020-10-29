@@ -28,6 +28,15 @@ public class rotateQuad : MonoBehaviour
     private bool rotate = false;
     private bool translate = false;
 
+    public bool Rotate
+    {
+        get { return rotate; }
+    }
+    public bool Translate
+    {
+        get { return translate; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {

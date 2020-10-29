@@ -51,6 +51,18 @@ public class changeButtonLook : MonoBehaviour
         
     }
 
+    public void ToggleActive(GameObject GO)
+    {
+        if(GO.activeSelf)
+        {
+            GO.SetActive(false);
+        }
+        else
+        {
+            GO.SetActive(true);
+        }
+    }
+
     public void ToggleColor()
     {
         //buttonColor = button.colors;
@@ -65,6 +77,27 @@ public class changeButtonLook : MonoBehaviour
         {
             buttonImage.color = Color.black;
             buttonText.color = Color.white;
+        }
+
+        //button.colors = buttonColor;
+    }
+
+    public void ToggleColorText(string Text)
+    {
+        //buttonColor = button.colors;
+        //buttonImageColor = buttonImage.color;
+
+        if(buttonImage.color == Color.black)
+        {
+            buttonImage.color = inactiveColor;
+            buttonText.text = inactiveText;
+            buttonText.color = Color.black;
+        }
+        else
+        {
+            buttonImage.color = Color.black;
+            buttonText.color = Color.white;
+            buttonText.text = Text;
         }
 
         //button.colors = buttonColor;

@@ -16,25 +16,30 @@
         _EnlargeMin("Enlargement Minimum", Float) = 1
         [HideInInspector]
         _EnlargeMax("Enlargement Maximum", Float) = 10
+        [HideInInspector] // Uncomment for Use
         _Enlarge("Enlargement", Range(1, 10)) = 1.8
 
         [HideInInspector]
         _ContrastMin("Contrast Minimum", Float) = 0
         [HideInInspector]
         _ContrastMax("Contrast Maximum", Float) = 3
+        [HideInInspector] // Uncomment for Use
         _Contrast("Contrast", Range(0,3)) = 1
 
         [HideInInspector]
         _BrightnessMin("Brightness Minimum", Float) = -1
         [HideInInspector]
         _BrightnessMax("Brightness Maximum", Float) = 1
+        [HideInInspector] // Uncomment for Use
         _Brightness("Brightness", Range(-1,1)) = 0
 
         [HideInInspector]
         _ThresholdMin("Threshold Minimum", Float) = 0
         [HideInInspector]
         _ThresholdMax("Threshold Maximum", Float) = 1
+        [HideInInspector] // Uncomment for Use
         _Threshold("Threshold", Range(0,1)) = 0
+        [HideInInspector] // Uncomment for Use
         _ThresholdInv("Inverted Threshold", Range(0,1)) = 1
 
         _StartCoords("Quad Start Coordinates", Vector) = (0,0,0) 
@@ -125,7 +130,7 @@
 
                 fixed4 col = tex2D(_MainTex, i.uv);
 
-                if(col.r < _Threshold && col.g < _Threshold && col.b < _Threshold)
+                /*if(col.r < _Threshold && col.g < _Threshold && col.b < _Threshold)
 					discard;
 
                 if(col.r > _ThresholdInv && col.g > _ThresholdInv && col.b > _ThresholdInv)
@@ -144,7 +149,7 @@
                 {
                     if(col.r < 0.08 && col.g < 0.08 && col.b < 0.08)
                         discard;
-                }
+                }*/
 
                 //if (i.uv.x <= _MainTex_TexelSize.x || i.uv.y <= _MainTex_TexelSize.y || i.uv.x >= (1.0 - _MainTex_TexelSize.x) || i.uv.y >= (1.0 - _MainTex_TexelSize.y))
                 //col = half4 (1,0,0,1);
