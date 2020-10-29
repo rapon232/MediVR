@@ -6,7 +6,7 @@ public class detectQuadCollision : MonoBehaviour
 {
     private bool collide = false;
 
-    private Transform objectLocation = null;
+    //private Transform objectLocation = null;
     private Vector3 dir = Vector3.zero;
     // Start is called before the first frame update
     void Start()

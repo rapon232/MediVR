@@ -257,6 +257,7 @@ public class duplicateQuad : MonoBehaviour
         newQuad.AddComponent<rotateQuad>();
         //newQuad.AddComponent<adjustQuad>();
         newQuad.AddComponent<grabQuad>();
+        //newQuad.AddComponent<detectQuadCollision>();
 
         var newQuadRb = newQuad.GetComponent<Rigidbody>();
 

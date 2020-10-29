@@ -23,7 +23,7 @@ public class snapQuad : MonoBehaviour
     private string snapZoneColorName = "_Color";
     private Color inactiveColor = Color.clear;
 
-    private bool objectIsOffset = false;
+    //private bool objectIsOffset = false;
 
     public bool IsSnapped
     {
@@ -31,7 +31,7 @@ public class snapQuad : MonoBehaviour
     }
 
     private bool isActivated = false;
-    private bool isDeleted = false;
+    //private bool isDeleted = false;
 
     // Start is called before the first frame update
     void Start()
@@ -140,8 +140,8 @@ public class snapQuad : MonoBehaviour
         {
             if(other.gameObject.name == objectToSnapName)
             {
-                quad.GetComponent<BoxCollider>().enabled = true;
-                snapZoneBoxCollider.isTrigger = true;
+                //quad.GetComponent<BoxCollider>().enabled = true;
+                //snapZoneBoxCollider.isTrigger = true;
 
                 quad = null;
                 grabQuadScript = null;
@@ -168,16 +168,17 @@ public class snapQuad : MonoBehaviour
                 quad.gameObject.transform.rotation = this.transform.rotation;
                 isSnapped = true;
 
-                quad.GetComponent<BoxCollider>().enabled = false;
-                snapZoneBoxCollider.isTrigger = false;
+                //quad.GetComponent<BoxCollider>().enabled = false;
+                //snapZoneBoxCollider.isTrigger = false;
             }
-            else
+            /*else
             {
+                quad.GetComponent<BoxCollider>().enabled = true;
                 snapZoneBoxCollider.isTrigger = true;
                 //isSnapped = false;
-                isInsideSnapZone = false;
+                //isInsideSnapZone = false;
                 //isActivated = false;
-            }
+            }*/
 
             //isActivated = true;
 

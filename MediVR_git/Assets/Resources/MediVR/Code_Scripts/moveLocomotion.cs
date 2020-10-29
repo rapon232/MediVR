@@ -6,7 +6,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class moveLocomotion : LocomotionProvider
 {
     public float moveSpeed = 1.0f;
-    public float gravityMultiplier = 1.0f;
+    public float gravityMultiplier = 10.0f;
 
     public List<XRController> controllers = null;
 
@@ -28,14 +28,15 @@ public class moveLocomotion : LocomotionProvider
     {
         PositionController();
         CheckForInput();
-        //ApplyGravity();
+        ApplyGravity();
     }
 
     private void PositionController()
     {
         // Get the head in local, playspace ground
-        //float headHeight = Mathf.Clamp(head.transform.localPosition.y, 1, 2);
-        characterController.height = head.transform.localPosition.y;//headHeight;
+        //float headHeight = Mathf.Clamp(head.transform.localPosition.y, 3, 4);
+        characterController.height = head.transform.localPosition.y - 1;//headHeight;
+        //characterController.height = headHeight;
 
         // Cut in half, add skin
         Vector3 newCenter = Vector3.zero;
