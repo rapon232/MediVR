@@ -18,7 +18,7 @@ public class detectQuadCollision : MonoBehaviour
     void Update()
     {
         //objectLocation = this.gameObject.transform;
-        if(dir != null && collide)
+        if(collide)
         {
             this.transform.Translate(dir, Space.Self);
         }
