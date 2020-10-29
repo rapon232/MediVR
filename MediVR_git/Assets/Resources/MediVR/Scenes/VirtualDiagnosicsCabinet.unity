@@ -8327,7 +8327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_System: {fileID: 1558508116}
   moveSpeed: 2
-  gravityMultiplier: 3
+  gravityMultiplier: 10
   controllers:
   - {fileID: 402290922}
 --- !u!1 &1563244885
