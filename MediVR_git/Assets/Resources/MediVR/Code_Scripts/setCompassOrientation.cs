@@ -20,6 +20,12 @@ public class setCompassOrientation : MonoBehaviour
 
     private string orientation = null;
 
+    //private GameObject mainCam = null;
+
+    //private Quaternion screenOrientation;
+
+    //private float mainCamYOrientation;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +43,10 @@ public class setCompassOrientation : MonoBehaviour
 
         orientation = importDicomScript.dicomInformation.OrientationPatient;
 
-        Debug.Log($"LOG: {orientation}");
+        //Debug.Log($"LOG: {orientation}");
+
+        //mainCam = GameObject.Find("Main Camera");
+        //screenOrientation = orientationL.transform.rotation;
 
         switch(orientation)
             {
@@ -98,6 +107,10 @@ public class setCompassOrientation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //mainCamYOrientation = mainCam.transform.rotation.eulerAngles.y;
+        //transform.rotation = new Quaternion(0, xrRigOrientation.y, 0);
+        //orientationL.transform.localRotation = Quaternion.Euler(screenOrientation.x, mainCamYOrientation, screenOrientation.z);
+        //orientationL.transform.Rotate( new Vector3(screenOrientation.x, mainCamYOrientation, screenOrientation.z), Space.Self);
+
     }
 }

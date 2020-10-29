@@ -20,6 +20,10 @@ public class duplicateQuad : MonoBehaviour
 
     public InputFeatureUsage<bool> duplicateButton = CommonUsages.menuButton;
 
+    public AudioSource audioFXSource = null;
+    public AudioClip onButtonPressDown = null;
+    public AudioClip onButtonPressUp = null;
+
     private Color inactiveColor = Color.clear;
     private Color snapshotColor = Color.black;
 
@@ -47,14 +51,18 @@ public class duplicateQuad : MonoBehaviour
     void Start()
     {
         dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
+
+        audioFXSource = dicomImageQuad.GetComponent<setQuadAudio>().audioFXSource;
+        onButtonPressDown = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressDown;
+        onButtonPressUp = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressUp;
+
         savePath = dicomImageQuad.GetComponent<importDicom>().textureDestinationPath;
 
         duplicateColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setDuplicate;
+        inactiveColor = dicomImageQuad.GetComponent<setQuadFrameColors>().defaultFrameColor;
 
         quadRenderer = this.GetComponent<Renderer>();
         quadMaterial = quadRenderer.material;        
-
-        inactiveColor = quadMaterial.GetColor(outlineColorName);
 
         GetControllers();
 
@@ -127,6 +135,8 @@ public class duplicateQuad : MonoBehaviour
             {
                 if(!flag)
                 {
+                    audioFXSource.PlayOneShot(onButtonPressDown);
+
                     //var check = this.GetComponent<isQuadDuplicate>();
 
                     if(this.tag == "Duplicate")
@@ -145,6 +155,8 @@ public class duplicateQuad : MonoBehaviour
             }
             else
             {
+                //audioFXSource.PlayOneShot(onButtonPressUp);
+
                 if(flag)
                 {
                     quadMaterial.SetColor(outlineColorName, inactiveColor);

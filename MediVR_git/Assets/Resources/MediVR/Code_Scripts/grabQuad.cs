@@ -17,6 +17,10 @@ public class grabQuad : XRGrabInteractable
     public Color activateColorForJoystickMode = Color.clear;
 
     public float moveSpeedWhileSelected = 0.8f;
+
+    public AudioSource audioFXSource = null;
+    public AudioClip onButtonPressDown = null;
+    public AudioClip onButtonPressUp = null;
     
     //public Color activateColorForJoystickMode = Color.cyan;
 
@@ -46,6 +50,9 @@ public class grabQuad : XRGrabInteractable
 
     private GameObject dicomImageQuad = null;
 
+    private bool audioSelectFlag = false;
+    private bool audioActivateFlag = false;
+
     public bool Selected
     {
         get { return selected; }
@@ -63,16 +70,20 @@ public class grabQuad : XRGrabInteractable
         base.tightenRotation = 0.345f;
         base.throwOnDetach = false;
 
-        quadRenderer = this.GetComponent<Renderer>();
-        quadMaterial = quadRenderer.material;
-
         dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
+
+        audioFXSource = dicomImageQuad.GetComponent<setQuadAudio>().audioFXSource;
+        onButtonPressDown = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressDown;
+        onButtonPressUp = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressUp;
+
         selectColorForHandMode = dicomImageQuad.GetComponent<setQuadFrameColors>().handTranslate;
         activateColorForHandMode = dicomImageQuad.GetComponent<setQuadFrameColors>().handRotate;
         selectColorForJoystickMode = dicomImageQuad.GetComponent<setQuadFrameColors>().joystickTranslate;
         activateColorForJoystickMode = dicomImageQuad.GetComponent<setQuadFrameColors>().joystickRotate;
+        inactiveColor = dicomImageQuad.GetComponent<setQuadFrameColors>().defaultFrameColor;
 
-        inactiveColor = quadMaterial.GetColor(outlineColorName);
+        quadRenderer = this.GetComponent<Renderer>();
+        quadMaterial = quadRenderer.material;
 
         xrRig = GameObject.Find("XR Rig");
         moveLocomotionScript = xrRig.GetComponent<moveLocomotion>();
@@ -102,6 +113,12 @@ public class grabQuad : XRGrabInteractable
             StoreInteractor(interactor);
             MatchAttachmentPoints(interactor);
 
+            if(!audioSelectFlag)
+            {
+                audioFXSource.PlayOneShot(onButtonPressDown);
+                audioSelectFlag = true;
+            }
+
             if(this.gameObject.tag != "Duplicate")
             {
                 moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
@@ -116,6 +133,12 @@ public class grabQuad : XRGrabInteractable
         }
         else if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
+            if(!audioSelectFlag)
+            {
+                audioFXSource.PlayOneShot(onButtonPressDown);
+                audioSelectFlag = true;
+            }
+
             moveLocomotionScript.enabled = false;
             snapTurnProviderScript.enabled = false;
 
@@ -136,6 +159,8 @@ public class grabQuad : XRGrabInteractable
     {
         selected = false;
 
+        //audioFXSource.PlayOneShot(onButtonPressUp);
+
         OnDeactivate(interactor);
 
         if(interactor.GetComponent<XRController>().controllerNode == handController)
@@ -144,6 +169,9 @@ public class grabQuad : XRGrabInteractable
 
             ResetAttachmentPoints(interactor);
             ClearInteractor(interactor);
+
+            audioSelectFlag = false;
+            audioActivateFlag = false;
 
             if(this.gameObject.tag != "Duplicate")
             {
@@ -156,6 +184,9 @@ public class grabQuad : XRGrabInteractable
         }
         else if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
+            audioSelectFlag = false;
+            audioActivateFlag = false;
+
             moveLocomotionScript.enabled = true;
             snapTurnProviderScript.enabled = true;
 
@@ -176,6 +207,12 @@ public class grabQuad : XRGrabInteractable
 
             MatchAttachmentPoints(interactor);
 
+            if(!audioActivateFlag)
+            {
+                audioFXSource.PlayOneShot(onButtonPressUp);
+                audioActivateFlag = true;
+            }
+
             if(this.gameObject.tag != "Duplicate")
             {
                 moveLocomotionScript.moveSpeed = moveSpeedWhileSelected;
@@ -189,6 +226,12 @@ public class grabQuad : XRGrabInteractable
         }
         else if(interactor.GetComponent<XRController>().controllerNode == joystickController)
         {
+            if(!audioActivateFlag)
+            {
+                audioFXSource.PlayOneShot(onButtonPressUp);
+                audioActivateFlag = true;
+            }
+
             rotateQuadScript.SetTranslate(false);
             rotateQuadScript.SetRotate(true);
 
@@ -205,6 +248,8 @@ public class grabQuad : XRGrabInteractable
     {
         //activated = false;
 
+        //audioFXSource.PlayOneShot(onButtonPressUp);
+
         //adjustQuadScript.SetAdjustListen(true);
 
         if(interactor.GetComponent<XRController>().controllerNode == handController)
@@ -215,6 +260,9 @@ public class grabQuad : XRGrabInteractable
 
             if(selected)
             {
+                audioSelectFlag = true;
+                audioActivateFlag = false;
+
                 if(this.gameObject.tag != "Duplicate")
                 {
                     adjustQuadScript.SetAdjustListen(false);
@@ -224,6 +272,9 @@ public class grabQuad : XRGrabInteractable
             }
             else
             {
+                audioSelectFlag = false;
+                audioActivateFlag = false;
+
                 if(this.gameObject.tag != "Duplicate")
                 {
                     moveLocomotionScript.moveSpeed = inactiveMoveSpeed;
@@ -240,6 +291,9 @@ public class grabQuad : XRGrabInteractable
         {
             if(selected)
             {
+                audioSelectFlag = true;
+                audioActivateFlag = false;
+
                 rotateQuadScript.SetTranslate(true);
                 rotateQuadScript.SetRotate(false);
 
@@ -252,6 +306,9 @@ public class grabQuad : XRGrabInteractable
             }
             else
             {
+                audioSelectFlag = false;
+                audioActivateFlag = false;
+
                 rotateQuadScript.SetTranslate(false);
                 rotateQuadScript.SetRotate(false);
 

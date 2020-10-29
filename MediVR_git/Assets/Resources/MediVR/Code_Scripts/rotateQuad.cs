@@ -16,6 +16,10 @@ public class rotateQuad : MonoBehaviour
 
     public InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
 
+    public AudioSource audioFXSource = null;
+    public AudioClip onButtonPressDown = null;
+    public AudioClip onButtonPressUp = null;
+
     private InputDevice leftController;
     private InputDevice rightController;
 
@@ -27,6 +31,10 @@ public class rotateQuad : MonoBehaviour
 
     private bool rotate = false;
     private bool translate = false;
+
+    private GameObject dicomImageQuad = null;
+
+    private bool audioFlag = false;
 
     public bool Rotate
     {
@@ -40,6 +48,12 @@ public class rotateQuad : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
+
+        audioFXSource = dicomImageQuad.GetComponent<setQuadAudio>().audioFXSource;
+        onButtonPressDown = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressDown;
+        onButtonPressUp = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressUp;
+
         GetControllers();
         //Debug.Log("Got Controllers");
         rotate = false;
@@ -126,24 +140,56 @@ public class rotateQuad : MonoBehaviour
                 if(rotate)
                 {
                     this.transform.rotation = rotateDefault;
+
+                    if(!audioFlag)
+                    {
+                        audioFXSource.PlayOneShot(onButtonPressDown);
+                        audioFlag = true;
+                    }
                 }
                 else if(translate)
                 {
                     this.transform.position = translateDefault;
+
+                    if(!audioFlag)
+                    {
+                        audioFXSource.PlayOneShot(onButtonPressDown);
+                        audioFlag = true;
+                    }
                 }
             }
+            else
+            {
+                audioFlag = false;
+            }
 
-            if(rightController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
+            /*if(rightController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
             {
                 if(rotate)
                 {
                     this.transform.rotation = rotateDefault;
+
+                    if(!audioFlag)
+                    {
+                        audioFXSource.PlayOneShot(onButtonPressDown);
+                        audioFlag = true;
+                    }
                 }
                 else if(translate)
                 {
                     this.transform.position = translateDefault;
+
+                    if(!audioFlag)
+                    {
+                        audioFXSource.PlayOneShot(onButtonPressDown);
+                        audioFlag = true;
+                    }
                 }
             }
+            else
+            {
+                audioFlag = false;
+            }*/
 
             /*if (leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lGrip) && lGrip)
             {

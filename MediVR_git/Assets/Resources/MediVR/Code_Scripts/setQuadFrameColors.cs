@@ -18,6 +18,7 @@ public class setQuadFrameColors : MonoBehaviour
     public Color setDuplicate = Color.green;
 
     private string colorVariableName = "_Color";
+    private string outlineColorName = "_OutlineColor";
 
     private GameObject defaultInstruction = null;
 
@@ -33,10 +34,12 @@ public class setQuadFrameColors : MonoBehaviour
 
     private GameObject setDuplicateInstruction = null;
 
+    private GameObject dicomInstructions = null;
+
     // Start is called before the first frame update
     void Start()
     {
-        this.gameObject.GetComponent<Renderer>().material.SetColor("_OutlineColor", defaultFrameColor);
+        this.gameObject.GetComponent<Renderer>().material.SetColor(outlineColorName, defaultFrameColor);
 
         defaultInstruction = GameObject.Find("Indicator_Default");
         defaultInstruction.GetComponent<Renderer>().material.SetColor(colorVariableName, defaultFrameColor);
@@ -60,5 +63,9 @@ public class setQuadFrameColors : MonoBehaviour
 
         setDuplicateInstruction = GameObject.Find("Indicator_Duplicate");
         setDuplicateInstruction.GetComponent<Renderer>().material.SetColor(colorVariableName, setDuplicate);
+
+        //Hide Instruction Field by Default
+        dicomInstructions = GameObject.Find("Dicom_Instruction_Text_Fields");
+        dicomInstructions.SetActive(false);
     }
 }

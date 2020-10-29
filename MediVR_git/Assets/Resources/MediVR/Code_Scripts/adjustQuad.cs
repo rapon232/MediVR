@@ -22,6 +22,10 @@ public class adjustQuad : MonoBehaviour
     public InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
 
     public InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
+
+    public AudioSource audioFXSource = null;
+    public AudioClip onButtonPressDown = null;
+    public AudioClip onButtonPressUp = null;
     
     private Color inactiveColor = Color.white;
 
@@ -45,7 +49,9 @@ public class adjustQuad : MonoBehaviour
     private bool adjustListen = false;
     private bool adjustWindow = false;
     private bool adjustScale = false;
+
     private bool flag = false;
+    private bool audioFlag = false;
 
     private string adjustWindowXName = "_WindowWidth";
     private string adjustWindowXMinName = "_WindowWidthMin";
@@ -100,18 +106,22 @@ public class adjustQuad : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
+
+        audioFXSource = dicomImageQuad.GetComponent<setQuadAudio>().audioFXSource;
+        onButtonPressDown = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressDown;
+        onButtonPressUp = dicomImageQuad.GetComponent<setQuadAudio>().onButtonPressUp;
+
+        adjustWindowColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setWindow;
+        adjustScaleColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setScale;
+        inactiveColor = dicomImageQuad.GetComponent<setQuadFrameColors>().defaultFrameColor;
+
         xrRig = GameObject.Find("XR Rig");
         moveLocomotionScript = xrRig.GetComponent<moveLocomotion>();
         snapTurnProviderScript = xrRig.GetComponent<SnapTurnProvider>();
 
-        dicomImageQuad = GameObject.Find("Dicom_Image_Quad");
-        adjustWindowColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setWindow;
-        adjustScaleColor = dicomImageQuad.GetComponent<setQuadFrameColors>().setScale;
-
         quadRenderer = this.GetComponent<Renderer>();
         quadMaterial = quadRenderer.material;
-
-        inactiveColor = quadMaterial.GetColor(outlineColorName);
 
         adjustWindowXDefault = quadMaterial.GetFloat(adjustWindowXName);
         adjustWindowXMin = quadMaterial.GetFloat(adjustWindowXMinName);
@@ -227,6 +237,11 @@ public class adjustQuad : MonoBehaviour
 
             if(rightController.TryGetFeatureValue(adjustWindowButton, out bool lPress) && lPress)
             {
+                if(!flag)
+                {
+                    audioFXSource.PlayOneShot(onButtonPressDown);
+                }
+
                 moveLocomotionScript.enabled = false;
                 snapTurnProviderScript.enabled = false;
 
@@ -238,6 +253,11 @@ public class adjustQuad : MonoBehaviour
             }
             else if(rightController.TryGetFeatureValue(adjustThresholdButton, out bool rPress) && rPress)
             {
+                if(!flag)
+                {
+                    audioFXSource.PlayOneShot(onButtonPressDown);
+                }
+
                 moveLocomotionScript.enabled = false;
                 snapTurnProviderScript.enabled = false;
 
@@ -251,6 +271,8 @@ public class adjustQuad : MonoBehaviour
             {
                 if(flag)
                 {
+                    //audioFXSource.PlayOneShot(onButtonPressUp);
+
                     moveLocomotionScript.enabled = true;
                     snapTurnProviderScript.enabled = true;
 
@@ -328,11 +350,22 @@ public class adjustQuad : MonoBehaviour
 
             if(leftController.TryGetFeatureValue(resetButton, out bool lClick) && lClick)
             {
+                if(!audioFlag)
+                {
+                    audioFXSource.PlayOneShot(onButtonPressDown);
+                    audioFlag = true;
+                }
+
                 quadMaterial.SetFloat(adjustWindowXName, adjustWindowXDefault);
                 quadMaterial.SetFloat(adjustWindowYName, adjustWindowYDefault);
 
                 UpdateWindowScreenDisplay(adjustWindowYDefault, adjustWindowXDefault);
             }
+            else
+            {
+                audioFlag = false;
+            }
+
 
         }
 
@@ -374,10 +407,20 @@ public class adjustQuad : MonoBehaviour
 
             if(leftController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
             {
+                if(!audioFlag)
+                {
+                    audioFXSource.PlayOneShot(onButtonPressDown);
+                    audioFlag = true;
+                }
+
                 //quadMaterial.SetFloat("_Threshold", thresholdDefault);
                 quadMaterial.SetFloat(adjustScaleYName, adjustScaleYDefault); 
 
                 UpdateScaleScreenDisplay(adjustScaleYDefault);  
+            }
+            else
+            {
+                audioFlag = false;
             }
 
             /*else
