@@ -184,14 +184,14 @@ public class duplicateQuad : MonoBehaviour
 
     public void SaveAllDuplicates()
     {
-        Debug.Log($"Saving produced slices.");
+        //Debug.Log($"Saving produced slice(s).");
 
         GameObject[] images;
         images = GameObject.FindGameObjectsWithTag("Duplicate");
 
         if(images.Length > 0)
         {
-            Debug.Log($"{images.Length} Slices being saved to: {savePath}.");
+            Debug.Log($"{images.Length} Slice(s) being saved to: {savePath}.");
 
             DateTime nowTime = DateTime.Now;
 
@@ -201,7 +201,7 @@ public class duplicateQuad : MonoBehaviour
                 dicomImageTools.SaveTextureToPNGFile(tex, savePath, "Slice", nowTime);
             }
 
-            Debug.Log($"Slices saved.");
+            Debug.Log($"Slice(s) saved.");
         }
         else
         {
