@@ -28,7 +28,7 @@ public class dicomInfoTools : ISerializable
     private int imageWidth;
     private int imageHeight;
     private string imageTransferSyntax;
-    private string defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian.ToString();
+    private string defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian.UID.ToString();
     private int imageRescaleSlope;
     private int imageRescaleIntercept;
     private int imageWindowWidth;
@@ -269,7 +269,7 @@ public class dicomInfoTools : ISerializable
             Debug.Log($"Image Width NOT found in dataset. Defaulting to: {imageWidth}.");
         }
 
-        imageTransferSyntax = file.Dataset.InternalTransferSyntax.ToString();
+        imageTransferSyntax = file.Dataset.InternalTransferSyntax.UID.ToString();
 
         if(file.Dataset.Contains(DicomTag.Rows))
         {

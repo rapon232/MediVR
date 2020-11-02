@@ -52,17 +52,21 @@ public class importDicom : MonoBehaviour
 
         dicomImporter = GameObject.Find("Dicom_Importer");
         initialImportScript = dicomImporter.GetComponent<initialImportDicom>();
-        dirName = initialImportScript.dicomFileDirectory;
+        //dirName = initialImportScript.dicomFileDirectory; 
+        dirName = initialImportScript.userDefinedFolderName;
         destinationTextureDirName = initialImportScript.assetDestinationDirectory;
         textureDestinationPath = initialImportScript.savedTextureDestinationPath;
 
         //////// LOAD 3D TEXTURE
 
-        pathTo3DTextures = "MediVR/Textures/" + destinationTextureDirName + "/" + dirName;
+        if(dirName != null)
+        {
+             pathTo3DTextures = "MediVR/Textures/" + destinationTextureDirName + "/" + dirName;
 
-        //threeDimTexture = Resources.Load<Texture3D>("MediVR/Textures/" + destinationTextureDirName + "/" + textureRessourceName); 
-        loadedTextures = Resources.LoadAll(pathTo3DTextures, typeof(Texture3D)); //TRY TO LOAD 3D TEXTURE FROM FOLDER
-
+            //threeDimTexture = Resources.Load<Texture3D>("MediVR/Textures/" + destinationTextureDirName + "/" + textureRessourceName); 
+            loadedTextures = Resources.LoadAll(pathTo3DTextures, typeof(Texture3D)); //TRY TO LOAD 3D TEXTURE FROM FOLDER
+        }
+       
         if(loadedTextures != null)
         {
             if(loadedTextures.Length > 0)

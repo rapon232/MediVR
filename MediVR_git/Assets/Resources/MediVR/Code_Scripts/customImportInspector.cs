@@ -6,6 +6,12 @@ public class customImportInspector : Editor
 {
     public override void OnInspectorGUI()
     {
+        EditorGUILayout.LabelField("To choose Directory containing dicom files, go up to menu bar");
+        EditorGUILayout.LabelField("and select menu: MediVR/Choose Dicom Source Directory.");
+
+        EditorGUILayout.Space();
+        EditorGUILayout.Space();
+
         DrawDefaultInspector();
 
         initialImportDicom import = (initialImportDicom)target;

@@ -41,14 +41,11 @@ public class setCompassOrientation : MonoBehaviour
         orientationA = GameObject.Find("Orientation_Anterior");
         orientationP = GameObject.Find("Orientation_Posterior");
 
-        orientation = importDicomScript.dicomInformation.OrientationPatient;
+        if(importDicomScript.dicomInformation != null)
+        {
+            orientation = importDicomScript.dicomInformation.OrientationPatient;
 
-        //Debug.Log($"LOG: {orientation}");
-
-        //mainCam = GameObject.Find("Main Camera");
-        //screenOrientation = orientationL.transform.rotation;
-
-        switch(orientation)
+            switch(orientation)
             {
                 case ("Coronal AP"):
                     orientationL.GetComponent<TextMeshProUGUI>().text = "R";
@@ -102,6 +99,19 @@ public class setCompassOrientation : MonoBehaviour
                     orientationCompass.SetActive(false);
                     break;
             }
+        }
+        else
+        {
+            orientationCompass.SetActive(false);
+        }
+        
+
+        //Debug.Log($"LOG: {orientation}");
+
+        //mainCam = GameObject.Find("Main Camera");
+        //screenOrientation = orientationL.transform.rotation;
+
+        
     }
 
     // Update is called once per frame
