@@ -6,19 +6,18 @@ using UnityEngine.XR;
 
 public class rotateQuad : MonoBehaviour
 {
-    public float rotateSpeed = 50.0f;
-    public float translateSpeed = .5f;
-
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
-    public InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
+    public float rotateSpeed = 50.0f;
+    public float translateSpeed = .5f;
 
-    public InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
+    private InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
+    private InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
 
-    public AudioSource audioFXSource = null;
-    public AudioClip onButtonPressDown = null;
-    public AudioClip onButtonPressUp = null;
+    private AudioSource audioFXSource = null;
+    private AudioClip onButtonPressDown = null;
+    private AudioClip onButtonPressUp = null;
 
     private InputDevice leftController;
     private InputDevice rightController;

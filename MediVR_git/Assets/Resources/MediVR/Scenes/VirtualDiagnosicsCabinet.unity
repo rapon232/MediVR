@@ -520,6 +520,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 28631390}
   m_CullTransparentMesh: 0
+--- !u!1 &66287740
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 66287742}
+  - component: {fileID: 66287741}
+  m_Layer: 0
+  m_Name: Dicom_Importer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &66287741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66287740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab406b9a0f21241f6adf7eb3f9ead1ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dicomSlices:
+  - {fileID: 2800000, guid: dd71e2e6834b643b2aba5eade025d956, type: 2}
+  - {fileID: 2800000, guid: 1e17bab9dbe3c40f1b7d13a1caff92b8, type: 2}
+  - {fileID: 2800000, guid: 02c1163df226a4434a806eb74ef436b7, type: 2}
+  - {fileID: 2800000, guid: ecaa61cbe4f2e480daa5ec848eb663c6, type: 2}
+  - {fileID: 2800000, guid: 5a2308d9d3b7b42669183c7bfcb3ea2f, type: 2}
+  threeDimTexture: {fileID: 0}
+  dicomFileDirectory: CT_Series
+  assetDestinationDirectory: Dicom 3D Textures
+  savedTextureDestinationDirectory: Saved Slices
+  savedTextureDestinationPath: Assets/Saved Slices
+--- !u!4 &66287742
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66287740}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.8978388, y: 0.9919362, z: 19.203545}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &70032136
 GameObject:
   m_ObjectHideFlags: 0
@@ -856,9 +910,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed58f6c708c274aa8bc31a815d57f6c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startCoords: {x: -0.12, y: 3.246, z: -1.76}
-  quadRenderer: {fileID: 86722773}
-  quadMeshFilter: {fileID: 86722774}
 --- !u!114 &86722777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -947,14 +998,7 @@ MonoBehaviour:
   m_RetainTransformParent: 1
   handController: 5
   joystickController: 4
-  selectColorForHandMode: {r: 1, g: 0, b: 0, a: 1}
-  activateColorForHandMode: {r: 0, g: 0, b: 1, a: 1}
-  selectColorForJoystickMode: {r: 1, g: 0, b: 1, a: 1}
-  activateColorForJoystickMode: {r: 0, g: 1, b: 1, a: 1}
   moveSpeedWhileSelected: 0.5
-  audioFXSource: {fileID: 0}
-  onButtonPressDown: {fileID: 0}
-  onButtonPressUp: {fileID: 0}
 --- !u!54 &86722779
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -983,13 +1027,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6f607130b1c0400db4ac08331cf23b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateSpeed: 10
-  translateSpeed: 0.5
   leftControllerNode: 4
   rightControllerNode: 5
-  audioFXSource: {fileID: 0}
-  onButtonPressDown: {fileID: 0}
-  onButtonPressUp: {fileID: 0}
+  rotateSpeed: 10
+  translateSpeed: 0.5
 --- !u!114 &86722781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1002,14 +1043,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8739813b7d5274c9ab401aa34f5c7155, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  adjustStep: 2000
   leftControllerNode: 4
   rightControllerNode: 5
-  adjustWindowColor: {r: 1, g: 0.92, b: 0.016, a: 1}
-  adjustScaleColor: {r: 0.823, g: 1, b: 0.024, a: 1}
-  audioFXSource: {fileID: 0}
-  onButtonPressDown: {fileID: 0}
-  onButtonPressUp: {fileID: 0}
+  adjustStep: 2000
 --- !u!114 &86722782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1024,11 +1060,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftControllerNode: 4
   rightControllerNode: 5
-  cutBlackPixels: 0
-  duplicateColor: {r: 0, g: 1, b: 0, a: 1}
-  audioFXSource: {fileID: 0}
-  onButtonPressDown: {fileID: 0}
-  onButtonPressUp: {fileID: 0}
 --- !u!114 &86722783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1042,21 +1073,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   threeDimTexture: {fileID: 0}
-  dirName: 
-  fileName: 
-  destinationTextureDirName: 
-  destinationDirName: 
-  dirPath: 
-  path: 
-  ressourceDestinationPath: 
-  fileDestinationPath: 
+  dicomSlices: []
   textureDestinationPath: 
-  textureDestinationDirName: 
-  textureWidth: 0
-  textureHeight: 0
-  textureDepth: 0
-  textureRessourceName: 
-  textureArrayName: 
 --- !u!114 &86722784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1311,7 +1329,7 @@ Transform:
   m_Children:
   - {fileID: 1046411354}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &148874360
 GameObject:
@@ -1343,7 +1361,7 @@ Transform:
   - {fileID: 1709549096}
   - {fileID: 1261746221}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &171274590
 GameObject:
@@ -1703,7 +1721,7 @@ Transform:
   - {fileID: 2084825173}
   - {fileID: 1257010448}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &345833109
 GameObject:
@@ -4836,7 +4854,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54c3a8552393841f08739f58895fac28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dirPath: 
 --- !u!222 &581442158
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7253,7 +7270,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1298686068
 GameObject:
@@ -11754,7 +11771,7 @@ Transform:
   - {fileID: 1298686072}
   - {fileID: 1173498192}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2084825172
 GameObject:

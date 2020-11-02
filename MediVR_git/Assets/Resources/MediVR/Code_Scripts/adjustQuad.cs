@@ -9,23 +9,22 @@ using TMPro;
 
 public class adjustQuad : MonoBehaviour
 {
-    public float adjustStep = 2000.0f;
-
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
-    public Color adjustWindowColor = Color.clear;
-    public Color adjustScaleColor = Color.clear;
+    public float adjustStep = 2000.0f;
 
-    public InputFeatureUsage<bool> adjustWindowButton = CommonUsages.secondaryButton;
-    public InputFeatureUsage<bool> adjustThresholdButton = CommonUsages.primaryButton;
-    public InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
+    private InputFeatureUsage<bool> adjustWindowButton = CommonUsages.secondaryButton;
+    private InputFeatureUsage<bool> adjustThresholdButton = CommonUsages.primaryButton;
+    private InputFeatureUsage<bool> resetButton = CommonUsages.primary2DAxisClick;
+    private InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
 
-    public InputFeatureUsage<Vector2> joystick = CommonUsages.primary2DAxis;
+    private AudioSource audioFXSource = null;
+    private AudioClip onButtonPressDown = null;
+    private AudioClip onButtonPressUp = null;
 
-    public AudioSource audioFXSource = null;
-    public AudioClip onButtonPressDown = null;
-    public AudioClip onButtonPressUp = null;
+    private Color adjustWindowColor = Color.clear;
+    private Color adjustScaleColor = Color.clear;
     
     private Color inactiveColor = Color.white;
 

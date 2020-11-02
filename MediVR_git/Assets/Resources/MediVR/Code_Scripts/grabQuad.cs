@@ -9,20 +9,17 @@ public class grabQuad : XRGrabInteractable
 {
     public XRNode handController = UnityEngine.XR.XRNode.RightHand;
     public XRNode joystickController = UnityEngine.XR.XRNode.LeftHand;
-
-    public Color selectColorForHandMode = Color.clear;
-    public Color activateColorForHandMode = Color.clear;
-
-    public Color selectColorForJoystickMode = Color.clear;
-    public Color activateColorForJoystickMode = Color.clear;
-
+    
     public float moveSpeedWhileSelected = 0.8f;
 
-    public AudioSource audioFXSource = null;
-    public AudioClip onButtonPressDown = null;
-    public AudioClip onButtonPressUp = null;
+    private AudioSource audioFXSource = null;
+    private AudioClip onButtonPressDown = null;
+    private AudioClip onButtonPressUp = null;
     
-    //public Color activateColorForJoystickMode = Color.cyan;
+    private Color selectColorForHandMode = Color.clear;
+    private Color activateColorForHandMode = Color.clear;
+    private Color selectColorForJoystickMode = Color.clear;
+    private Color activateColorForJoystickMode = Color.clear;
 
     private Color inactiveColor = Color.clear;
     private float inactiveMoveSpeed = 0f;

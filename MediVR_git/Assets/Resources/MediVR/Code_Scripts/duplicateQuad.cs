@@ -14,15 +14,15 @@ public class duplicateQuad : MonoBehaviour
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
 
-    public bool cutBlackPixels = false;
+    //public bool cutBlackPixels = false;
 
-    public Color duplicateColor = Color.clear;
+    private InputFeatureUsage<bool> duplicateButton = CommonUsages.menuButton;
 
-    public InputFeatureUsage<bool> duplicateButton = CommonUsages.menuButton;
+    private AudioSource audioFXSource = null;
+    private AudioClip onButtonPressDown = null;
+    private AudioClip onButtonPressUp = null;
 
-    public AudioSource audioFXSource = null;
-    public AudioClip onButtonPressDown = null;
-    public AudioClip onButtonPressUp = null;
+    private Color duplicateColor = Color.clear;
 
     private Color inactiveColor = Color.clear;
     private Color snapshotColor = Color.black;
@@ -237,14 +237,14 @@ public class duplicateQuad : MonoBehaviour
         newQuadRend.material.SetTexture("_MainTex", tex);
         newQuadRend.material.SetColor(outlineColorName, inactiveColor);
 
-        if(!cutBlackPixels)
+        /*if(!cutBlackPixels)
         {
             newQuadRend.material.SetInt("_CutBlackPixels", 0);
         }
         else
         {
             newQuadRend.material.SetInt("_CutBlackPixels", 1);
-        }
+        }*/
         
 
         newQuad.AddComponent<Rigidbody>();

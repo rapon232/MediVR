@@ -17,7 +17,6 @@ using TMPro;
 
 public class loadQuadTexture : MonoBehaviour
 {
-    //private GameObject screenPlane;
     private GameObject borderCube = null;
 
     private importDicom importDicomScript = null;
@@ -26,7 +25,7 @@ public class loadQuadTexture : MonoBehaviour
     private string adjustWindowWidthName = "_WindowWidth";
     private string adjustWindowCenterName = "_WindowCenter";
 
-    private float originalWindowWidth = 0;
+    private float originalWindowWidth = 300;
     private float originalWindowCenter = 0;
 
     private Texture3D quadTexture = null;
@@ -37,27 +36,33 @@ public class loadQuadTexture : MonoBehaviour
     void Start()
     {
         importDicomScript = this.GetComponent<importDicom>();
-        originalWindowWidth = (float)importDicomScript.dicomInformation.ImageWindowWidth;
-        originalWindowCenter = (float)importDicomScript.dicomInformation.ImageWindowCenter;
-        quadTexture = importDicomScript.threeDimTexture;
-        
-        /////Set 3D Texture to material of cube
         quadRenderer = this.GetComponent<Renderer>();
-        quadRenderer.material.SetTexture(mainTextureName, quadTexture);
-        quadRenderer.material.SetFloat(adjustWindowWidthName, originalWindowWidth);
-        quadRenderer.material.SetFloat(adjustWindowCenterName, originalWindowCenter);
 
         borderCube = GameObject.Find("Dicom_Image_Border_Cube");
         cubeRenderer = borderCube.GetComponent<Renderer>();
-        cubeRenderer.material.SetTexture(mainTextureName, quadTexture);
+
+        if(importDicomScript.dicomInformation != null)
+        {
+            //////// Set Original window settings to shader of cube
+            originalWindowWidth = (float)importDicomScript.dicomInformation.ImageWindowWidth;
+            originalWindowCenter = (float)importDicomScript.dicomInformation.ImageWindowCenter;
+
+            quadRenderer.material.SetFloat(adjustWindowWidthName, originalWindowWidth);
+            quadRenderer.material.SetFloat(adjustWindowCenterName, originalWindowCenter);
+        }
+
+        if(importDicomScript.threeDimTexture != null)
+        {
+            //////// Set 3D Texture to shader of cube
+            quadTexture = importDicomScript.threeDimTexture;
+            quadRenderer.material.SetTexture(mainTextureName, quadTexture);
+
+            cubeRenderer.material.SetTexture(mainTextureName, quadTexture);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //////// Method for toggleing shader parameters from UI Button. The parameters are boolean, but ShaderLab does not support bool, so int 0/1 is used instead
+    //////// Used here for toggleing between cutting black background pixels of 3D Texture
     public void ToggleShaderIntParam(string parameter)
     {
         int set = quadRenderer.material.GetInt(parameter);

@@ -38,7 +38,7 @@ public static class dicomImageTools
 
         //dump = file.WriteToString();
 
-        info.setDicomInfo(file);
+        info = new dicomInfoTools(file);
 
         Texture2D texture = new DicomImage(file.Dataset).RenderImage().As<Texture2D>();
 
@@ -80,7 +80,7 @@ public static class dicomImageTools
 
         //dump = file.WriteToString();
 
-        info.setDicomInfo(file);
+        info = new dicomInfoTools(file);
 
         Texture2D texture = new DicomImage(file.Dataset).RenderImage().As<Texture2D>();
 
@@ -89,79 +89,43 @@ public static class dicomImageTools
         return texture;
     }
 
-    public static Texture2D[] CreateNumberedTextureArrayFromDicomdir(string dirPath, bool anonymize, ref dicomInfoTools info, int numberOfImages)
+    public static Texture2D[] CreateNumberedTextureArrayFromDicomdir(List<string> fileNameList, int numberOfImages)
     {
-        var dicomDirectoryInfo = new DirectoryInfo(dirPath);
-
-        int fileCount = dicomDirectoryInfo.GetFiles().Length;
-
-        Debug.Log($"Files found in Directory: {fileCount}");
-
-        Debug.Log($"Loading {numberOfImages} Dicom files from Directory {dirPath} into Array");
-
-        int validFileCount = 0;
-
-        foreach (var file in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
+        if(fileNameList.Count > numberOfImages )
         {
-            if (DicomFile.HasValidHeader(file.FullName))
+            Texture2D[] slices = new Texture2D[numberOfImages];
+
+            int fileEvenSpaceCounter = fileNameList.Count / numberOfImages;
+
+            //int filesInArrayCount = 0;
+
+            int validFileCountAhead = 0;
+
+
+            for(int i = 0; i < numberOfImages; i++) 
             {
-                validFileCount++;
+                var tmpDicom = DicomFile.Open(fileNameList[validFileCountAhead]);
+
+                var tmpTex = new DicomImage(tmpDicom.Dataset).RenderImage().As<Texture2D>();
+                slices[i] = tmpTex;
+
+                validFileCountAhead += fileEvenSpaceCounter;
+                //filesInArrayCount++;
+                //Debug.Log(validFileCount);
+                //Debug.Log(validFileCountAhead);
+                //Debug.Log(filesInArrayCount);
+                //validFileCount++;
             }
+
+            Debug.Log($"Instances loaded into Array: {slices.Length}");
+
+            return slices;
         }
-
-        Debug.Log($"Valid Dicom files found in Directory: {validFileCount}");
-
-        Texture2D[] slices = new Texture2D[numberOfImages];
-
-        int fileEvenSpaceCounter = validFileCount / numberOfImages;
-
-        var filesInArrayCount = 0;
-
-        validFileCount = 0;
-
-        var validFileCountAhead = 0;
-
-        bool infoGet = false;
-
-        foreach (var file in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
+        else
         {
-            if(filesInArrayCount != numberOfImages)
-            {
-                if (DicomFile.HasValidHeader(file.FullName))
-                {
-                    if(validFileCount == validFileCountAhead)
-                    {
-                        var tmpDicom = DicomFile.Open(file.FullName);
-
-                        if(!infoGet)
-                        {
-                            if(anonymize)
-                            {
-                                var anonymizer = new DicomAnonymizer();
-                                anonymizer.AnonymizeInPlace(tmpDicom);
-                            }
-
-                            info.setDicomInfo(tmpDicom);
-                            infoGet = true;
-                        }
-
-                        var tmpTex = new DicomImage(tmpDicom.Dataset).RenderImage().As<Texture2D>();
-                        slices[filesInArrayCount] = tmpTex;
-
-                        validFileCountAhead += fileEvenSpaceCounter;
-                        filesInArrayCount++;
-                        //Debug.Log(validFileCount);
-                        //Debug.Log(validFileCountAhead);
-                        //Debug.Log(filesInArrayCount);
-                    }
-                    validFileCount++;
-                }
-            }
+            return null;
         }
-
-        Debug.Log($"Instances loaded into Array: {slices.Length}");
-
-        return slices;
+        
     }
 
     public static Color[] CreateTextureFromDicomdir(string dirPath, double scaleTexture, List<string> fileNameList, int textureWidth, int textureHeight, int textureDepth)
@@ -250,7 +214,7 @@ public static class dicomImageTools
         return value;
     }
 
-    public static Color[] CreateColorArrayFromDicomdir(string dirPath, List<string> fileNameList, dicomInfoTools dicomInformation, int textureWidth, int textureHeight, int textureDepth)
+    public static Color[] CreateColorArrayFromDicomdir(List<string> fileNameList, dicomInfoTools dicomInformation, int textureWidth, int textureHeight, int textureDepth)
     {
         Debug.Log($"Preparing stuff for color array creation.");
 
@@ -289,9 +253,9 @@ public static class dicomImageTools
         //short[,] dicomFilePixelHUIntensities = new short[dicomFrameWidth, dicomFrameHeight];
         Color[] dicomOriginalTextureRescaledHU = new Color[dicomFrameWidth * dicomFrameHeight];
 
-        DicomTransferSyntax dicomFileTransferSyntax = dicomInformation.ImageTransferSyntax;
+        DicomTransferSyntax dicomFileTransferSyntax = DicomTransferSyntax.Parse(dicomInformation.ImageTransferSyntax);
 
-        DicomTransferSyntax defaultDicomTransferSyntax = dicomInformation.DefaultDicomTransferSyntax;
+        DicomTransferSyntax defaultDicomTransferSyntax = DicomTransferSyntax.Parse(dicomInformation.DefaultDicomTransferSyntax);
 
         short rescaleSlope = (short)dicomInformation.ImageRescaleSlope;
         short rescaleIntercept = (short)dicomInformation.ImageRescaleIntercept;
@@ -697,7 +661,7 @@ public static class dicomImageTools
 
             UnityEditor.AssetDatabase.CreateAsset(texture, assetName);
 
-            Debug.Log($"3D Texture saved as Asset to path: {assetName}");
+            Debug.Log($"3D Texture saved as Asset to path: {ressourceDestinationPath}");
 
         #endif
     }
@@ -881,23 +845,23 @@ public static class dicomImageTools
         return texture;
     }
 
-    public static Texture3D createTexture3DAsAssetScript(string dirPath, string ressourceDestinationPath, string textureRessourceName, List<string> fileNameList, dicomInfoTools dicomInformation, int textureWidth, int textureHeight, int textureDepth)
+    public static Texture3D createTexture3DAsAssetScript(List<string> fileNameList, dicomInfoTools dicomInformation, int textureWidth, int textureHeight, int textureDepth)
     {
         /////Load all slices from directory into array of 2D Textures
         //var textureArray = CreateTextureArrayFromDicomdir(dirPath, scaleTexture);
 
         /////Copy pixel data of 2D Textures in array into color array
         //var colorsForCubeTexture = CreateTextureFromDicomdir(dirPath, scaleTexture, fileNameList, textureWidth, textureHeight, textureDepth);
-        var colorsForCubeTexture = CreateColorArrayFromDicomdir(dirPath, fileNameList, dicomInformation, textureWidth, textureHeight, textureDepth);
+        var colorsForCubeTexture = CreateColorArrayFromDicomdir(fileNameList, dicomInformation, textureWidth, textureHeight, textureDepth);
 
         //Debug.Log($" Color: {colorsForCubeTexture[15000000]}");
 
         /////Map 2D Texture color pixels to 3D Texture
         var cubeTexture = CreateTexture3D(colorsForCubeTexture, textureWidth, textureHeight, textureDepth);
-        Debug.Log($"3D Texture created from path {dirPath}");
+        Debug.Log($"3D Texture created.");
 
         /////Save 3D Texture as Asset in Unity Editor
-        dicomImageTools.exportTexture3DToAsset(cubeTexture, ressourceDestinationPath, textureRessourceName);
+        //dicomImageTools.exportTexture3DToAsset(cubeTexture, ressourceDestinationPath, textureRessourceName);
 
         return cubeTexture;
     }
@@ -1008,6 +972,25 @@ public static class dicomImageTools
         }
 
         File.WriteAllBytes(fullFilePath, bytes);
+    }
+
+    public static void SaveTextureArrayAsAssets(Texture2D[] tex, string destinationPath, string fileName)
+    { 
+        #if UNITY_EDITOR
+
+            for (int i = 0; i < tex.Length; i++)
+            {
+                string fullFileName = fileName + "_0" + i + ".asset";
+                string fullFilePath = Path.Combine(destinationPath, fullFileName);
+
+                tex[i].wrapMode = TextureWrapMode.Clamp;
+
+                UnityEditor.AssetDatabase.CreateAsset(tex[i], fullFilePath);
+            }
+
+            Debug.Log($"{tex.Length} Slices saved as 2D Texture Assets to path: {destinationPath}");
+
+        #endif
     }
 
     

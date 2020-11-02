@@ -4,6 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using System.Xml;
+using System.Linq;
 
 using UnityEngine;
 
@@ -19,148 +22,105 @@ using TMPro;
 
 public class importDicom : MonoBehaviour
 {
-    //private Texture2D singleTexture = null;
-
-    public dicomInfoTools dicomInformation  = new dicomInfoTools();
-
     public Texture3D threeDimTexture = null;
+    [HideInInspector]
+    public dicomInfoTools dicomInformation = null;
+    public Texture2D[] dicomSlices = null;
 
-    public string dirName = null;
-    public string fileName = null;
-    public string destinationTextureDirName = null;
-    public string destinationDirName = null;
-    public string dirPath = null;
-    public string path = null;
-    public string ressourceDestinationPath = null;
-    public string fileDestinationPath = null;
+    [HideInInspector]
     public string textureDestinationPath = null;
-    public string textureDestinationDirName = null;
-    // string threeDimTexturePath = null;
 
-    public int textureWidth = 0;
-    public int textureHeight = 0;
-    public int textureDepth = 0;
+    private string metaData = null;
 
-    public string textureRessourceName = null;
-    public string textureArrayName = null;
+    private string dirName = null;
+    private string pathTo3DTextures = null;
+
+    private string destinationTextureDirName = null;
+    private string metadataName = null;
+
+    private UnityEngine.Object[] loadedTextures = null;
+    private UnityEngine.Object[] loaded2DTextures = null;
+
+    private GameObject dicomImporter = null;
+    private initialImportDicom initialImportScript = null;
 
 
     // Start is called before the first frame update
     void Start()
     {
-
-
         //////// PATHS
 
+        dicomImporter = GameObject.Find("Dicom_Importer");
+        initialImportScript = dicomImporter.GetComponent<initialImportDicom>();
+        dirName = initialImportScript.dicomFileDirectory;
+        destinationTextureDirName = initialImportScript.assetDestinationDirectory;
+        textureDestinationPath = initialImportScript.savedTextureDestinationPath;
 
-        dirName = "CT_Series";
-        //dirName = "MR_Series";
-        //fileName = "image-000001.dcm";
-        //fileName = "image-000000.dcm";
-        destinationTextureDirName = "Dicom 3D Textures";
-        destinationDirName = "Saved";
-        textureDestinationDirName = "Saved Slices";
+        //////// LOAD 3D TEXTURE
 
-        #if UNITY_EDITOR
-            var rootPath = "Assets";
-        #else
-            var rootPath = "sdcard/DCIM/MediVR";
-        #endif
+        pathTo3DTextures = "MediVR/Textures/" + destinationTextureDirName + "/" + dirName;
 
-        dirPath = Path.Combine(rootPath, dirName);
-        //path = Path.Combine(dirPath, fileName);
-        ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", destinationTextureDirName);
-        fileDestinationPath = Path.Combine(dirPath, destinationDirName);
-        textureDestinationPath = Path.Combine(rootPath, textureDestinationDirName);
-        
+        //threeDimTexture = Resources.Load<Texture3D>("MediVR/Textures/" + destinationTextureDirName + "/" + textureRessourceName); 
+        loadedTextures = Resources.LoadAll(pathTo3DTextures, typeof(Texture3D)); //TRY TO LOAD 3D TEXTURE FROM FOLDER
 
-        Debug.Log($"Path to Directory: {dirPath}");
-        //Debug.Log($"Path to first File in Directory: {path}");
-        Debug.Log($"Path to Texture Ressource Directory: {ressourceDestinationPath}");
-        //Debug.Log($"Path to Array Save Directory: {fileDestinationPath}");
-        Debug.Log($"Path to Texture Save Directory: {textureDestinationPath}");
-
-        //////// FILES AT PATH
-
-        var dicomDirectoryInfo = new DirectoryInfo(dirPath);
-
-        int dicomFileCount = dicomDirectoryInfo.GetFiles().Length;
-        Debug.Log($"Files found in Directory: {dicomFileCount}");
-        Debug.Log($"Loading Dicom files from Directory {dirPath} into Array");
-
-        List<string> dicomFileNameList = new List<string>();
-
-        foreach (var dicomFile in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
+        if(loadedTextures != null)
         {
-            if (DicomFile.HasValidHeader(dicomFile.FullName))
+            if(loadedTextures.Length > 0)
             {
-                dicomFileNameList.Add(dicomFile.FullName);
+                //Debug.Log($"{loadedTextures.Length} 3D Texture(s) loaded. Using first texture from List.");
+
+                threeDimTexture = (Texture3D)loadedTextures[0];
+
+                //Debug.Log($"{loadedTextures[0].name}");
+
+                //////// LOAD METADATA
+
+                metadataName = pathTo3DTextures + "/" + loadedTextures[0].name + "_MetaData";
+
+                //metadataName = loadedTextures[0].name + "_MetaData.XML";
+
+                metaData = Resources.Load<TextAsset>(metadataName).text;
+
+                metaData = metaData.Replace("&#x0;", "");
+
+                //Debug.Log($"{metaData}");
+
+                if(metaData != null)
+                {
+                    XmlSerializer deserializer = new XmlSerializer(typeof(dicomInfoTools));
+
+                    using(StringReader reader = new StringReader(metaData))
+                    {
+                        object obj = deserializer.Deserialize(reader);
+
+                        dicomInformation = (dicomInfoTools)obj;
+                        dicomInformation.GetDicomInfoString();
+                    }
+                }
+
+                //Debug.Log($"{dicomInformation.PatientId}");
+
+                //Debug.Log($"{metaData}");
+
+                //////// LOAD SINGLE SLICES
+                
+                loaded2DTextures = Resources.LoadAll(pathTo3DTextures, typeof(Texture2D)); //TRY TO LOAD 2D TEXTURES FROM FOLDER
+
+                if(loaded2DTextures != null)
+                {
+                    if(loaded2DTextures.Length == 5)
+                    {
+                        dicomSlices = new Texture2D[5];
+
+                        for(int i = 0; i < loaded2DTextures.Length; i++)
+                        {
+                            dicomSlices[i] = (Texture2D)loaded2DTextures[i];
+                        }
+                    }
+                }
             }
+            
         }
-
-        dicomFileNameList.Reverse();
-
-        Debug.Log($"Valid Dicom files found in Directory: {dicomFileNameList.Count}. File names loaded onto list.");
-
-        var file = DicomFile.Open(dicomFileNameList[0]);
-        dicomInformation.setDicomInfo(file);
-
-        Debug.Log($"Metadata loaded from file: {dicomFileNameList[0]}");
-
-
-        //////// TEXTURE SELECTION
-
-        textureWidth = textureHeight = 256;
-        textureDepth = dicomImageTools.NextPow2(dicomFileNameList.Count);
-        textureRessourceName = dirName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
-        textureArrayName = fileDestinationPath + "/" + dirName + "_3DTexture_Color_Array" + textureWidth + "x" + textureHeight + "x" + textureDepth + ".bytes";
-
-        //threeDimTexturePath = Path.Combine(ressourceDestinationPath, textureRessourceName);
-
-
-        ///////// 2D
-
-        //singleTexture = dicomImageTools.CreateTextureFromDicom (path, false, ref dicomInformation);
-        //singleTexture = dicomImageTools.CreateTextureFromFirstDicom (dirPath, false, ref dicomInformation);
-
-        ///////// 3D 
-
-        /////Create 3D Texture from Dicomfiles
-        
-        /////Load 3DTexture as Asset
-        threeDimTexture = Resources.Load<Texture3D>("MediVR/Textures/" + destinationTextureDirName + "/" + textureRessourceName); 
-        
-        if(threeDimTexture != null)
-        {
-            Debug.Log($"3D texture exists as Ressource. {textureRessourceName} loaded from {ressourceDestinationPath}.");
-        }
-        else
-        {
-            /*if(File.Exists(textureArrayName))
-            {
-                Debug.Log($"Color Array for 3D Texture exists. Building 3D Texture from array at {textureArrayName}.");
-                threeDimTexture = dicomImageTools.importColorArrayTo3DTexture(textureArrayName, textureWidth, textureHeight, textureDepth);
-            }
-            else
-            {*/
-                Debug.Log($"3D Texture does not exist. Initializing 3D Texture from {dirPath}.");
-                //double scaleTexture = Convert.ToDouble((textureWidth+textureHeight)/2) / Convert.ToDouble(singleTexture.width); 
-                //Debug.Log($"3D Texture scale set to {scaleTexture*100}%.");
-
-                threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dirPath, ressourceDestinationPath, textureRessourceName, dicomFileNameList, dicomInformation, textureWidth, textureHeight, textureDepth);
-                //threeDimTexture = dicomImageTools.createTexture3DAsFileScript(dirPath, dirName, fileDestinationPath, scaleTexture, textureArrayName, textureWidth, textureHeight, textureDepth);
-            //}
-        }
-
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    
-
 }
 

@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class updateQuadVertices : MonoBehaviour
 {
-    public Vector3 startCoords;
+    private Vector3 startCoords;
     //public Vector3 updatedCoords;
     //public GameObject Quad;
-    public Renderer quadRenderer;
-    public MeshFilter quadMeshFilter;
+    private Renderer quadRenderer;
+    private MeshFilter quadMeshFilter;
 
     // Start is called before the first frame update
     void Start()

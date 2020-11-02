@@ -28,7 +28,7 @@ public class loadCubeTexture : MonoBehaviour
     {
         screenPlane = GameObject.Find("Screen_Plane");
         //var screenPlaneScript = screenPlane.GetComponent<importDicom>();
-        textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
+        //textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
         //Debug.Log(textureRessourceName);
 
         cubeTexture = Resources.Load<Texture3D>(textureRessourceName); 

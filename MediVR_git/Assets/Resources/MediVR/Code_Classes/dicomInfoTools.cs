@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
@@ -18,145 +20,41 @@ using Dicom.Media;
 
 using TMPro;
 
-public class dicomInfoTools
+public class dicomInfoTools : ISerializable
 {
+    private string dateFormat;
+    private string timeFormat;
 
-    private string dateFormat = "N/A";
-    private string timeFormat = "N/A";
+    private int imageWidth;
+    private int imageHeight;
+    private string imageTransferSyntax;
+    private string defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian.ToString();
+    private int imageRescaleSlope;
+    private int imageRescaleIntercept;
+    private int imageWindowWidth;
+    private int imageWindowCenter;
+    private double[] imageOrientationPatient;
+    private string orientationPatient;
 
-    private int imageWidth = 0;
-    private int imageHeight = 0;
-    private DicomTransferSyntax imageTransferSyntax = null;
-    private DicomTransferSyntax defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
-    private int imageRescaleSlope = 0;
-    private int imageRescaleIntercept = 0;
-    private int imageWindowWidth = 0;
-    private int imageWindowCenter = 0;
-    private double[] imageOrientationPatient = new double[6];
-    private string orientationPatient = null;
+    private int patientId;
+    private int patientAge;
+    private DateTime patientBd;
+    private string patientSex;
+    private string patientName;
 
-    private int patientId = 0;
-    private int patientAge = 0;
-    private DateTime patientBd = DateTime.MinValue;
-    private string patientSex = "N/A";
-    private string patientName = "N/A";
+    private int studyId;
+    private DateTime studyTime;
+    private DateTime studyDate;
+    private string studyDescription;
+    private string studySeriesDescription;
+    private string studyProtocolName;
+    private float  studySliceThickness;
+    private string studyDoctorName;
 
-    private int studyId = 0;
-    private DateTime studyTime = DateTime.MinValue;
-    private DateTime studyDate = DateTime.MinValue;
-    private string studyDescription = "N/A";
-    private string studySeriesDescription = "N/A";
-    private string studyProtocolName = "N/A";
-    private float  studySliceThickness = 0f;
-    private string studyDoctorName = "N/A";
+    private string modality;
+    private string modalityManufacturer;
 
-    private string modality = "N/A";
-    private string modalityManufacturer = "N/A";
-
-    
-    public int ImageWidth
-    {
-        get { return imageWidth; }
-    }
-    public int ImageHeight
-    {
-        get { return imageHeight; }
-    }
-    public DicomTransferSyntax ImageTransferSyntax
-    {
-        get { return imageTransferSyntax; }
-    }
-    public DicomTransferSyntax DefaultDicomTransferSyntax
-    {
-        get { return defaultDicomTransferSyntax; }
-    }
-    public int ImageRescaleSlope
-    {
-        get { return imageRescaleSlope; }
-    }
-    public int ImageRescaleIntercept
-    {
-        get { return imageRescaleIntercept; }
-    }
-    public int ImageWindowWidth
-    {
-        get { return imageWindowWidth; }
-    }
-    public int ImageWindowCenter
-    {
-        get { return imageWindowCenter; }
-    }
-    public double[] ImageOrientationPatient
-    {
-        get { return imageOrientationPatient; }
-    }
-    public string OrientationPatient
-    {
-        get { return orientationPatient; }
-    }
-
-    public int PatientId
-    {
-        get { return patientId; }
-    }
-    public int PatientAge
-    {
-        get { return patientAge; }
-    }
-    public DateTime PatientBd
-    {
-        get { return patientBd; }
-    }
-    public string PatientSex
-    {
-        get { return patientSex; }
-    }
-    public string PatientName
-    {
-        get { return patientName; }
-    }
-
-    public int StudyId
-    {
-        get { return studyId; }
-    }
-    public DateTime StudyTime
-    {
-        get { return studyTime; }
-    }
-    public DateTime StudyDate
-    {
-        get { return studyDate; }
-    }
-    public string StudyDescription
-    {
-        get { return studyDescription; }
-    }
-    public string StudySeriesDescription
-    {
-        get { return studySeriesDescription; }
-    }
-    public string StudyProtocolName
-    {
-        get { return studyProtocolName; }
-    }
-    public float StudySliceThickness
-    {
-        get { return studySliceThickness; }
-    }
-    public string StudyDoctorName
-    {
-        get { return studyDoctorName; }
-    }
-
-    public string Modality
-    {
-        get { return modality; }
-    }
-    public string ModalityManufacturer
-    {
-        get { return modalityManufacturer; }
-    }
+    private dicomInfoString strings;
 
     public struct dicomInfoString
     {
@@ -172,9 +70,190 @@ public class dicomInfoTools
         }
     }
 
-    public dicomInfoString Strings;
+    public string DateFormat
+    {
+        get { return dateFormat; }
+        set { dateFormat = value; }
+    }
+    public string TimeFormat
+    {
+        get { return timeFormat; }
+        set { timeFormat = value; }
+    }
+    
+    public int ImageWidth
+    {
+        get { return imageWidth; }
+        set { imageWidth = value; }
+    }
+    public int ImageHeight
+    {
+        get { return imageHeight; }
+        set { imageHeight = value; }
+    }
+    public string ImageTransferSyntax
+    {
+        get { return imageTransferSyntax; }
+        set { imageTransferSyntax = value; }
+    }
+    public string DefaultDicomTransferSyntax
+    {
+        get { return defaultDicomTransferSyntax; }
+        set { defaultDicomTransferSyntax = value; }
+    }
+    public int ImageRescaleSlope
+    {
+        get { return imageRescaleSlope; }
+        set { imageRescaleSlope = value; }
+    }
+    public int ImageRescaleIntercept
+    {
+        get { return imageRescaleIntercept; }
+        set { imageRescaleIntercept = value; }
+    }
+    public int ImageWindowWidth
+    {
+        get { return imageWindowWidth; }
+        set { imageWindowWidth = value; }
+    }
+    public int ImageWindowCenter
+    {
+        get { return imageWindowCenter; }
+        set { imageWindowCenter = value; }
+    }
+    public double[] ImageOrientationPatient
+    {
+        get { return imageOrientationPatient; }
+        set { imageOrientationPatient = value; }
+    }
+    public string OrientationPatient
+    {
+        get { return orientationPatient; }
+        set { orientationPatient = value; }
+    }
 
-    public void setDicomInfo(DicomFile file)
+    public int PatientId
+    {
+        get { return patientId; }
+        set { patientId = value; }
+    }
+    public int PatientAge
+    {
+        get { return patientAge; }
+        set { patientAge = value; }
+    }
+    public DateTime PatientBd
+    {
+        get { return patientBd; }
+        set { patientBd = value; }
+    }
+    public string PatientSex
+    {
+        get { return patientSex; }
+        set { patientSex = value; }
+    }
+    public string PatientName
+    {
+        get { return patientName; }
+        set { patientName = value; }
+    }
+
+    public int StudyId
+    {
+        get { return studyId; }
+        set { studyId = value; }
+    }
+    public DateTime StudyTime
+    {
+        get { return studyTime; }
+        set { studyTime = value; }
+    }
+    public DateTime StudyDate
+    {
+        get { return studyDate; }
+        set { studyDate = value; }
+    }
+    public string StudyDescription
+    {
+        get { return studyDescription; }
+        set { studyDescription = value; }
+    }
+    public string StudySeriesDescription
+    {
+        get { return studySeriesDescription; }
+        set { studySeriesDescription = value; }
+    }
+    public string StudyProtocolName
+    {
+        get { return studyProtocolName; }
+        set { studyProtocolName = value; }
+    }
+    public float StudySliceThickness
+    {
+        get { return studySliceThickness; }
+        set { studySliceThickness = value; }
+    }
+    public string StudyDoctorName
+    {
+        get { return studyDoctorName; }
+        set { studyDoctorName = value; }
+    }
+
+    public string Modality
+    {
+        get { return modality; }
+        set { modality = value; }
+    }
+    public string ModalityManufacturer
+    {
+        get { return modalityManufacturer; }
+        set { modalityManufacturer = value; }
+    } 
+
+    public dicomInfoString Strings
+    {
+        get { return strings; }
+    }
+
+    
+
+    public dicomInfoTools()
+    {
+        dateFormat = "N/A";
+        timeFormat = "N/A";
+
+        imageWidth = 0;
+        imageHeight = 0;
+        imageTransferSyntax = null;
+        imageRescaleSlope = 0;
+        imageRescaleIntercept = 0;
+        imageWindowWidth = 0;
+        imageWindowCenter = 0;
+        imageOrientationPatient = new double[6];
+        orientationPatient = null;
+
+        patientId = 0;
+        patientAge = 0;
+        patientBd = DateTime.MinValue;
+        patientSex = "N/A";
+        patientName = "N/A";
+
+        studyId = 0;
+        studyTime = DateTime.MinValue;
+        studyDate = DateTime.MinValue;
+        studyDescription = "N/A";
+        studySeriesDescription = "N/A";
+        studyProtocolName = "N/A";
+        studySliceThickness = 0f;
+        studyDoctorName = "N/A";
+
+        modality = "N/A";
+        modalityManufacturer = "N/A";
+
+        GetDicomInfoString();
+    }
+
+    public dicomInfoTools(DicomFile file)
     {
         dateFormat = "dd.MM.yyyy";
         timeFormat = "HH:mm:ss";
@@ -190,7 +269,7 @@ public class dicomInfoTools
             Debug.Log($"Image Width NOT found in dataset. Defaulting to: {imageWidth}.");
         }
 
-        imageTransferSyntax = file.Dataset.InternalTransferSyntax;
+        imageTransferSyntax = file.Dataset.InternalTransferSyntax.ToString();
 
         if(file.Dataset.Contains(DicomTag.Rows))
         {
@@ -490,14 +569,96 @@ public class dicomInfoTools
         orientationPatient = GetPatientOrientationString(imageOrientationPatient);
         //Debug.Log($"Patient orientation: {orientationPatient}");
 
-        Strings = getDicomInfoString();
+        GetDicomInfoString();
 
         //Debug.Log($"Image frame width: {imageWidth} pixels and frame height: {imageHeight} pixels.");
         //Debug.Log($"Image Transfer Syntax: {imageTransferSyntax.ToString()}. Applying Decompression Transfer Syntax: {defaultDicomTransferSyntax.ToString()}");
         //Debug.Log($"Image Rescale Slope: {imageRescaleSlope} and Rescale Intercept: {imageRescaleIntercept}");
     }
 
-    private dicomInfoString getDicomInfoString()
+    public dicomInfoTools(SerializationInfo info, StreamingContext context)
+    {
+        dateFormat = (string)info.GetValue("DateFormat", typeof(string));
+        timeFormat = (string)info.GetValue("TimeFormat", typeof(string));
+
+        imageWidth = (int)info.GetValue("ImageWidth", typeof(int));
+        imageHeight = (int)info.GetValue("ImageHeight", typeof(int));
+        imageTransferSyntax = (string)info.GetValue("ImageTransferSyntax", typeof(string));
+        defaultDicomTransferSyntax = (string)info.GetValue("DefaultDicomTransferSyntax", typeof(string));
+        imageRescaleSlope = (int)info.GetValue("ImageRescaleSlope", typeof(int));
+        imageRescaleIntercept = (int)info.GetValue("ImageRescaleIntercept", typeof(int));
+        imageWindowWidth = (int)info.GetValue("ImageWindowWidth", typeof(int));
+        imageWindowCenter = (int)info.GetValue("ImageWindowCenter", typeof(int));
+        imageOrientationPatient = (double[])info.GetValue("ImageOrientationPatient", typeof(double[]));
+        orientationPatient = (string)info.GetValue("OrientationPatient", typeof(string));
+
+        patientId = (int)info.GetValue("PatientId", typeof(int));
+        patientAge = (int)info.GetValue("PatientAge", typeof(int));
+        patientBd = (DateTime)info.GetValue("PatientBd", typeof(DateTime));
+        patientSex = (string)info.GetValue("PatientSex", typeof(string));
+        patientName = (string)info.GetValue("PatientName", typeof(string));
+
+        studyId = (int)info.GetValue("StudyId", typeof(int));
+        studyTime = (DateTime)info.GetValue("StudyTime", typeof(DateTime));
+        studyDate = (DateTime)info.GetValue("StudyDate", typeof(DateTime));
+        studyDescription = (string)info.GetValue("StudyDescription", typeof(string));
+        studySeriesDescription = (string)info.GetValue("StudySeriesDescription", typeof(string));
+        studyProtocolName = (string)info.GetValue("StudyProtocolName", typeof(string));
+        studySliceThickness = (float)info.GetValue("StudySliceThickness", typeof(float));
+        studyDoctorName = (string)info.GetValue("StudyDoctorName", typeof(string));
+
+        modality = (string)info.GetValue("Modality", typeof(string));
+        modalityManufacturer = (string)info.GetValue("ModalityManufacturer", typeof(string));
+
+        strings = (dicomInfoString)info.GetValue("Strings", typeof(dicomInfoString));
+        GetDicomInfoString();
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        //throw new NotImplementedException();
+
+        info.AddValue("DateFormat", DateFormat);
+        info.AddValue("TimeFormat", TimeFormat);
+
+        info.AddValue("ImageWidth", ImageWidth);
+        info.AddValue("ImageHeight", ImageHeight);
+        info.AddValue("ImageTransferSyntax", ImageTransferSyntax);
+        info.AddValue("DefaultDicomTransferSyntax", DefaultDicomTransferSyntax);
+        info.AddValue("ImageRescaleSlope", ImageRescaleSlope);
+        info.AddValue("ImageRescaleIntercept", ImageRescaleIntercept);
+        info.AddValue("ImageWindowWidth", ImageWindowWidth);
+        info.AddValue("ImageWindowCenter", ImageWindowCenter);
+        info.AddValue("ImageOrientationPatient", ImageOrientationPatient);
+        info.AddValue("OrientationPatient", OrientationPatient);
+
+        info.AddValue("PatientId", PatientId);
+        info.AddValue("PatientAge", PatientAge);
+        info.AddValue("PatientBd", PatientBd);
+        info.AddValue("PatientSex", PatientSex);
+        info.AddValue("PatientName", PatientName);
+
+        info.AddValue("StudyId", StudyId);
+        info.AddValue("StudyTime", StudyTime);
+        info.AddValue("StudyDate", StudyDate);
+        info.AddValue("StudyDescription", StudyDescription);
+        info.AddValue("StudySeriesDescription", StudySeriesDescription);
+        info.AddValue("StudyProtocolName", StudyProtocolName);
+        info.AddValue("StudySliceThickness", StudySliceThickness);
+        info.AddValue("StudyDoctorName", StudyDoctorName);
+
+        info.AddValue("Modality", Modality);
+        info.AddValue("ModalityManufacturer", ModalityManufacturer);
+
+        info.AddValue("Strings", Strings);
+    }
+
+    /*public void SetDicomInfoFromFile(DicomFile file)
+    {
+        
+    }*/
+
+    public void GetDicomInfoString()
     {
         string patientIdString;
         string patientAgeString;
@@ -583,7 +744,7 @@ public class dicomInfoTools
         string mdInfo =     "<b>Modality Info:</b>\n\n" +
                             $"Modality: {modality}\nManufacturer: {modalityManufacturer}\n";
 
-        dicomInfoString info = new dicomInfoString(patInfo, styInfo, mdInfo);
+        strings = new dicomInfoString(patInfo, styInfo, mdInfo);
 
         //Debug.Log(info);
 
@@ -598,7 +759,7 @@ public class dicomInfoTools
         Debug.Log(dumpModality);
         Debug.Log(dumpModalityManufacturer);*/
 
-        return info;
+        return;
     }
 
     private string GetPatientOrientationString(double[] orientations)
