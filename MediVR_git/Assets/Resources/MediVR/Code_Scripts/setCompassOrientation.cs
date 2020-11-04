@@ -105,6 +105,7 @@ public class setCompassOrientation : MonoBehaviour
             orientationCompass.SetActive(false);
         }
         
+        orientationCompass.SetActive(false);
 
         //Debug.Log($"LOG: {orientation}");
 

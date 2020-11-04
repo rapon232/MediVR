@@ -150,7 +150,7 @@ public class oldImportDicom : MonoBehaviour
 
                 var file = DicomFile.Open(dicomFileNameList[0]);
 
-                dicomInformation = new dicomInfoTools(file);
+                dicomInformation = new dicomInfoTools(file, false);
 
                 Debug.Log($"Metadata loaded from file: {dicomFileNameList[0]}");
 

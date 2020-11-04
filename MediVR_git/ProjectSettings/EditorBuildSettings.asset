@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Resources/MediVR/Scenes/DicomXR_FlattenedRendering.unity
     guid: 329cf33211c15483098055930653063a
   - enabled: 1
+    path: Assets/Resources/MediVR/Scenes/VirtualDiagnosticsMenu.unity
+    guid: 43d7cee89726042d9b011a6e2ea52847
+  - enabled: 1
     path: Assets/Resources/MediVR/Scenes/VirtualDiagnosicsCabinet.unity
     guid: 7e7be7cad799e42d5878f2085068d3cd
   m_configObjects:

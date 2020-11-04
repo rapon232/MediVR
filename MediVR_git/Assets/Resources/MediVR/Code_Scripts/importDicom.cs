@@ -41,8 +41,8 @@ public class importDicom : MonoBehaviour
     private UnityEngine.Object[] loadedTextures = null;
     private UnityEngine.Object[] loaded2DTextures = null;
 
-    private GameObject dicomImporter = null;
-    private initialImportDicom initialImportScript = null;
+    //private GameObject dicomImporter = null;
+    //private initialImportDicom initialImportScript = null;
 
 
     // Start is called before the first frame update
@@ -50,18 +50,18 @@ public class importDicom : MonoBehaviour
     {
         //////// PATHS
 
-        dicomImporter = GameObject.Find("Dicom_Importer");
-        initialImportScript = dicomImporter.GetComponent<initialImportDicom>();
+        //dicomImporter = GameObject.Find("Dicom_Importer");
+        //initialImportScript = dicomImporter.GetComponent<initialImportDicom>();
         //dirName = initialImportScript.dicomFileDirectory; 
-        dirName = initialImportScript.userDefinedFolderName;
-        destinationTextureDirName = initialImportScript.assetDestinationDirectory;
-        textureDestinationPath = initialImportScript.savedTextureDestinationPath;
+        dirName = setCurrentDirectory.currentDirectory;//initialImportScript.userDefinedFolderName;
+        destinationTextureDirName = initialImportDicom.assetDestinationDirectory;
+        textureDestinationPath = initialImportDicom.savedTextureDestinationPath;
 
         //////// LOAD 3D TEXTURE
 
         if(dirName != null)
         {
-             pathTo3DTextures = "MediVR/Textures/" + destinationTextureDirName + "/" + dirName;
+            pathTo3DTextures = "MediVR/Textures/" + destinationTextureDirName + "/" + dirName; 
 
             //threeDimTexture = Resources.Load<Texture3D>("MediVR/Textures/" + destinationTextureDirName + "/" + textureRessourceName); 
             loadedTextures = Resources.LoadAll(pathTo3DTextures, typeof(Texture3D)); //TRY TO LOAD 3D TEXTURE FROM FOLDER
@@ -83,14 +83,18 @@ public class importDicom : MonoBehaviour
 
                 //metadataName = loadedTextures[0].name + "_MetaData.XML";
 
-                metaData = Resources.Load<TextAsset>(metadataName).text;
-
-                metaData = metaData.Replace("&#x0;", "");
+                var resource = Resources.Load<TextAsset>(metadataName);
+                if(resource != null)
+                {
+                    metaData = resource.text;
+                }
 
                 //Debug.Log($"{metaData}");
 
                 if(metaData != null)
                 {
+                    metaData = metaData.Replace("&#x0;", "");
+                    
                     XmlSerializer deserializer = new XmlSerializer(typeof(dicomInfoTools));
 
                     using(StringReader reader = new StringReader(metaData))

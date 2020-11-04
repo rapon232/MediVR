@@ -30,15 +30,7 @@ public static class dicomImageTools
 
         Debug.Log($"Dicom File at {path} loaded");
 
-        if(anonymize)
-        {
-            var anonymizer = new DicomAnonymizer();
-            anonymizer.AnonymizeInPlace(file);
-        }
-
-        //dump = file.WriteToString();
-
-        info = new dicomInfoTools(file);
+        info = new dicomInfoTools(file, anonymize);
 
         Texture2D texture = new DicomImage(file.Dataset).RenderImage().As<Texture2D>();
 
@@ -53,8 +45,6 @@ public static class dicomImageTools
 
         DirectoryInfo dicomDirectoryInfo = new DirectoryInfo(path);
 
-        //var stream = dir.GetFiles().Select(fi => fi.Name).FirstOrDefault();
-
         foreach (var dicom in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
         {
             if (DicomFile.HasValidHeader(dicom.FullName))
@@ -66,21 +56,11 @@ public static class dicomImageTools
 
         Debug.Log(stream);
 
-        //var stream = File.OpenRead(path);
-
         var file = DicomFile.Open(stream);
 
         Debug.Log($"Dicom File at {path} loaded");
 
-        if(anonymize)
-        {
-            var anonymizer = new DicomAnonymizer();
-            anonymizer.AnonymizeInPlace(file);
-        }
-
-        //dump = file.WriteToString();
-
-        info = new dicomInfoTools(file);
+        info = new dicomInfoTools(file, anonymize);
 
         Texture2D texture = new DicomImage(file.Dataset).RenderImage().As<Texture2D>();
 
@@ -996,6 +976,10 @@ public static class dicomImageTools
         #endif
     }
 
+    public static bool IsDirectoryEmpty(string path)
+    {
+        return !Directory.EnumerateFileSystemEntries(path).Any();
+    }
     
 
     /*public static string getTag(DicomFile _file, DicomTag _tag)

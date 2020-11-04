@@ -8,8 +8,10 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml;
+using System.Linq;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using Dicom;
 using Dicom.Imaging;
@@ -18,8 +20,6 @@ using Dicom.Network;
 using Dicom.Media;
 
 using TMPro;
-
-
 
 public class initialImportDicom : MonoBehaviour
 {
@@ -33,21 +33,24 @@ public class initialImportDicom : MonoBehaviour
 
     //public UnityEngine.Object[] loadedTextures = null;
 
-    public string userDefinedFolderName = null;
-    public string userDefinedDicomPath = null;
+    public string userDefinedFolderName = null;// Name of Directory to be importec, chosen from menu bar
+    public string userDefinedDicomPath = null; // Path to Directory to be importec, chosen from menu bar
+    public bool anonymizeDicomMetaData = false; // Toggle to anonymize data
 
     //public string dicomFileDirectory = "CT_Series"; // Name of folder containing dicom slices
     
     [HideInInspector]
-    public string assetDestinationDirectory =  "Dicom 3D Textures"; // Name of folder containg saved 3D Textures
+    public static string assetDestinationDirectory =  "Dicom 3D Textures"; // Name of folder containg saved 3D Textures
     [HideInInspector]
-    public string savedTextureDestinationDirectory = "Saved Slices"; // Name of folder to save duplicates at runtime
+    public static string savedTextureDestinationDirectory = "Saved Slices"; // Name of folder to save duplicates at runtime
     [HideInInspector]
-    public string savedTextureDestinationPath = null; // Path to folder to save duplicates at runtime
-
-    //private string dirPath = null;   //Path to dicomFileDirectory, path to folder containing dicom slices
-    private string ressourceDestinationPath = null;  //Path to savedTextureDestinationDirectory, path to folder conatining saved 3d textures
-    private string thisRessourceDestinationPath = null; //Path to Dicom 3D Textures/dicomFileDirectory, path folder containing 3d texture, metadata and planes
+    public static string savedTextureDestinationPath = null; // Path to folder to save duplicates at runtime
+    //public string dirPath = null;   // Path to dicomFileDirectory, path to folder containing dicom slices
+    public static string ressourceDestinationPath = null;  // Path to Dicom 3D Textures, path to folder conatining saved 3d textures
+    [HideInInspector]
+    public string thisRessourceDestinationPath = null; // Path to Dicom 3D Textures/dicomFileDirectory, path folder containing 3d texture, metadata and planes
+    [HideInInspector]
+    public static string importedDirectoryXMLFileName = "importedDirectoryNames.XML"; // Name of saved XML file containing all imported directory names
 
     #if UNITY_EDITOR
         private string rootPath = "Assets";
@@ -60,9 +63,13 @@ public class initialImportDicom : MonoBehaviour
 
     private int textureDepth = 0;
 
-    private string metadataRessourceName = null;  //Name of saved 3D Texture metadata in resources, with path and ending
-    private string sliceRessourceName = null;  //Name of saved 3D Texture metadata in resources, without path and ending
+    private string metadataRessourceName = null;  // Name of saved 3D Texture metadata in resources, with path and ending
+    private string sliceRessourceName = null;  // Name of saved 3D Texture metadata in resources, without path and ending
     private string textureRessourceName = null;  //Name of saved 3D Texture in Resources, without path and without ending
+    
+    private string[] subDirectoryNames = null; // Array of Strings containing imported directory names
+    private string[] subDirectoryEntries = null; // Array of Strings containing imported directory paths
+    private string importedDirectoryXMLFilePath = null; // Path to saved XML file containing all imported directory names, with ending
 
     void Start()
     {
@@ -74,25 +81,25 @@ public class initialImportDicom : MonoBehaviour
 
     public void CreateTexture3DAssets()
     {
-        if(userDefinedDicomPath != null)
+        if(userDefinedDicomPath != null && userDefinedFolderName != null)
         {
             //dirPath = Path.Combine(rootPath, dicomFileDirectory);
             savedTextureDestinationPath = Path.Combine(rootPath, savedTextureDestinationDirectory);
             ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", assetDestinationDirectory);
             thisRessourceDestinationPath = Path.Combine(ressourceDestinationPath, userDefinedFolderName);//dicomFileDirectory);
 
-            bool exists = System.IO.Directory.Exists(ressourceDestinationPath); // Create/Check for Folder: Dicom 3D Textures
+            bool exists = Directory.Exists(ressourceDestinationPath); // Create/Check for Folder: Dicom 3D Textures
 
             if(!exists)
             {
-                System.IO.Directory.CreateDirectory(ressourceDestinationPath);
+                Directory.CreateDirectory(ressourceDestinationPath);
             }
 
-            exists = System.IO.Directory.Exists(thisRessourceDestinationPath); // Create/Check for Folder: Dicom 3D Textures/dicomFileDirecory (CT_Series)
+            exists = Directory.Exists(thisRessourceDestinationPath); // Create/Check for Folder: Dicom 3D Textures/dicomFileDirecory (CT_Series)
 
             if(!exists)
             {
-                System.IO.Directory.CreateDirectory(thisRessourceDestinationPath);
+                Directory.CreateDirectory(thisRessourceDestinationPath);
             }
             
 
@@ -125,7 +132,7 @@ public class initialImportDicom : MonoBehaviour
                 }
             }
 
-            dicomFileNameList.Reverse();
+            //dicomFileNameList.Reverse();
 
             Debug.Log($"Valid Dicom files found in Directory: {dicomFileNameList.Count}. File names loaded onto list.");
 
@@ -133,7 +140,7 @@ public class initialImportDicom : MonoBehaviour
 
             var file = DicomFile.Open(dicomFileNameList[0]);
 
-            dicomInformation = new dicomInfoTools(file);
+            dicomInformation = new dicomInfoTools(file, anonymizeDicomMetaData);
 
             Debug.Log($"Metadata loaded from file: {dicomFileNameList[0]}.");
 
@@ -164,7 +171,63 @@ public class initialImportDicom : MonoBehaviour
             textureRessourceName = userDefinedFolderName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
             threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dicomFileNameList, dicomInformation, textureWidth, textureHeight, textureDepth);
             dicomImageTools.exportTexture3DToAsset(threeDimTexture, thisRessourceDestinationPath, textureRessourceName);
+
+            //////// SAVE IMPORTED DIRECTORY NAMES
+
+            saveImportedTextureDirectoryNames();
+        }
+        else
+        {
+            saveImportedTextureDirectoryNames();
         }
     }
+
+    public void saveImportedTextureDirectoryNames()
+    {
+        bool exists = Directory.Exists(ressourceDestinationPath); // Create/Check for Folder: Dicom 3D Textures
+
+        if(exists)
+        {
+            subDirectoryEntries = Directory.GetDirectories(ressourceDestinationPath);
+            subDirectoryNames = new string[subDirectoryEntries.Length];
+
+            for (int i = 0; i < subDirectoryEntries.Length; i++)
+            {
+                subDirectoryNames[i] = subDirectoryEntries[i].Split(Path.DirectorySeparatorChar).Last();
+            }
+
+            importedDirectoryXMLFilePath = Path.Combine(ressourceDestinationPath, importedDirectoryXMLFileName);
+
+            XmlSerializer serializer = new XmlSerializer(typeof(string[]));
+            using(TextWriter writer = new StreamWriter(importedDirectoryXMLFilePath))
+            {
+                serializer.Serialize(writer, subDirectoryNames);
+            }
+
+            Debug.Log($"{subDirectoryEntries.Length} Imported Directory Name(s) saved to file: {importedDirectoryXMLFilePath}.");
+        }
+        else
+        {
+            Debug.Log($"Imported Directories NOT found.");
+        }
+    }
+
+    public void GoToLastScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+    }
+
+    public void GoToNextScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    public void QuitApplication()
+    {
+        Debug.Log($"Quitting App. Stay safe and healthy :) !");
+        Application.Quit();
+    }
+
+
 }
 

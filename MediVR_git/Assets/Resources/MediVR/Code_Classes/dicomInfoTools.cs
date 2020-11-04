@@ -253,8 +253,14 @@ public class dicomInfoTools : ISerializable
         GetDicomInfoString();
     }
 
-    public dicomInfoTools(DicomFile file)
+    public dicomInfoTools(DicomFile file, bool anonymize)
     {
+        if(anonymize)
+        {
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(file);
+        }
+
         dateFormat = "dd.MM.yyyy";
         timeFormat = "HH:mm:ss";
 
