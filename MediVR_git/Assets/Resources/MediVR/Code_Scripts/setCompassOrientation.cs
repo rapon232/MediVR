@@ -6,6 +6,8 @@ using TMPro;
 
 public class setCompassOrientation : MonoBehaviour
 {
+    public bool showOrientationCompass = false;
+
     private GameObject dicomImageQuad = null;
     private importDicom importDicomScript = null;
 
@@ -104,8 +106,15 @@ public class setCompassOrientation : MonoBehaviour
         {
             orientationCompass.SetActive(false);
         }
-        
-        orientationCompass.SetActive(false);
+
+        if(showOrientationCompass)
+        {
+            orientationCompass.SetActive(true);
+        }
+        else
+        {
+            orientationCompass.SetActive(false);
+        }
 
         //Debug.Log($"LOG: {orientation}");
 

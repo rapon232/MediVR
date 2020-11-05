@@ -132,7 +132,7 @@ public class initialImportDicom : MonoBehaviour
                 }
             }
 
-            //dicomFileNameList.Reverse();
+            dicomFileNameList.Reverse();
 
             Debug.Log($"Valid Dicom files found in Directory: {dicomFileNameList.Count}. File names loaded onto list.");
 

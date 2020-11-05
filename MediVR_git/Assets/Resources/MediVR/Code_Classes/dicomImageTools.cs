@@ -237,12 +237,23 @@ public static class dicomImageTools
         //DicomTransferSyntax defaultDicomTransferSyntax = DicomTransferSyntax.Parse(dicomInformation.DefaultDicomTransferSyntax);
         DicomTransferSyntax defaultDicomTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
 
+        bool rescale = false;
+
         short rescaleSlope = (short)dicomInformation.ImageRescaleSlope;
         short rescaleIntercept = (short)dicomInformation.ImageRescaleIntercept;
+        string modality = dicomInformation.Modality;
+
+        if(modality == "CT")
+        {
+            rescale = true;
+        }
 
         Debug.Log($"Image frame width: {dicomFrameWidth} pixels and frame height: {dicomFrameHeight} pixels.");
-        Debug.Log($"Image Transfer Syntax: {dicomInformation.ImageTransferSyntax}. Applying Decompression Transfer Syntax: {defaultDicomTransferSyntax}");
-        Debug.Log($"Image Rescale Slope: {rescaleSlope} and Rescale Intercept: {rescaleIntercept}");
+        Debug.Log($"Image Transfer Syntax: {dicomInformation.ImageTransferSyntax}. Applying Decompression Transfer Syntax: {defaultDicomTransferSyntax}.");
+        Debug.Log($"Image Rescale Slope: {rescaleSlope} and Rescale Intercept: {rescaleIntercept}.");
+
+        Debug.Log($"Modality is: {modality} and Rescale is set to: {rescale}.");
+
 
         /*var dicomFile = DicomFile.Open(fileNameList[0]);
 
@@ -298,6 +309,7 @@ public static class dicomImageTools
 
 
 		for(int z = 0; z < d; z++)
+        //Parallel.For(0, d, z =>
 		{
             textureCount++;
 			//sliceCountFloat += countOffset;
@@ -364,6 +376,12 @@ public static class dicomImageTools
 
                 Array.Reverse(dicomFrameShortArray);
 
+                for(int row = 0; row < dicomFramePixelData.Width; ++row)
+                //Parallel.For(0, dicomFramePixelData.Width, row =>
+                {
+                    Array.Reverse(dicomFrameShortArray, row * dicomFramePixelData.Width, dicomFramePixelData.Width);
+                }
+
                 //Debug.Log($"Short Array reversed. Begining transform to color array.");
 
                 //ushort[] shorts = new ushort[bytes.Length/2];
@@ -382,11 +400,22 @@ public static class dicomImageTools
                 //for(int y = dicomFramePixelData.Height - 1; y >= 0 ; y--)
                 //{
                     //for(int x = 0; x < dicomFramePixelData.Width * dicomFramePixelData.Height ; x++)
+
                     Parallel.For(0, dicomFramePixelData.Width * dicomFramePixelData.Height, x =>
                     {
                         //var dicomFilePixel = BAToInt16(dicomFrameByteArray, count);
                         //var dicomFilePixel = (short)(dicomFrameShortArray[count] | (dicomFrameByteArray[count+1] << 8));
-                        var dicomFileHUPixel = (dicomFrameShortArray[x] * rescaleSlope) + rescaleIntercept;
+                        int dicomFileHUPixel = 0;
+
+                        if(rescale)
+                        {
+                           dicomFileHUPixel = (dicomFrameShortArray[x] * rescaleSlope) + rescaleIntercept;
+                        }
+                        else
+                        {
+                            dicomFileHUPixel = dicomFrameShortArray[x];
+                        }
+                        
                         float dicomFileRescaledHUIntensity = ((float)dicomFileHUPixel - (float)hounsfieldUnitMinimumIntenisty) / hounsfieldUnitRange;
                         Color readyRescaledHUColor = new Color(dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity, dicomFileRescaledHUIntensity);
                         dicomOriginalTextureRescaledHU[x] = readyRescaledHUColor;
@@ -459,7 +488,7 @@ public static class dicomImageTools
 			for(int x = 0; x < w; x++)
             //Parallel.For(0, w, x =>
 			{
-				for(int y = 0; y < h; y++)
+			    for(int y = 0; y < h; y++)
                 //Parallel.For(0, h, y =>
 				{
 					var idx = x + (y * w) + (z * (w * h));

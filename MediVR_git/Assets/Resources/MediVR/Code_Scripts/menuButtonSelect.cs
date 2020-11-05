@@ -15,11 +15,14 @@ using TMPro;
 
 public class menuButtonSelect : MonoBehaviour
 {
+    public ScrollRect scrollView = null;
+
+    public string[] savedDirectoryNames = null;
+
     private string dicomAssetPath = "MediVR/Textures/Dicom 3D Textures";
     private static string savedDirectoryFileName = "importedDirectoryNames";
     private string savedDirectoryFilePath = null;
     private string savedDirectoryFileNames = null;
-    public string[] savedDirectoryNames = null;
 
     //private static string cabinetScenePath = "Assets/Resources/MediVR/Scenes/VirtualDiagnosticsCabinet";
     private initialImportDicom initialImportDicomScript = null; 
@@ -83,6 +86,8 @@ public class menuButtonSelect : MonoBehaviour
 
             Destroy(buttonTemplate);
         }
+
+        scrollView.verticalNormalizedPosition = 1;
     }
 
     void ButtonClicked(int idx)
