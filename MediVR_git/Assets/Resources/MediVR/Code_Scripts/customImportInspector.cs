@@ -30,6 +30,11 @@ using UnityEditor;
             {
                 import.CreateTexture3DAssets();
             }
+
+            if(GUILayout.Button("Save Imported Directory Names"))
+            {
+                import.SaveImportedTextureDirectoryNames();
+            }
         }
     }
 

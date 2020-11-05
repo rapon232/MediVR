@@ -374,13 +374,13 @@ public static class dicomImageTools
 
                 //Debug.Log($"Reversing short array.");
 
-                Array.Reverse(dicomFrameShortArray);
+                /*Array.Reverse(dicomFrameShortArray);
 
                 for(int row = 0; row < dicomFramePixelData.Width; ++row)
                 //Parallel.For(0, dicomFramePixelData.Width, row =>
                 {
                     Array.Reverse(dicomFrameShortArray, row * dicomFramePixelData.Width, dicomFramePixelData.Width);
-                }
+                }*/
 
                 //Debug.Log($"Short Array reversed. Begining transform to color array.");
 
@@ -498,7 +498,7 @@ public static class dicomImageTools
                     if(z > sliceCountOffset && z < invSliceCountOffset)
                     {
                         //c = slices[slicesCount].GetPixelBilinear(x / (float)w, y / (float)h);
-                        c = newDicomTex.GetPixel(x, y);
+                        c = newDicomTex.GetPixel(x, (h - y));
                        /* if (pixelData is Dicom.Imaging.Render.GrayscalePixelDataU16)
                         {
                             var pixel = pixelData.GetPixel(x,y);

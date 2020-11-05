@@ -174,16 +174,18 @@ public class initialImportDicom : MonoBehaviour
 
             //////// SAVE IMPORTED DIRECTORY NAMES
 
-            saveImportedTextureDirectoryNames();
+            SaveImportedTextureDirectoryNames();
         }
         else
         {
-            saveImportedTextureDirectoryNames();
+            SaveImportedTextureDirectoryNames();
         }
     }
 
-    public void saveImportedTextureDirectoryNames()
+    public void SaveImportedTextureDirectoryNames()
     {
+        ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", assetDestinationDirectory);
+        
         bool exists = Directory.Exists(ressourceDestinationPath); // Create/Check for Folder: Dicom 3D Textures
 
         if(exists)
