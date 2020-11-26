@@ -159,8 +159,8 @@ public class adjustQuad : MonoBehaviour
         WMax = GameObject.Find("WMax_Value");
         WScale = GameObject.Find("WScale_Value");
 
-       UpdateWindowScreenDisplay(adjustWindowYDefault, adjustWindowXDefault);
-       UpdateScaleScreenDisplay(adjustScaleYDefault);
+        UpdateWindowScreenDisplay(adjustWindowYDefault, adjustWindowXDefault);
+        UpdateScaleScreenDisplay(adjustScaleYDefault);
 
         GetControllers();
     }
@@ -482,6 +482,16 @@ public class adjustQuad : MonoBehaviour
     public void UpdateScaleScreenDisplay(float wscale)
     {
         WScale.GetComponent<TextMeshProUGUI>().text = (wscale / adjustScaleYDefault * 100).ToString("F0") + "%";
+    }
+
+    public void ResetWindowAndScale()
+    {
+        quadMaterial.SetFloat(adjustWindowXName, adjustWindowXDefault);
+        quadMaterial.SetFloat(adjustWindowYName, adjustWindowYDefault);
+        quadMaterial.SetFloat(adjustScaleYName, adjustScaleYDefault);
+
+        UpdateWindowScreenDisplay(adjustWindowYDefault, adjustWindowXDefault);
+        UpdateScaleScreenDisplay(adjustScaleYDefault); 
     }
 
 }

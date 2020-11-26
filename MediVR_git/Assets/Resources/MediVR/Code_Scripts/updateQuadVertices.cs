@@ -32,13 +32,13 @@ public class updateQuadVertices : MonoBehaviour
         {
             //updatedCoords = this.transform.position;
             //quadRenderer.material.SetVector("_MovingCoords", (startCoords - updatedCoords));
-            calculateCoords();
+            CalculateCoords();
             transform.hasChanged = false;
         }
         
     }
 
-    void calculateCoords()
+    void CalculateCoords()
     {
         List<Vector3> vertices = new List<Vector3>(quadMeshFilter.mesh.vertices);
         for (int i = 0; i < vertices.Count; i++)

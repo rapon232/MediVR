@@ -16,7 +16,10 @@ using UnityEditor;
 
             DrawDefaultInspector();
 
-            initialImportDicom import = (initialImportDicom)target;
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Slices must be ordered from distal to proximal end of volume.");
+            EditorGUILayout.LabelField("If in reverse order, check box Reverse Slice Order.");
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
@@ -25,6 +28,8 @@ using UnityEditor;
             EditorGUILayout.LabelField("The 3D Texture will be saved as an Asset for use at runtime.");
 
             EditorGUILayout.Space();
+
+            initialImportDicom import = (initialImportDicom)target;
 
             if(GUILayout.Button("Import Dicom Files"))
             {

@@ -148,8 +148,33 @@ Shader "MediVR/RayCastingRendering" {
 					if (ray_pos.x > 1 || ray_pos.y > 1 || ray_pos.z > 1) break;
 				}
 
+				//if(ray_col.r < 0.08 && ray_col.g < 0.08 && ray_col.b < 0.08)
+				//	discard;
+
+					//NEW
+
+
 				if(ray_col.r < 0.08 && ray_col.g < 0.08 && ray_col.b < 0.08)
-					discard;
+				discard;
+              
+                ray_col = (ray_col * 4095) - 1024;
+
+                if(ray_col.r > 400 && ray_col.g > 400 && ray_col.b > 400)
+                {
+                    ray_col = 400;
+                }
+                else if(ray_col.r < -300 && ray_col.g < -300 && ray_col.b < -300)
+                {
+                    ray_col = -300;
+                }
+                else if((ray_col.r > -300 && ray_col.r < 400) && (ray_col.g > -300 && ray_col.g < 400) && (ray_col.b > -300 && ray_col.b < 400))
+                {
+                    ray_col = ray_col;
+                }
+
+                ray_col = (ray_col + 300) / 350;
+
+					//END OF NEW
 
 		    	return ray_col*_Normalization;
 			}

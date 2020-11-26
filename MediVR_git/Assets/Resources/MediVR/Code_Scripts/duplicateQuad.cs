@@ -166,6 +166,44 @@ public class duplicateQuad : MonoBehaviour
             }
             
         }
+
+        #if UNITY_EDITOR
+
+            if(Input.GetKeyDown("d"))//(Input.GetMouseButtonDown(0))
+            {
+                if(!flag)
+                {
+                    audioFXSource.PlayOneShot(onButtonPressDown);
+
+                    //var check = this.GetComponent<isQuadDuplicate>();
+
+                    if(this.tag == "Duplicate")
+                    {
+                        Destroy(this.gameObject);
+                    }
+                    else
+                    {
+                        DuplicateQuad();
+                    }
+                }
+
+                quadMaterial.SetColor(outlineColorName, duplicateColor);
+
+                flag = true;
+            }
+            else
+            {
+                //audioFXSource.PlayOneShot(onButtonPressUp);
+
+                if(flag)
+                {
+                    quadMaterial.SetColor(outlineColorName, inactiveColor);
+
+                    flag = false;
+                }
+            }
+
+        #endif
         
     }
 
@@ -249,6 +287,7 @@ public class duplicateQuad : MonoBehaviour
 
         newQuad.AddComponent<Rigidbody>();
         newQuad.AddComponent<BoxCollider>();
+        
         //newQuad.AddComponent<CharacterController>();
         //newQuad.AddComponent<SphereCollider>();
 
@@ -259,10 +298,14 @@ public class duplicateQuad : MonoBehaviour
         newQuad.AddComponent<grabQuad>();
         //newQuad.AddComponent<detectQuadCollision>();
 
+        
+
         var newQuadRb = newQuad.GetComponent<Rigidbody>();
 
         newQuadRb.useGravity = false;
         newQuadRb.isKinematic = true;
+
+        
         //newQuadRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
         //var newQuadGQ = newQuad.GetComponent<grabQuad>();

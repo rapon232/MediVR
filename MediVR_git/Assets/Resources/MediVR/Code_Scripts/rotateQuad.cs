@@ -215,4 +215,10 @@ public class rotateQuad : MonoBehaviour
         translate = state;
         //Debug.Log($"Translate set to: {translate}!");
     }
+
+    public void ResetPositionRotation()
+    {
+        this.transform.position = translateDefault;
+        this.transform.rotation = rotateDefault;
+    }
 }
