@@ -48,20 +48,15 @@ Developed on Unity.
   8. To save all reproduced slices, hit the **Save Images** button. They will appear in .PNG format in the MediVR/Saved Slices directory on the Quest's internal storage.
   3. To reset cutting plane position and window, hit the **↺** button.
   4. To go back to menu and quit or choose different study, hit **Open Menu** button.
-  10. The right wall has 10 interactive fields for comparing slices. To pin them, drag them near to the field and release. To remove, either delete or drag outside screen.
+  10. The right wall has 10 interactive fields for comparing slices. To pin slices to wall, drag them near to the field and release. To remove, either delete or drag outside screen.
 
-
-
-
-
-
-
+---
 
 ## License & Copyright
 
 © Dimitar Tahov 2020
 
-Student @ [HTW Berlin] (https://www.htw-berlin.de), [Gesundheitselektronik] (https://ge-bachelor.htw-berlin.de) Bachelor's thesis under Prof. Dr.-Ing. Kay Otto
+Student @ [HTW Berlin](https://www.htw-berlin.de), [Gesundheitselektronik](https://ge-bachelor.htw-berlin.de) Bachelor's thesis under Prof. Dr.-Ing. Kay Otto
 
 ---
 
