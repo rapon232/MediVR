@@ -1,13 +1,30 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to pass quad vertices to flattened rendering shader.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 
 public class updateQuadVertices : MonoBehaviour
 {
     private Vector3 startCoords;
-    //public Vector3 updatedCoords;
-    //public GameObject Quad;
     private Renderer quadRenderer;
     private MeshFilter quadMeshFilter;
 
@@ -18,26 +35,21 @@ public class updateQuadVertices : MonoBehaviour
 
         quadMeshFilter = this.GetComponent<MeshFilter>();
         quadRenderer = this.GetComponent<Renderer>();
-        //Quad = GameObject.Find("Quad");
         
-        //quadRenderer.material.SetTexture("_MainTex", Resources.Load<Texture3D>("Textures/Dicom 3D Textures/CT_Series_3DTexture_256x256x512"));
         quadRenderer.material.SetVector("_StartCoords", startCoords);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
         if(transform.hasChanged)
         {
-            //updatedCoords = this.transform.position;
-            //quadRenderer.material.SetVector("_MovingCoords", (startCoords - updatedCoords));
             CalculateCoords();
             transform.hasChanged = false;
         }
-        
     }
 
+    //GET LIST OF VERTICES OF QUAD AND UPDATE MESH RENDERER
     void CalculateCoords()
     {
         List<Vector3> vertices = new List<Vector3>(quadMeshFilter.mesh.vertices);

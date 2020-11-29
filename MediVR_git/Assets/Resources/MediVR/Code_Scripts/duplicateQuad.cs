@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to enable duplication of slices.
+
+*/
+
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,8 +33,6 @@ public class duplicateQuad : MonoBehaviour
 {
     public XRNode leftControllerNode = XRNode.LeftHand;
     public XRNode rightControllerNode = XRNode.RightHand;
-
-    //public bool cutBlackPixels = false;
 
     private InputFeatureUsage<bool> duplicateButton = CommonUsages.menuButton;
 
@@ -43,9 +61,6 @@ public class duplicateQuad : MonoBehaviour
 
     private GameObject dicomImageQuad = null;
     private string savePath = null;
-    //private bool duplicated = false;
-
-    //private GameObject q = null;
 
     // Start is called before the first frame update
     void Start()
@@ -65,8 +80,6 @@ public class duplicateQuad : MonoBehaviour
         quadMaterial = quadRenderer.material;        
 
         GetControllers();
-
-        //q = GameObject.Find("Quad");
     }
 
     // Update is called once per frame
@@ -79,37 +92,9 @@ public class duplicateQuad : MonoBehaviour
         }
 
         DuplicateListen();
-        //DuplicateQuad();
-
-        /*if(Input.GetMouseButtonDown(0))
-            {
-                //SetDuplicate(true);
-
-                var tex = GetTextureFromShader(this.gameObject, quadRenderer.material.mainTexture.width, quadRenderer.material.mainTexture.height);
-
-                var q = InstantiateDuplicateQuad(this.gameObject, tex);
-
-                //var rend = q.GetComponent<Renderer>();
-
-                //rend.material.SetTexture("_MainTex", tex);
-
-                quadMaterial.SetColor(outlineColorName, duplicateColor);
-
-                flag = true;
-            }
-            else
-            {
-                if(flag)
-                {
-                    //SetDuplicate(false);
-
-                    quadMaterial.SetColor(outlineColorName, inactiveColor);
-
-                    flag = false;
-                }
-            }*/
     }
 
+    //AWAKE CONTROLLERS
     private void GetControllers()
     {
         InputDevices.GetDevicesAtXRNode(leftControllerNode, leftDevices);
@@ -127,6 +112,7 @@ public class duplicateQuad : MonoBehaviour
         }
     }
 
+    //LISTEN FOR BUTTON PRESS
     private void DuplicateListen()
     {
         if(duplicateListen)
@@ -137,8 +123,6 @@ public class duplicateQuad : MonoBehaviour
                 {
                     audioFXSource.PlayOneShot(onButtonPressDown);
 
-                    //var check = this.GetComponent<isQuadDuplicate>();
-
                     if(this.tag == "Duplicate")
                     {
                         Destroy(this.gameObject);
@@ -155,8 +139,6 @@ public class duplicateQuad : MonoBehaviour
             }
             else
             {
-                //audioFXSource.PlayOneShot(onButtonPressUp);
-
                 if(flag)
                 {
                     quadMaterial.SetColor(outlineColorName, inactiveColor);
@@ -167,15 +149,14 @@ public class duplicateQuad : MonoBehaviour
             
         }
 
+        //DUPLICATE IN UNITY EDITOR
         #if UNITY_EDITOR
 
-            if(Input.GetKeyDown("d"))//(Input.GetMouseButtonDown(0))
+            if(Input.GetKeyDown("d"))
             {
                 if(!flag)
                 {
                     audioFXSource.PlayOneShot(onButtonPressDown);
-
-                    //var check = this.GetComponent<isQuadDuplicate>();
 
                     if(this.tag == "Duplicate")
                     {
@@ -193,8 +174,6 @@ public class duplicateQuad : MonoBehaviour
             }
             else
             {
-                //audioFXSource.PlayOneShot(onButtonPressUp);
-
                 if(flag)
                 {
                     quadMaterial.SetColor(outlineColorName, inactiveColor);
@@ -207,6 +186,7 @@ public class duplicateQuad : MonoBehaviour
         
     }
 
+    //DUPLICATE SLICE TEXTURE TO NEW QUAD
     private void DuplicateQuad()
     {
         var newMaterial = Resources.Load<Material>("MediVR/Materials/duplicateMaterial");
@@ -214,16 +194,11 @@ public class duplicateQuad : MonoBehaviour
         var newTexture = GetTextureFromShader(this.gameObject, 1024, 1024);
 
         var newQuad = InstantiateDuplicateQuad(this.gameObject, newMaterial, newTexture);
-
-        //var rend = q.GetComponent<Renderer>();
-
-        //rend.material.SetTexture("_MainTex", tex);
     }
 
+    //SAVE DUPLICATES TO PNG FILES
     public void SaveAllDuplicates()
     {
-        //Debug.Log($"Saving produced slice(s).");
-
         GameObject[] images;
         images = GameObject.FindGameObjectsWithTag("Duplicate");
 
@@ -249,12 +224,14 @@ public class duplicateQuad : MonoBehaviour
         
     }
 
+    //SET LISTENER
     public void SetDuplicateListen(bool state)
     {
         duplicateListen = state;
         //Debug.Log($"Duplicate Listener set to: {duplicateListen}!");
     }
 
+    //CREATE NEW QUAD AND RENDER DUPLICATE TEXTURE ON IT
     public GameObject InstantiateDuplicateQuad(GameObject quad, Material material, Texture2D tex)
     {
         GameObject newQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -275,66 +252,38 @@ public class duplicateQuad : MonoBehaviour
         newQuadRend.material.SetTexture("_MainTex", tex);
         newQuadRend.material.SetColor(outlineColorName, inactiveColor);
 
-        /*if(!cutBlackPixels)
-        {
-            newQuadRend.material.SetInt("_CutBlackPixels", 0);
-        }
-        else
-        {
-            newQuadRend.material.SetInt("_CutBlackPixels", 1);
-        }*/
-        
-
         newQuad.AddComponent<Rigidbody>();
         newQuad.AddComponent<BoxCollider>();
         
-        //newQuad.AddComponent<CharacterController>();
-        //newQuad.AddComponent<SphereCollider>();
-
-        //newQuad.AddComponent<isQuadDuplicate>();
         newQuad.AddComponent<duplicateQuad>();
         newQuad.AddComponent<rotateQuad>();
-        //newQuad.AddComponent<adjustQuad>();
-        newQuad.AddComponent<grabQuad>();
-        //newQuad.AddComponent<detectQuadCollision>();
 
-        
+        newQuad.AddComponent<grabQuad>();
 
         var newQuadRb = newQuad.GetComponent<Rigidbody>();
 
         newQuadRb.useGravity = false;
         newQuadRb.isKinematic = true;
 
-        
-        //newQuadRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-
-        //var newQuadGQ = newQuad.GetComponent<grabQuad>();
-        //newQuadGQ.trackRotation = true;
-        //newQuadGQ.
-
         return newQuad;
     }
 
+    //SCREENSHOT TEXTURE FROM SLICE TO NEW TEXTURE
     public Texture2D GetTextureFromShader(GameObject quad, int width, int height)
     {
         //Create render texture:
         RenderTexture temp = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
  
         //Create a Quad:
-        /*GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        MeshRenderer rend = quad.GetComponent<MeshRenderer>();
-        rend.material = mat;*/
-        Vector3 quadScale = quad.transform.localScale;// / (float)((Screen.height / 2.0) / Camera.main.orthographicSize);
-        //quad.transform.position = Vector3.forward;
+        Vector3 quadScale = quad.transform.localScale;
  
         //Setup camera:
         GameObject camera = new GameObject("CaptureCam");
         Camera orthoCam = camera.AddComponent<Camera>();
-        //cam.transform.LookAt(quad.transform);
-        //cam.renderingPath = RenderingPath.Forward;
+
         orthoCam.transform.position = quad.transform.position;
         orthoCam.transform.rotation = quad.transform.rotation;
-        //cam.transform.position = new Vector3(quad.transform.position.x, quad.transform.position.y, quad.transform.position.z - 1);
+        
         orthoCam.transform.Translate(Vector3.back, Space.Self);
 
         orthoCam.cullingMask = 1 << LayerMask.NameToLayer("Quad");

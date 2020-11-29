@@ -1,4 +1,25 @@
-﻿using System;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to import DICOM slices from a directory and reconstruct them to a 3D Texture. Their metadata gets serialized to an XML file and
+    all imported directory names get serialized to an XML file too.
+
+*/
+
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,14 +52,10 @@ public class initialImportDicom : MonoBehaviour
     [HideInInspector]
     public Texture3D threeDimTexture = null;
 
-    //public UnityEngine.Object[] loadedTextures = null;
-
-    public string userDefinedFolderName = null;// Name of Directory to be imported, chosen from menu bar
+    public string userDefinedFolderName = null; // Name of Directory to be imported, chosen from menu bar
     public string userDefinedDicomPath = null; // Path to Directory to be imported, chosen from menu bar
     public bool anonymizeDicomMetaData = false; // Toggle to anonymize data
     public bool reverseSliceOrder = false; //Toggle to reverse order of slices while importing
-
-    //public string dicomFileDirectory = "CT_Series"; // Name of folder containing dicom slices
     
     [HideInInspector]
     public static string assetDestinationDirectory =  "Dicom 3D Textures"; // Name of folder containg saved 3D Textures
@@ -46,7 +63,6 @@ public class initialImportDicom : MonoBehaviour
     public static string savedTextureDestinationDirectory = "Saved Slices"; // Name of folder to save duplicates at runtime
     [HideInInspector]
     public static string savedTextureDestinationPath = null; // Path to folder to save duplicates at runtime
-    //public string dirPath = null;   // Path to dicomFileDirectory, path to folder containing dicom slices
     public static string ressourceDestinationPath = null;  // Path to Dicom 3D Textures, path to folder conatining saved 3d textures
     [HideInInspector]
     public string thisRessourceDestinationPath = null; // Path to Dicom 3D Textures/dicomFileDirectory, path folder containing 3d texture, metadata and planes
@@ -74,7 +90,6 @@ public class initialImportDicom : MonoBehaviour
 
     void Start()
     {
-        //dirPath = Path.Combine(rootPath, dicomFileDirectory);
         savedTextureDestinationPath = Path.Combine(rootPath, savedTextureDestinationDirectory);
         bool exists = Directory.Exists(savedTextureDestinationPath); // Create/Check for Folder: Saved Slices
 
@@ -83,15 +98,15 @@ public class initialImportDicom : MonoBehaviour
             Directory.CreateDirectory(savedTextureDestinationPath);
         }
 
-        ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", assetDestinationDirectory);
-        thisRessourceDestinationPath = Path.Combine(ressourceDestinationPath, userDefinedFolderName);// dicomFileDirectory);
+        ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", assetDestinationDirectory); // Set some paths
+        thisRessourceDestinationPath = Path.Combine(ressourceDestinationPath, userDefinedFolderName);
     }
 
+    //IMPORT DICOM SLICES
     public void CreateTexture3DAssets()
     {
-        try//(userDefinedDicomPath != null && userDefinedFolderName != null)
+        try
         {
-            //dirPath = Path.Combine(rootPath, dicomFileDirectory);
             savedTextureDestinationPath = Path.Combine(rootPath, savedTextureDestinationDirectory);
             bool exists = Directory.Exists(savedTextureDestinationPath); // Create/Check for Folder: Saved Slices
 
@@ -100,8 +115,8 @@ public class initialImportDicom : MonoBehaviour
                 Directory.CreateDirectory(savedTextureDestinationPath);
             }
 
-            ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", assetDestinationDirectory);
-            thisRessourceDestinationPath = Path.Combine(ressourceDestinationPath, userDefinedFolderName);//dicomFileDirectory);
+            ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", assetDestinationDirectory); //Set some paths
+            thisRessourceDestinationPath = Path.Combine(ressourceDestinationPath, userDefinedFolderName);
 
             exists = Directory.Exists(ressourceDestinationPath); // Create/Check for Folder: Dicom 3D Textures
 
@@ -137,6 +152,8 @@ public class initialImportDicom : MonoBehaviour
             //Debug.Log($"Loading Dicom files from Directory {dirPath} into Array");
             Debug.Log($"Loading Dicom files from Directory {userDefinedDicomPath} into Array");
 
+            //READ FILE NAMES
+
             List<string> dicomFileNameList = new List<string>();
 
             foreach (var dicomFile in dicomDirectoryInfo.GetFiles(".", SearchOption.AllDirectories)) 
@@ -166,7 +183,6 @@ public class initialImportDicom : MonoBehaviour
 
                 //////// SAVE METADATA
 
-                //metadataRessourceName = thisRessourceDestinationPath + "/" + dicomFileDirectory + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth + "_MetaData.XML";
                 metadataRessourceName = thisRessourceDestinationPath + "/" + userDefinedFolderName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth + "_MetaData.XML"; 
         
                 XmlSerializer serializer = new XmlSerializer(typeof(dicomInfoTools));
@@ -179,7 +195,6 @@ public class initialImportDicom : MonoBehaviour
 
                 //////// SAVE SINGLE SLICES
 
-                //sliceRessourceName = dicomFileDirectory + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth + "_Slice"; 
                 sliceRessourceName = userDefinedFolderName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth + "_Slice";
 
                 dicomSlices = dicomImageTools.CreateNumberedTextureArrayFromDicomdir(dicomFileNameList, 5);
@@ -187,7 +202,6 @@ public class initialImportDicom : MonoBehaviour
 
                 //////// SAVE 3D TEXTURE
 
-                //textureRessourceName = dicomFileDirectory + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth; 
                 textureRessourceName = userDefinedFolderName + "_3DTexture_" + textureWidth + "x" + textureHeight + "x" + textureDepth;
                 threeDimTexture = dicomImageTools.createTexture3DAsAssetScript(dicomFileNameList, dicomInformation, textureWidth, textureHeight, textureDepth);
                 dicomImageTools.exportTexture3DToAsset(threeDimTexture, thisRessourceDestinationPath, textureRessourceName);
@@ -208,6 +222,7 @@ public class initialImportDicom : MonoBehaviour
         }
     }
 
+    //SERIALIZE IMPORTED DIRECTORY NAMES
     public void SaveImportedTextureDirectoryNames()
     {
         ressourceDestinationPath = Path.Combine("Assets/Resources/MediVR/Textures", assetDestinationDirectory);
@@ -255,7 +270,6 @@ public class initialImportDicom : MonoBehaviour
         Debug.Log($"Quitting App. Stay safe and healthy :) !");
         Application.Quit();
     }
-
 
 }
 

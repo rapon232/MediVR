@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This class serves to read and save DICOM metadata to a unity object.
+
+*/
+
+using System;
 using System.Globalization;
 using System.IO;
 using System.Collections;
@@ -22,6 +42,7 @@ using TMPro;
 
 public class dicomInfoTools : ISerializable
 {
+    //PRIVATE ATTRIBUTES
     private string dateFormat;
     private string timeFormat;
 
@@ -56,6 +77,7 @@ public class dicomInfoTools : ISerializable
 
     private dicomInfoString strings;
 
+    //STRUCT FOR PASSING INFORMATION TO SCREEN
     public struct dicomInfoString
     {
         public string patientInfo { get;}
@@ -70,6 +92,7 @@ public class dicomInfoTools : ISerializable
         }
     }
 
+    //PUBLIC PROPERTIES
     public string DateFormat
     {
         get { return dateFormat; }
@@ -216,7 +239,7 @@ public class dicomInfoTools : ISerializable
     }
 
     
-
+    //CONSTRUCTORS
     public dicomInfoTools()
     {
         dateFormat = "N/A";
@@ -473,7 +496,6 @@ public class dicomInfoTools : ISerializable
         if(file.Dataset.Contains(DicomTag.StudyTime))
         {
             var time = file.Dataset.Get<string>(DicomTag.StudyTime, "N/A");
-            //time = time.Substring(0, 6);
 
             string format = "HHmmss.ffffff";
             bool isFormattable = DateTime.TryParseExact(time, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime newTime);
@@ -582,6 +604,7 @@ public class dicomInfoTools : ISerializable
         //Debug.Log($"Image Rescale Slope: {imageRescaleSlope} and Rescale Intercept: {imageRescaleIntercept}");
     }
 
+    //SERIALIZATION CONSTRUCTOR
     public dicomInfoTools(SerializationInfo info, StreamingContext context)
     {
         dateFormat = (string)info.GetValue("DateFormat", typeof(string));
@@ -620,10 +643,9 @@ public class dicomInfoTools : ISerializable
         GetDicomInfoString();
     }
 
+    //SERIALIZATION INTERFACE METHOD
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-        //throw new NotImplementedException();
-
         info.AddValue("DateFormat", DateFormat);
         info.AddValue("TimeFormat", TimeFormat);
 
@@ -659,11 +681,7 @@ public class dicomInfoTools : ISerializable
         info.AddValue("Strings", Strings);
     }
 
-    /*public void SetDicomInfoFromFile(DicomFile file)
-    {
-        
-    }*/
-
+    //READ METADATA
     public void GetDicomInfoString()
     {
         string patientIdString;
@@ -768,13 +786,13 @@ public class dicomInfoTools : ISerializable
         return;
     }
 
+    //CALCULATE ORIENTATION FROM PATIENTORIENTATION TAG
     private string GetPatientOrientationString(double[] orientations)
     {
         string orientation = null;
 
         if(orientations != null)
         {
-            //var orientations = file.Dataset.GetValues<double>(DicomTag.ImageOrientationPatient); // this array has length 6
             var rowDirection = new Dicom.Imaging.Mathematics.Vector3D(orientations, 0); // take 3 values starting from index 0
             var colDirection = new Dicom.Imaging.Mathematics.Vector3D(orientations, 3); // take 3 values starting from index 3
             var normalvector = colDirection.CrossProduct(rowDirection);

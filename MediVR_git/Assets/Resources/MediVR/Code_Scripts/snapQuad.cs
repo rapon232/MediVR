@@ -1,4 +1,24 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to snap duplicate slices to pin wall.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,15 +43,12 @@ public class snapQuad : MonoBehaviour
     private string snapZoneColorName = "_Color";
     private Color inactiveColor = Color.clear;
 
-    //private bool objectIsOffset = false;
-
     public bool IsSnapped
     {
         get { return isSnapped; }
     }
 
     private bool isActivated = false;
-    //private bool isDeleted = false;
 
     // Start is called before the first frame update
     void Start()
@@ -55,52 +72,16 @@ public class snapQuad : MonoBehaviour
             {
                 isGrabbed = true;
             }
-            //isDeleted = false;
         }
         else
         {
-            //isDeleted = true;
             isGrabbed = false;
         }
-
-        if(isSnapped)
-        {
-            //snapZoneBoxCollider.isTrigger = false;
-            //snapZoneMaterial.SetColor(snapZoneColorName, activeColor);
-            //snapZoneMaterial.SetColor(snapZoneColorName, Color.clear);
-        }
-        else
-        {
-            //snapZoneBoxCollider.isTrigger = true;
-            //snapZoneMaterial.SetColor(snapZoneColorName, inactiveColor);
-            /*if(isInsideSnapZone)
-            {
-                snapZoneMaterial.SetColor(snapZoneColorName, activeColor);
-            }
-            else
-            {
-                snapZoneMaterial.SetColor(snapZoneColorName, inactiveColor);
-            }*/
-            
-        }
-
-        /*if(isDeleted)
-        {
-            snapZoneBoxCollider.isTrigger = true;
-        }*/
-
-        /*if(isInsideSnapZone)
-        {
-            snapZoneMaterial.SetColor(snapZoneColorName, activeColor);
-        }
-        else
-        {
-            snapZoneMaterial.SetColor(snapZoneColorName, inactiveColor);
-        }*/
 
         SnapQuad();
     }
 
+    //SNAP SLICE TO WALL
     void OnTriggerEnter(Collider other)
     {
         if(!isActivated)
@@ -113,50 +94,28 @@ public class snapQuad : MonoBehaviour
 
                 isInsideSnapZone = true;
                 isActivated = true;
-                //snapZoneBoxCollider.isTrigger = false;
-
-                //snapZoneMaterial.SetColor(snapZoneColorName, activeColor);
             }
         }
     }
 
-    /*void OnTriggerStay(Collider other)
-    {
-        if(isActivated)
-        {
-            if(other.gameObject.name == objectToSnapName)
-            {
-                if(isSnapped)
-                {
-                    snapZoneBoxCollider.isTrigger = false;
-                }
-            }
-        }
-    }*/
-
+    //UNSNAP SLICE FROM WALL
     void OnTriggerExit(Collider other)
     {
         if(isActivated)
         {
             if(other.gameObject.name == objectToSnapName)
             {
-                //quad.GetComponent<BoxCollider>().enabled = true;
-                //snapZoneBoxCollider.isTrigger = true;
-
                 quad = null;
                 grabQuadScript = null;
                 rotateQuadScript = null;
 
                 isInsideSnapZone = false;
                 isActivated = false;
-                //snapZoneBoxCollider.isTrigger = true;
-                //objectIsOffset = true;
-
-                //snapZoneMaterial.SetColor(snapZoneColorName, inactiveColor);
             }
         }
     }
 
+    //UPDATE SLICE SNAP TO WALL
     void SnapQuad()
     {
         if(!isGrabbed && isInsideSnapZone)
@@ -167,56 +126,11 @@ public class snapQuad : MonoBehaviour
                 quad.gameObject.transform.position -= new Vector3(quadSnappedOffset, 0, 0);
                 quad.gameObject.transform.rotation = this.transform.rotation;
                 isSnapped = true;
-
-                //quad.GetComponent<BoxCollider>().enabled = false;
-                //snapZoneBoxCollider.isTrigger = false;
             }
-            /*else
-            {
-                quad.GetComponent<BoxCollider>().enabled = true;
-                snapZoneBoxCollider.isTrigger = true;
-                //isSnapped = false;
-                //isInsideSnapZone = false;
-                //isActivated = false;
-            }*/
-
-            //isActivated = true;
-
-
-            //snapZoneMaterial.SetColor(snapZoneColorName, inactiveColor);
         }
-        //else if(isGrabbed && isInsideSnapZone)
-        //{
-            /*if(!objectIsOffset)
-            {
-                quad.gameObject.transform.position = this.transform.position;
-                quad.gameObject.transform.position -= new Vector3(quadOrientatedOffset, 0, 0);
-                quad.gameObject.transform.rotation = this.transform.rotation;
-
-                objectIsOffset = true;
-            }*/
-            
-            //isSnapped = false;
-
-            //quad.GetComponent<BoxCollider>().enabled = true;
-            //isActivated = true;
-
-            //snapZoneMaterial.SetColor(snapZoneColorName, activeColor);
-        //}
-        /*else if(isGrabbed && !isInsideSnapZone)
-        {
-            //objectIsOffset = true;
-            isSnapped = false;
-
-        }*/
         else
         {
-            //objectIsOffset = false;
             isSnapped = false;
-            //isActivated = false;
-
-
-            //snapZoneMaterial.SetColor(snapZoneColorName, inactiveColor);
         }
     }
 }

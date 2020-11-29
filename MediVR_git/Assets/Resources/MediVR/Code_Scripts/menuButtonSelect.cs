@@ -1,4 +1,24 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to create scrollable list of imported directories at beginning menu.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +44,6 @@ public class menuButtonSelect : MonoBehaviour
     private string savedDirectoryFilePath = null;
     private string savedDirectoryFileNames = null;
 
-    //private static string cabinetScenePath = "Assets/Resources/MediVR/Scenes/VirtualDiagnosticsCabinet";
     private initialImportDicom initialImportDicomScript = null; 
 
     private GameObject buttonTemplate = null;
@@ -33,22 +52,12 @@ public class menuButtonSelect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        /*subDirectoryEntries = Directory.GetDirectories(dicomAssetPath);
-        subDirectoryNames = new string[subDirectoryEntries.Length];
-
-        #if UNITY_EDITOR
-            dicomAssetPath = initialImportDicom.ressourceDestinationPath;
-            Debug.Log(dicomAssetPath);
-        #else
-            dicomAssetPath = Path.Combine(Application.persistentDataPath, initialImportDicom.ressourceDestinationPath);
-            Debug.Log(dicomAssetPath);
-        #endif*/ 
-
         initialImportDicomScript = this.GetComponent<initialImportDicom>();
 
         savedDirectoryFilePath = Path.Combine(dicomAssetPath, savedDirectoryFileName);
         //Debug.Log(savedDirectoryFilePath);
 
+        //LOAD DIRECTORY PATH
         if(savedDirectoryFilePath != null)
         {
             var resource = Resources.Load<TextAsset>(savedDirectoryFilePath);
@@ -59,6 +68,7 @@ public class menuButtonSelect : MonoBehaviour
             }
         }
 
+        //DESERIALIZE DIRECTORY NAMES
         if(savedDirectoryFileNames != null)
         {
             XmlSerializer deserializer = new XmlSerializer(typeof(string[]));
@@ -74,6 +84,7 @@ public class menuButtonSelect : MonoBehaviour
 
         buttonTemplate = transform.GetChild(0).gameObject;
         
+        //CREATE ONE BUTTON IN LIST FOR EVERY IMPORTED DIRECTORY
         if(savedDirectoryNames != null)
         {
             for (int i = 0; i < savedDirectoryNames.Length; i++)
@@ -90,26 +101,19 @@ public class menuButtonSelect : MonoBehaviour
         scrollView.verticalNormalizedPosition = 1;
     }
 
+    //LOAD CLICKED DATASET
     void ButtonClicked(int idx)
     {
-        //Debug.Log($"{idx}");
-        //Debug.Log($"Folder: {setCurrentPath.currentDirectory} clicked.");
         setCurrentDirectory.currentDirectory = savedDirectoryNames[idx];
 
         Debug.Log($"Clicked folder name: {setCurrentDirectory.currentDirectory}.");
 
-        //if(!IsDirectoryEmpty(setCurrentDirectory.currentDirectoryPath))
-        //{
-            Debug.Log($"Loading Cabinet.");
-            initialImportDicomScript.GoToNextScene();
-        /*}
-        else
-        {
-            Debug.Log($"Folder: {setCurrentDirectory.currentDirectory} is empty.");
-        }*/
+        Debug.Log($"Loading Cabinet.");
+        initialImportDicomScript.GoToNextScene();
     }
 }
 
+//MODIFY BUTTON ONCLICK METHOD
 public static class ButtonExtension
 {
     public static void AddEventListener<T>(this Button button, T param, Action<T> OnClick)

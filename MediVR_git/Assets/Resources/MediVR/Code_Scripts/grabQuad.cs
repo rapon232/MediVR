@@ -1,4 +1,24 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to enable grabbing of slice frame by hand.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -7,6 +27,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class grabQuad : XRGrabInteractable
 {
+    //PRIVATE ATTRIBUTES
     public XRNode handController = UnityEngine.XR.XRNode.RightHand;
     public XRNode joystickController = UnityEngine.XR.XRNode.LeftHand;
     
@@ -25,7 +46,6 @@ public class grabQuad : XRGrabInteractable
     private float inactiveMoveSpeed = 0f;
 
     private bool selected = false;
-    //private bool activated = false;
 
     private Vector3 interactorPosition = Vector3.zero;
     private Quaternion interactorRotation = Quaternion.identity;
@@ -34,8 +54,6 @@ public class grabQuad : XRGrabInteractable
     private Material quadMaterial = null;
 
     private string outlineColorName = "_OutlineColor";
-    //private Color outlineColor = Color.white;
-    //private bool colorStored = false;
 
     private GameObject xrRig = null;
     private moveLocomotion moveLocomotionScript = null;
@@ -50,6 +68,7 @@ public class grabQuad : XRGrabInteractable
     private bool audioSelectFlag = false;
     private bool audioActivateFlag = false;
 
+    //PUBLIC PROPERTIES
     public bool Selected
     {
         get { return selected; }
@@ -95,10 +114,9 @@ public class grabQuad : XRGrabInteractable
         {
             adjustQuadScript = this.GetComponent<adjustQuad>();
         }
-        //textureRessourceName = screenPlane.GetComponent<importDicom>().textureRessourceName;
-
     }
 
+    //PROCEDURE ON TRIGGER PRESS
     protected override void OnSelectEnter(XRBaseInteractor interactor)
     {
         selected = true;
@@ -152,11 +170,10 @@ public class grabQuad : XRGrabInteractable
         
     }
 
+    //PROCEDURE ON TRIGGER RELEASE
     protected override void OnSelectExit(XRBaseInteractor interactor)
     {
         selected = false;
-
-        //audioFXSource.PlayOneShot(onButtonPressUp);
 
         OnDeactivate(interactor);
 
@@ -192,12 +209,9 @@ public class grabQuad : XRGrabInteractable
         }
     }
 
+    //PROCEDURE ON GRIP PRESS WHILE TRIGGER IS PRESSED
     protected override void OnActivate(XRBaseInteractor interactor)
     {
-        //activated = true;
-
-        //adjustQuadScript.SetAdjustListen(false);
-
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
             base.OnActivate(interactor);
@@ -241,14 +255,9 @@ public class grabQuad : XRGrabInteractable
         }
     }
 
+    //PROCEDURE ON GRIP RELEASE
     protected override void OnDeactivate(XRBaseInteractor interactor)
     {
-        //activated = false;
-
-        //audioFXSource.PlayOneShot(onButtonPressUp);
-
-        //adjustQuadScript.SetAdjustListen(true);
-
         if(interactor.GetComponent<XRController>().controllerNode == handController)
         {
             base.OnDeactivate(interactor);
@@ -319,6 +328,7 @@ public class grabQuad : XRGrabInteractable
         }
     }
 
+    //PROCEDURE ON HOVER UPON SLICE FRAME
     protected override void OnHoverEnter(XRBaseInteractor interactor)
     {
         base.OnHoverEnter(interactor);
@@ -334,6 +344,7 @@ public class grabQuad : XRGrabInteractable
         }
     }
 
+    //PROCEDURE ON HOVER EXIT
     protected override void OnHoverExit(XRBaseInteractor interactor)
     {
         base.OnHoverExit(interactor);
@@ -349,6 +360,7 @@ public class grabQuad : XRGrabInteractable
         }
     }
 
+    //METHODS FOR ENABLING OF DISTANCE GRABBING
     private void StoreInteractor(XRBaseInteractor interactor)
     {
         interactorPosition = interactor.attachTransform.localPosition;
@@ -375,15 +387,7 @@ public class grabQuad : XRGrabInteractable
         interactorRotation = Quaternion.identity;
     }
 
-    /*private void StoreOutlineColor(Material material, string colorName)
-    {
-        if(!colorStored)
-        {
-            outlineColor = material.GetColor(colorName);
-            colorStored = true;
-        }
-    }*/
-
+    //SET COLOR OF SLICE FRAME
     private void SetOutlineColor(Material material, string colorName, Color color)
     {
         //StoreOutlineColor(material, colorName);

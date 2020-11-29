@@ -1,4 +1,24 @@
-﻿Shader "MediVR/DuplicateRendering"
+﻿
+
+//    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+//   Copyright (C) 2020  Dimitar Tahov
+
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+
+//    This shader serves to render duplicate slices at runtime.
+
+
+
+Shader "MediVR/DuplicateRendering"
 {
     Properties
     {
@@ -46,7 +66,7 @@
         //_MovingCoords("Quad Updated Coordinates", Vector) = (0,0,0) 
 
     }
-
+        
         CGINCLUDE
         #include "UnityCG.cginc"
 
@@ -62,12 +82,10 @@
             float _ThresholdInv;
 
             float3 _StartCoords;
-            //float3 _MovingCoords;
 
             struct appdata
             {
                 float4 vertex : POSITION;
-                //float2 uv : TEXCOORD0;
                 float2 uv : TEXCOORD0;
 
                 float3 normal : NORMAL;
@@ -76,17 +94,13 @@
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-                //float2 uv : TEXCOORD0;
                 float2 uv : TEXCOORD0;
-
-                //float depth : TEXCOORD1;
 
                 float3 normal : NORMAL;
                 float4 color : COLOR;
             };
 
             sampler2D _MainTex;
-            //float4 _MainTex_ST;
             float4 _MainTex_TexelSize;
 
         ENDCG
@@ -96,6 +110,7 @@
         Tags { "Queue"="Transparent" }
         LOD 200
 
+        //RENDER TEXTURE2D
         Pass
         {
             ZWrite On
@@ -107,80 +122,39 @@
 
             v2f vert (appdata v)
             {
-                //v.vertex.xyz *= _OutlineWidth;
-
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.uv = v.uv;//(v.uv -_StartCoords) / _Enlarge + float3(.5,.5,.5);
-                //o.uv = float2(_MovingCoords.x, _MovingCoords.y);
-                //float3 updatedCoords = _StartCoords - _MovingCoords;
-                //o.depth = - _MovingCoords.z;
-                //o.color = _OutlineColor;
+                o.uv = v.uv;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // sample the texture
-                //_uv = float3(i.uv, i.depth);
-                //fixed4 col = tex3Dlod(_MainTex, float4(i.uv,i.depth,0));
+                //CLIP TEXTURE IN Z AXIS
                 clip(i.uv);
                 clip(1.0 - i.uv);
 
                 fixed4 col = tex2D(_MainTex, i.uv);
-
-                /*if(col.r < _Threshold && col.g < _Threshold && col.b < _Threshold)
-					discard;
-
-                if(col.r > _ThresholdInv && col.g > _ThresholdInv && col.b > _ThresholdInv)
-                discard;
-
-                if(_CutBlackPixels == 1)
-                {
-                    if(col.r < 0.08 && col.g < 0.08 && col.b < 0.08)
-                        discard;
-                }
-
-                col*= _Contrast;
-                col += _Brightness;
-                
-                if(_CutBlackPixels == 1)
-                {
-                    if(col.r < 0.08 && col.g < 0.08 && col.b < 0.08)
-                        discard;
-                }*/
-
-                //if (i.uv.x <= _MainTex_TexelSize.x || i.uv.y <= _MainTex_TexelSize.y || i.uv.x >= (1.0 - _MainTex_TexelSize.x) || i.uv.y >= (1.0 - _MainTex_TexelSize.y))
-                //col = half4 (1,0,0,1);
 
                 return col;
             }
             ENDCG
         }
 
+        //RENDER FRAME
         Pass
         {
             ZWrite Off
-            //Cull Off
 
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
 
-            //#include "UnityCG.cginc"
-
             v2f vert (appdata v)
             {
-                //v.vertex.xyz *= _OutlineWidth;
-
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.uv = v.vertex + float3(.5,.5,.5);//(v.uv -_StartCoords) / _Enlarge + float3(.5,.5,.5);
-                //o.uv = float2(_MovingCoords.x, _MovingCoords.y);
-                //float3 updatedCoords = _StartCoords - _MovingCoords;
-                //o.depth = - _MovingCoords.z;
+                o.uv = v.vertex + float3(.5,.5,.5);
                 o.color = _OutlineColor;
                 return o;
             }
@@ -189,8 +163,10 @@
             {
                 fixed4 col = (0,0,0,1);
 
+                //SET FRAME WIDTH
                 if (i.uv.x <= _OutlineWidth || i.uv.y <= _OutlineWidth || i.uv.x >= (1.0 - _OutlineWidth) || i.uv.y >= (1.0 - _OutlineWidth))
-                col = i.color;//half4 (1,0,0,1);
+                //SET FRAME COLOR
+                col = i.color;
 
                 else
                 discard;

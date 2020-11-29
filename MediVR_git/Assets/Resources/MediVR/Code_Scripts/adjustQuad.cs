@@ -1,4 +1,24 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to set quad window parameters.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -79,22 +99,6 @@ public class adjustQuad : MonoBehaviour
     private float adjustScaleYMin = 0;
     private float adjustScaleYRange = 0;
 
-    /*private float brightnessDefault = 0;
-    private float brightnessMax = 0;
-    private float brightnessMin = 0;
-    private float brightnessRange = 0;
-
-    private float contrastDefault = 0;
-    private float contrastMax = 0;
-    private float contrastMin = 0;
-    private float contrastRange = 0;
-
-    private float thresholdDefault = 0;
-    private float thresholdInvDefault = 0;
-    private float thresholdMax = 0;
-    private float thresholdMin = 0;
-    private float thresholdRange = 0;*/
-
     private GameObject WW = null;
     private GameObject WL = null;
     private GameObject WMin = null;
@@ -137,22 +141,6 @@ public class adjustQuad : MonoBehaviour
         adjustScaleYMax = quadMaterial.GetFloat(adjustScaleYMaxName);
         adjustScaleYRange = adjustScaleYMax - adjustScaleYMin;
 
-        /*brightnessDefault = quadMaterial.GetFloat("_Brightness"); // Uncomment Block for use of parameters
-        brightnessMax = quadMaterial.GetFloat("_BrightnessMax");
-        brightnessMin = quadMaterial.GetFloat("_BrightnessMin");
-        brightnessRange = brightnessMax - brightnessMin;
-
-        contrastDefault = quadMaterial.GetFloat("_Contrast");
-        contrastMax = quadMaterial.GetFloat("_ContrastMax");
-        contrastMin = quadMaterial.GetFloat("_ContrastMin");
-        contrastRange = contrastMax - contrastMin;
-
-        thresholdDefault = quadMaterial.GetFloat("_Threshold");
-        thresholdInvDefault = quadMaterial.GetFloat("_ThresholdInv");
-        thresholdMax = quadMaterial.GetFloat("_ThresholdMax");
-        thresholdMin = quadMaterial.GetFloat("_ThresholdMin");
-        thresholdRange = thresholdMax - thresholdMin;*/
-
         WL = GameObject.Find("WL_Value");
         WW = GameObject.Find("WW_Value");
         WMin = GameObject.Find("WMin_Value");
@@ -178,6 +166,7 @@ public class adjustQuad : MonoBehaviour
         AdjustQuad();
     }
 
+    //AWAKE CONTROLLERS
     private void GetControllers()
     {
         InputDevices.GetDevicesAtXRNode(leftControllerNode, leftDevices);
@@ -195,45 +184,11 @@ public class adjustQuad : MonoBehaviour
         }
     }
 
+    //LISTEN FOR CONTROLLER INPUT
     private void AdjustListen()
     {
         if(adjustListen)
         {
-            /*if(adjust)
-            {
-                if((leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lPress) && lPress) || 
-                        (rightController.TryGetFeatureValue(CommonUsages.gripButton, out bool rPress) && rPress))
-                {
-                    moveLocomotionScript.enabled = true;
-
-                    SetAdjust(false);
-
-                    quadMaterial.SetColor(outlineColorName, inactiveColor);
-                }
-
-                if(rightController.TryGetFeatureValue(CommonUsages.secondaryButton, out bool rPress) && rPress)
-                {
-                    SetAdjust(false);
-                }
-            }
-            else
-            {
-                if((leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lPress) && lPress) || 
-                        (rightController.TryGetFeatureValue(CommonUsages.gripButton, out bool rPress) && rPress))
-                {
-                    moveLocomotionScript.enabled = false;
-
-                    SetAdjust(true);
-
-                    quadMaterial.SetColor(outlineColorName, adjustColor);
-                }
-
-                if(rightController.TryGetFeatureValue(CommonUsages.secondaryButton, out bool rPress) && rPress)
-                {
-                    SetAdjust(true);
-                }
-            }*/
-
             if(rightController.TryGetFeatureValue(adjustWindowButton, out bool lPress) && lPress)
             {
                 if(!flag)
@@ -270,8 +225,6 @@ public class adjustQuad : MonoBehaviour
             {
                 if(flag)
                 {
-                    //audioFXSource.PlayOneShot(onButtonPressUp);
-
                     moveLocomotionScript.enabled = true;
                     snapTurnProviderScript.enabled = true;
 
@@ -283,53 +236,28 @@ public class adjustQuad : MonoBehaviour
                     flag = false;
                 }
             }
-            
-
-            /*if(adjust)
-            {
-                quadMaterial.SetColor(outlineColorName, adjustColor);
-            }
-            else
-            {
-                quadMaterial.SetColor(outlineColorName, inactiveColor);
-            }*/
         }
         
     }
 
+    //SET QUAD WINDOW PARAMETERS
     private void AdjustQuad()
     {
-        /*if (leftController.TryGetFeatureValue(CommonUsages.secondaryButton, out bool press) && press)
-        {
-            ToggleLocomotion();
-            ToggleAdjust();
-        }*/
-
+        //LISTEN FOR WINDOW INPUT
         if(adjustWindow)
         {
-            //moveLocomotionScript.enabled = false;
-
-            //quadMaterial.SetColor(outlineColorName, adjustColor);
-
             if (leftController.TryGetFeatureValue(joystick, out Vector2 lPosition) && lPosition != Vector2.zero)
             {
                 if(adjustWindow)
                 {
-                    //var xAxis = lPosition.x * adjustSpeed * Time.deltaTime;
-                    //var yAxis = lPosition.y * adjustSpeed * Time.deltaTime;
-
                     var xAxis = lPosition.x * adjustWindowXRange / adjustStep;
                     var yAxis = lPosition.y * adjustWindowYRange / adjustStep;
 
-                    //Debug.Log(xAxis);
-                    //Debug.Log(xOrig + xAxis);
                     var xOrig = quadMaterial.GetFloat(adjustWindowXName);
                     var yOrig = quadMaterial.GetFloat(adjustWindowYName);
                     
                     float xTemp = xOrig + xAxis;
                     float yTemp = yOrig + yAxis;
-
-                    //quadMaterial.SetFloat("_Contrast", xOrig + xAxis);
 
                     if(xTemp <= adjustWindowXMax && xTemp >= adjustWindowXMin)
                     {
@@ -341,9 +269,6 @@ public class adjustQuad : MonoBehaviour
                     }
 
                     UpdateWindowScreenDisplay(yTemp, xTemp);
-
-                    //transform.Rotate(new Vector3 (yAxis, -xAxis, 0f), Space.Self);
-                    //Debug.Log(lPosition);
                 }
             }
 
@@ -364,10 +289,9 @@ public class adjustQuad : MonoBehaviour
             {
                 audioFlag = false;
             }
-
-
         }
 
+        //LISTEN FOR ADJUST INPUT
         if(adjustScale)
         {
 
@@ -375,32 +299,17 @@ public class adjustQuad : MonoBehaviour
             {
                 if(adjustScale)
                 {
-                    //var xzAxis = rPosition.x * thresholdRange / adjustStep;
                     var zAxis = rPosition.y * adjustScaleYRange / adjustStep;
 
-                    //quadMaterial.SetFloat("_Threshold", xzAxis);
-                    //quadMaterial.SetFloat("_ThresholdInv", zAxis);
-
-                    //var xzOrig = quadMaterial.GetFloat("_Threshold");
                     var zOrig = quadMaterial.GetFloat(adjustScaleYName);
 
-                    //float xzTemp = xzOrig + xzAxis;
                     float zTemp = zOrig + zAxis;
 
-                    /*if(xzTemp <= thresholdMax && xzTemp >= thresholdMin)
-                    {
-                        quadMaterial.SetFloat("_Threshold", xzTemp);
-                    }*/
                     if(zTemp <= adjustScaleYMax && zTemp >= adjustScaleYMin)
                     {
                         quadMaterial.SetFloat(adjustScaleYName, zTemp);
                         UpdateScaleScreenDisplay(zTemp);
                     }
-
-                    
-
-                    //transform.Rotate(new Vector3 (0f, 0f, zAxis), Space.Self);
-                    //Debug.Log(rPosition);
                 }
             }
 
@@ -412,7 +321,6 @@ public class adjustQuad : MonoBehaviour
                     audioFlag = true;
                 }
 
-                //quadMaterial.SetFloat("_Threshold", thresholdDefault);
                 quadMaterial.SetFloat(adjustScaleYName, adjustScaleYDefault); 
 
                 UpdateScaleScreenDisplay(adjustScaleYDefault);  
@@ -421,31 +329,16 @@ public class adjustQuad : MonoBehaviour
             {
                 audioFlag = false;
             }
-
-            /*else
-            {
-                quadMaterial.SetColor(outlineColorName, inactiveColor);
-            }*/
-
-            /*if (leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lGrip) && lGrip)
-            {
-                SetRotate();
-                SetTranslate();
-            }
-
-            if (rightController.TryGetFeatureValue(CommonUsages.gripButton, out bool rGrip) && rGrip)
-            {
-                SetRotate();
-                SetTranslate();
-            }*/
         }
     }
 
+    //SET LISTENERS
     public void SetAdjustListen(bool state)
     {
         adjustListen = state;
         //Debug.Log($"Adjust Listener set to: {adjustListen}!");
     }
+
 
     public void SetAdjustWindow(bool state)
     {
@@ -459,18 +352,14 @@ public class adjustQuad : MonoBehaviour
         //Debug.Log($"Adjust set to: {adjust}!");
     }
 
-    /*public void ToggleAdjust()
-    {
-        adjust = !adjust;
-        //Debug.Log($"Adjust set to: {adjust}!");
-    }*/
-
+    //ENABLE/DISABLE LOCOMOTION SYSTEM
     public void ToggleLocomotion()
     {
         moveLocomotionScript.enabled  = !moveLocomotionScript.enabled;
         //Debug.Log($"Locomotion set to: {moveLocomotionScript.enabled}!");
     }
 
+    //DISPLAY WINDOW PARAMETERS ON VIRTUAL SCREEN
     public void UpdateWindowScreenDisplay(float wl, float ww)
     {
         WL.GetComponent<TextMeshProUGUI>().text = wl.ToString("F0");
@@ -479,11 +368,13 @@ public class adjustQuad : MonoBehaviour
         WMax.GetComponent<TextMeshProUGUI>().text = (wl + (ww / 2)).ToString("F0");
     }
 
+    //DISPLAY SCALE ON VIRTUAL SCREEN
     public void UpdateScaleScreenDisplay(float wscale)
     {
         WScale.GetComponent<TextMeshProUGUI>().text = (wscale / adjustScaleYDefault * 100).ToString("F0") + "%";
     }
 
+    //RESET WINDOWING AND SCALING
     public void ResetWindowAndScale()
     {
         quadMaterial.SetFloat(adjustWindowXName, adjustWindowXDefault);

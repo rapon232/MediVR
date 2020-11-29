@@ -1,4 +1,10 @@
-﻿// Only works on ARGB32, RGB24 and Alpha8 textures that are marked readable
+﻿// Author: Eric Haines (Eric5h5)
+// From Unify Community Wiki
+
+//Source: https://wiki.unity3d.com/index.php/TextureScale
+
+
+// Only works on ARGB32, RGB24 and Alpha8 textures that are marked readable
  
 using System.Threading;
 using UnityEngine;

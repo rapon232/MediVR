@@ -1,4 +1,23 @@
-﻿Shader "MediVR/FlattenedRendering"
+﻿
+
+//    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+//   Copyright (C) 2020  Dimitar Tahov
+
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+
+//    This shader serves to render the slicing frame at runtime.
+
+
+Shader "MediVR/FlattenedRendering"
 {
     Properties
     {
@@ -30,9 +49,6 @@
         [Toggle]
         _CutWhitePixelsAfter("Cut White Foreground", Int) = 0
         _CutUpperBorder("White Cutoff level", Range(0,1)) = 0.95
-       
-        //_WindowMax("Window Max", Int) = 225
-        //_WindowMin("Window Min", Int) = -125
         
         [HideInInspector]
         _EnlargeMin("Enlargement Minimum", Float) = 1
@@ -64,8 +80,6 @@
         _ThresholdInv("Inverted Threshold", Range(0,1)) = 1
 
         _StartCoords("Quad Start Coordinates", Vector) = (0,0,0) 
-        //_MovingCoords("Quad Updated Coordinates", Vector) = (0,0,0) 
-
     }
 
         CGINCLUDE
@@ -94,15 +108,10 @@
             float _ThresholdInv;
 
             float3 _StartCoords;
-            //float3 _MovingCoords;
-
-            
-            
 
             struct appdata
             {
                 float4 vertex : POSITION;
-                //float2 uv : TEXCOORD0;
                 float3 uv : TEXCOORD0;
 
                 float3 normal : NORMAL;
@@ -111,17 +120,13 @@
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-                //float2 uv : TEXCOORD0;
                 float3 uv : TEXCOORD0;
-
-                //float depth : TEXCOORD1;
 
                 float3 normal : NORMAL;
                 float4 color : COLOR;
             };
 
             sampler3D _MainTex;
-            //float4 _MainTex_ST;
             float4 _MainTex_TexelSize;
 
         ENDCG
@@ -131,6 +136,7 @@
         Tags { "Queue"="Transparent" }
         LOD 200
 
+        //RENDER TEXTURE SLICE
         Pass
         {
             ZWrite On
@@ -142,50 +148,45 @@
 
             v2f vert (appdata v)
             {
-                //v.vertex.xyz *= _OutlineWidth;
-
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.uv = (v.uv -_StartCoords) / _Enlarge + float3(.5,.5,.5);
-                //o.uv = float2(_MovingCoords.x, _MovingCoords.y);
-                //float3 updatedCoords = _StartCoords - _MovingCoords;
-                //o.depth = - _MovingCoords.z;
-                //o.color = _OutlineColor;
+
                 return o;
             }
 
             float4 frag (v2f i) : SV_Target
             {
-                // sample the texture
-                //_uv = float3(i.uv, i.depth);
-                //fixed4 col = tex3Dlod(_MainTex, float4(i.uv,i.depth,0));
+                //CLIP TEXTURE IN Z AXIS
                 clip(i.uv);
                 clip(1.0 - i.uv);
 
+                //GET PIXEL COLOR
                 float4 col = tex3D(_MainTex, i.uv);
-
                 float4 newCol = col;
 
-                //_CutUpperBorder = 1 - _CutLowerBorder;
-
+                //CUT BLACK BACKGROUND OF DICOM FILE
                 if(_CutBlackPixelsBefore == 1)
                 {
                     if(newCol.r < _CutLowerBorder && newCol.g < _CutLowerBorder && newCol.b < _CutLowerBorder)
 					discard;
                     
                 }
+                //CUT WHITE FOREGROUND OF DICOM FILE
                 if(_CutWhitePixelsBefore == 1)
                 {
                     if(newCol.r > _CutUpperBorder && newCol.g > _CutUpperBorder && newCol.b > _CutUpperBorder)
                     discard;
                 }
 
+                //CALCULATE WINDOW BOUNDS
                 _WindowMax =  _WindowCenter + (_WindowWidth/2);
                 _WindowMin =  _WindowCenter - (_WindowWidth/2);
 
+                //RESCALE PIXEL VALUE BACK INTO HOUNSFIELD SCALE
                 newCol = (newCol * 4095) - 1024;
 
+                //WINDOW PIXEL VALUE
                 if(newCol.r > _WindowMax && newCol.g > _WindowMax && newCol.b > _WindowMax)
                 {
                     newCol = _WindowMax;
@@ -199,58 +200,42 @@
                     newCol = newCol;
                 }
 
+                //RESCALE PIXEL BACK FROM HOUNSFIELD SCALE TO 0..1
                 newCol = (newCol - _WindowMin) / _WindowWidth;
-
-                /*if(col.r < _Threshold && col.g < _Threshold && col.b < _Threshold)
-					discard;
-
-                if(col.r > _ThresholdInv && col.g > _ThresholdInv && col.b > _ThresholdInv)
-                discard;*/
-
-                //col*= _Contrast;
-                //col += _Brightness;
                 
+                //CUT BLACK BACKGROUND AFTER WINDOWING
                 if(_CutBlackPixelsAfter == 1)
                 {
                     if(newCol.r < _CutLowerBorder && newCol.g < _CutLowerBorder && newCol.b < _CutLowerBorder)
 					discard;
                 }
+                //CUT WHITE FOREGROUND AFTER WINDOWING
                 if(_CutWhitePixelsAfter == 1)
                 {
                     if(newCol.r > _CutUpperBorder && newCol.g > _CutUpperBorder && newCol.b > _CutUpperBorder)
                     discard;
                 }
 
-                //if (i.uv.x <= _MainTex_TexelSize.x || i.uv.y <= _MainTex_TexelSize.y || i.uv.x >= (1.0 - _MainTex_TexelSize.x) || i.uv.y >= (1.0 - _MainTex_TexelSize.y))
-                //col = half4 (1,0,0,1);
-
                 return newCol;
             }
             ENDCG
         }
 
+        //RENDER COLOR FRAME
         Pass
         {
             ZWrite Off
-            //Cull Off
 
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
 
-            //#include "UnityCG.cginc"
-
             v2f vert (appdata v)
             {
-                //v.vertex.xyz *= _OutlineWidth;
-
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.uv = v.vertex + float3(.5,.5,.5);//(v.uv -_StartCoords) / _Enlarge + float3(.5,.5,.5);
-                //o.uv = float2(_MovingCoords.x, _MovingCoords.y);
-                //float3 updatedCoords = _StartCoords - _MovingCoords;
-                //o.depth = - _MovingCoords.z;
+                o.uv = v.vertex + float3(.5,.5,.5);
+
                 o.color = _OutlineColor;
                 return o;
             }
@@ -259,8 +244,10 @@
             {
                 fixed4 col = (0,0,0,1);
 
+                //SET FRAME WIDTH
                 if (i.uv.x <= _OutlineWidth || i.uv.y <= _OutlineWidth || i.uv.x >= (1.0 - _OutlineWidth) || i.uv.y >= (1.0 - _OutlineWidth))
-                col = i.color;//half4 (1,0,0,1);
+                //SET FRAME COLOR
+                col = i.color;
 
                 else
                 discard;

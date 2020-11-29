@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to initialize imported data and open it at runtime.
+
+*/
+
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,8 +37,6 @@ using Dicom.Network;
 using Dicom.Media;
 
 using TMPro;
-
-
 
 public class importDicom : MonoBehaviour
 {
@@ -41,19 +59,12 @@ public class importDicom : MonoBehaviour
     private UnityEngine.Object[] loadedTextures = null;
     private UnityEngine.Object[] loaded2DTextures = null;
 
-    //private GameObject dicomImporter = null;
-    //private initialImportDicom initialImportScript = null;
-
-
     // Start is called before the first frame update
     void Start()
     {
         //////// PATHS
 
-        //dicomImporter = GameObject.Find("Dicom_Importer");
-        //initialImportScript = dicomImporter.GetComponent<initialImportDicom>();
-        //dirName = initialImportScript.dicomFileDirectory; 
-        dirName = setCurrentDirectory.currentDirectory;//initialImportScript.userDefinedFolderName;
+        dirName = setCurrentDirectory.currentDirectory;
         destinationTextureDirName = initialImportDicom.assetDestinationDirectory;
         textureDestinationPath = initialImportDicom.savedTextureDestinationPath;
 
@@ -63,7 +74,6 @@ public class importDicom : MonoBehaviour
         {
             pathTo3DTextures = "MediVR/Textures/" + destinationTextureDirName + "/" + dirName; 
 
-            //threeDimTexture = Resources.Load<Texture3D>("MediVR/Textures/" + destinationTextureDirName + "/" + textureRessourceName); 
             loadedTextures = Resources.LoadAll(pathTo3DTextures, typeof(Texture3D)); //TRY TO LOAD 3D TEXTURE FROM FOLDER
         }
        
@@ -71,8 +81,6 @@ public class importDicom : MonoBehaviour
         {
             if(loadedTextures.Length > 0)
             {
-                //Debug.Log($"{loadedTextures.Length} 3D Texture(s) loaded. Using first texture from List.");
-
                 threeDimTexture = (Texture3D)loadedTextures[0];
 
                 //Debug.Log($"{loadedTextures[0].name}");
@@ -80,8 +88,6 @@ public class importDicom : MonoBehaviour
                 //////// LOAD METADATA
 
                 metadataName = pathTo3DTextures + "/" + loadedTextures[0].name + "_MetaData";
-
-                //metadataName = loadedTextures[0].name + "_MetaData.XML";
 
                 var resource = Resources.Load<TextAsset>(metadataName);
                 if(resource != null)

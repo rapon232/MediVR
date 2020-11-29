@@ -1,4 +1,24 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to momentarily change button text and color after pressing of said button.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +30,6 @@ public class changeButtonLook : MonoBehaviour
     private Button button = null;
     private ColorBlock buttonColor = ColorBlock.defaultColorBlock;
     private Image buttonImage = null;
-    //private Color buttonImageColor;
     private Text buttonText = null;
 
     private Color inactiveColor = Color.clear;
@@ -51,6 +70,7 @@ public class changeButtonLook : MonoBehaviour
         
     }
 
+    //TOGGLE ACTIVENESS OF GAME OBJECT
     public void ToggleActive(GameObject GO)
     {
         if(GO.activeSelf)
@@ -63,11 +83,9 @@ public class changeButtonLook : MonoBehaviour
         }
     }
 
+    //TOGGLE BUTTON COLOR
     public void ToggleColor()
     {
-        //buttonColor = button.colors;
-        //buttonImageColor = buttonImage.color;
-
         if(buttonImage.color == Color.black)
         {
             buttonImage.color = inactiveColor;
@@ -78,15 +96,11 @@ public class changeButtonLook : MonoBehaviour
             buttonImage.color = Color.black;
             buttonText.color = Color.white;
         }
-
-        //button.colors = buttonColor;
     }
 
+    //TOGGLE BUTTON TEXT COLOR
     public void ToggleColorText(string Text)
     {
-        //buttonColor = button.colors;
-        //buttonImageColor = buttonImage.color;
-
         if(buttonImage.color == Color.black)
         {
             buttonImage.color = inactiveColor;
@@ -99,15 +113,11 @@ public class changeButtonLook : MonoBehaviour
             buttonText.color = Color.white;
             buttonText.text = Text;
         }
-
-        //button.colors = buttonColor;
     }
 
+    //TOGGLE BUTTON COLOR OVER SPECIFIED PERIOD OF TIME
     public void ToggleColorTextOverTime(string timedText)
     {
-        //buttonColor = button.colors;
-        //buttonImageColor = buttonImage.color;
-
         if(countdown)
         {
             // do nothing
@@ -118,7 +128,5 @@ public class changeButtonLook : MonoBehaviour
             buttonText.text = timedText;
             ToggleColor();
         }
-
-        //button.colors = buttonColor;
     }
 }

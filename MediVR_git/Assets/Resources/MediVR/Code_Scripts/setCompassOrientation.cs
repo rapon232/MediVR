@@ -1,4 +1,25 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to assign the correct letters to the orientation compass, as to indicate the 
+    positioning of the patient relative to the three anatomical planes.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,12 +43,6 @@ public class setCompassOrientation : MonoBehaviour
 
     private string orientation = null;
 
-    //private GameObject mainCam = null;
-
-    //private Quaternion screenOrientation;
-
-    //private float mainCamYOrientation;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -47,6 +62,7 @@ public class setCompassOrientation : MonoBehaviour
         {
             orientation = importDicomScript.dicomInformation.OrientationPatient;
 
+            //APPLY LETTERS ACCORDING TO CALCULATED PATIENT ORIENTATION
             switch(orientation)
             {
                 case ("Coronal AP"):
@@ -116,21 +132,6 @@ public class setCompassOrientation : MonoBehaviour
             orientationCompass.SetActive(false);
         }
 
-        //Debug.Log($"LOG: {orientation}");
-
-        //mainCam = GameObject.Find("Main Camera");
-        //screenOrientation = orientationL.transform.rotation;
-
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //mainCamYOrientation = mainCam.transform.rotation.eulerAngles.y;
-        //transform.rotation = new Quaternion(0, xrRigOrientation.y, 0);
-        //orientationL.transform.localRotation = Quaternion.Euler(screenOrientation.x, mainCamYOrientation, screenOrientation.z);
-        //orientationL.transform.Rotate( new Vector3(screenOrientation.x, mainCamYOrientation, screenOrientation.z), Space.Self);
-
+        //Debug.Log($"LOG: {orientation}");        
     }
 }

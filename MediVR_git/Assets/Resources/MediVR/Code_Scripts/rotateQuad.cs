@@ -1,4 +1,24 @@
-﻿using System.Collections;
+﻿/*
+
+    MediVR, a medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
+
+    Copyright (C) 2020  Dimitar Tahov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    This script serves to move slice frame by joystick input.
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -74,6 +94,7 @@ public class rotateQuad : MonoBehaviour
         //Debug.Log("Rotated Quad");
     }
 
+    //AWAKE CONTROLLERS
     private void GetControllers()
     {
         InputDevices.GetDevicesAtXRNode(leftControllerNode, leftDevices);
@@ -91,6 +112,7 @@ public class rotateQuad : MonoBehaviour
         }
     }
 
+    //LISTEN FOR INPUT
     private void RotateQuad()
     {
         if(rotate || translate)
@@ -161,49 +183,10 @@ public class rotateQuad : MonoBehaviour
             {
                 audioFlag = false;
             }
-
-            /*if(rightController.TryGetFeatureValue(resetButton, out bool rClick) && rClick)
-            {
-                if(rotate)
-                {
-                    this.transform.rotation = rotateDefault;
-
-                    if(!audioFlag)
-                    {
-                        audioFXSource.PlayOneShot(onButtonPressDown);
-                        audioFlag = true;
-                    }
-                }
-                else if(translate)
-                {
-                    this.transform.position = translateDefault;
-
-                    if(!audioFlag)
-                    {
-                        audioFXSource.PlayOneShot(onButtonPressDown);
-                        audioFlag = true;
-                    }
-                }
-            }
-            else
-            {
-                audioFlag = false;
-            }*/
-
-            /*if (leftController.TryGetFeatureValue(CommonUsages.gripButton, out bool lGrip) && lGrip)
-            {
-                SetRotate();
-                SetTranslate();
-            }
-
-            if (rightController.TryGetFeatureValue(CommonUsages.gripButton, out bool rGrip) && rGrip)
-            {
-                SetRotate();
-                SetTranslate();
-            }*/
         }
     }
 
+    //SET LISTENERS
     public void SetRotate(bool state)
     {
         rotate = state;
@@ -216,6 +199,7 @@ public class rotateQuad : MonoBehaviour
         //Debug.Log($"Translate set to: {translate}!");
     }
 
+    //RESET POSITION AND ROTATION OF FRAME
     public void ResetPositionRotation()
     {
         this.transform.position = translateDefault;
