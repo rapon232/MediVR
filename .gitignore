@@ -60,10 +60,5 @@ crashlytics-build.properties
 
 #Large files over 100mb
 MediVR_git/Assets/Resources/MediVR/Textures/Dicom 3D Textures
-#MediVR_git/Assets/Resources/MediVR/Textures/Dicom 3D Textures/CT_Series_3DTexture_512x512x512.asset
-#MediVR_git/Assets/Resources/MediVR/Textures/Dicom 3D Textures/CT_Series_3DTexture_512x512x512.asset.meta
 
-CT_Series/Saved
-
-#MediVR_git/Assets/Oculus/SampleFramework/Core/TouchControllers/Models/controller_NM.psd
 
