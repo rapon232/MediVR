@@ -16,6 +16,10 @@ Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under Prof. Dr.-Ing.
 
 ![image](Gallery/Screenshot%202020-11-13%20at%2021.57.56.png)
 
+Video of app at runtime with imported Abdomen CT Dataset available [here](https://youtu.be/WNjk1fsayIA).
+
+Video of app at runtime with imported Brain CT Dataset available [here](https://youtu.be/NMsnznsmv3w).
+
 ---
 
 ## Instructions for Setup & Use
@@ -31,7 +35,7 @@ Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under Prof. Dr.-Ing.
 
 ### Instructions for DICOM import
 
-For example use, download sample CT Dataset from the [Dicom Library](https://www.dicomlibrary.com).
+For example use, download a sample CT Dataset from the [Dicom Library](https://www.dicomlibrary.com).
 
   1. Open Scene **VirtualDiagnosticsMenu** in Hierarchy and locate object **Dicom_Importer**.
   2. To set the path to a DICOM directory, go to Menu Bar -> MediVR -> Choose Dicom Source Directory, it should appear under the Inspector Tab.
@@ -68,6 +72,11 @@ For example use, download sample CT Dataset from the [Dicom Library](https://www
   ![image](Gallery/Screenshot%202020-11-26%20at%2013.31.28.png)
   ![image](Gallery/Screenshot%202020-11-19%20at%2012.56.31.png)
 
+### Instructions for project launch in Unity
+
+  1. Make sure ONLY the **VirtualDiagnosticsMenu** scene is loaded in hierarchy.
+  2. Hit Play and click on desired dataset in menu under the Game tab. Next Scene should load automatically.
+  3. Slices can be duplicated using "d" button on keyboard and the window can be set from quad shader directly.
 ---
 
 ## License & Copyright
