@@ -2,6 +2,8 @@
 
 **Version 1.0.0**
 
+![image](Gallery/Screenshot 2020-11-26 at 13.25.58.png)
+
 A medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
 
 MediVR aims to contribute to the medical field by allowing medical doctors, professors and students to import, view, explore, manipulate and export 3D DICOM studies in an immersive VR environment. The application offers a modern and intuitive user interface to interact with medical datasets in 3D space, rather than on screen.
