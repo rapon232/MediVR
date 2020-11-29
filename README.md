@@ -23,6 +23,8 @@ Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under Prof. Dr.-Ing.
 
 ### Instructions for DICOM import
 
+For example use, download sample CT Dataset from the [Dicom Library](https://www.dicomlibrary.com).
+
   1. Open Scene **VirtualDiagnosticsMenu** in Hierarchy and locate object **Dicom_Importer**.
   2. To set the path to a DICOM directory, go to Menu Bar -> MediVR -> Choose Dicom Source Directory, it should appear under the Inspector Tab.
   3. The slices should be ordered in ascending order from distal to proximal side of volume, if other way around, tick box **Reverse Slice Order**. All Slices in one directory should also be part of only one study.
@@ -30,6 +32,7 @@ Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under Prof. Dr.-Ing.
   5. Hit Button **Import Dicom Files** and wait for confirmation on console. Depending on the amount of files, this may take a couple of minutes, be patient.
   6. Button **Save Imported Directory Names** does not need to be pressed while importing, it is there only in case pre-imported data gets manually copied to project and needs to be added to directory list.
   7. Repeat process for all DICOM studies to be imported.
+  8. Upload new .APK to Quest each time more data is imported into project.
 
 ### Instructions for project launch
 
