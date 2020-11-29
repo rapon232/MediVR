@@ -8,7 +8,7 @@ A medical Virtual Reality application for exploring 3D medical datasets on the O
 
 MediVR aims to contribute to the medical field by allowing medical doctors, professors and students to import, view, explore, manipulate and export 3D DICOM studies in an immersive VR environment. The application offers a modern and intuitive user interface to interact with medical datasets in 3D space, rather than on screen.
 
-Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under Prof. Dr.-Ing. Kay Otto for Gesundheitselektronik course of study @ HTW Berlin.
+Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under [Prof. Dr.-Ing. Kay Otto for](https://www.researchgate.net/profile/Kay_Otto) [Gesundheitselektronik](https://ge-bachelor.htw-berlin.de) course of study @ [HTW Berlin](https://www.htw-berlin.de).
 
 ![image](Gallery/Screenshot%202020-11-26%20at%2013.28.54.png)
 
@@ -83,7 +83,7 @@ For example use, download a sample CT Dataset from the [Dicom Library](https://w
 
 © Dimitar Tahov 2020
 
-Student @ [HTW Berlin](https://www.htw-berlin.de), [Gesundheitselektronik](https://ge-bachelor.htw-berlin.de) Bachelor's thesis under Prof. Dr.-Ing. Kay Otto
+Student @ [HTW Berlin](https://www.htw-berlin.de), [Gesundheitselektronik](https://ge-bachelor.htw-berlin.de) Bachelor's thesis under [Prof. Dr.-Ing. Kay Otto](https://www.researchgate.net/profile/Kay_Otto).
 
 MediVR licensed under the [GNU General Public License v3](LICENSE.txt).
 
