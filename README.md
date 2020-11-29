@@ -1,12 +1,12 @@
 # MediVR
 
-** Version 1.0.0 **
+**Version 1.0.0**
 
 A medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
 
 MediVR aims to contribute to the medical field by allowing medical doctors, professors and students to import, view, explore, manipulate and export 3D DICOM studies in an immersive VR environment. The application offers a modern and intuitive user interface to interact with medical datasets in 3D space, rather than on screen.
 
-Developed on Unity.
+Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under Prof. Dr.-Ing. Kay Otto for Gesundheitselektronik course of study @ HTW Berlin.
 
 ---
 
@@ -57,6 +57,8 @@ Developed on Unity.
 © Dimitar Tahov 2020
 
 Student @ [HTW Berlin](https://www.htw-berlin.de), [Gesundheitselektronik](https://ge-bachelor.htw-berlin.de) Bachelor's thesis under Prof. Dr.-Ing. Kay Otto
+
+MediVR licensed under the [GNU General Public License v3](LICENSE.txt).
 
 ---
 
