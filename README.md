@@ -2,7 +2,7 @@
 
 **Version 1.0.0**
 
-![image](Gallery/Screenshot%202020-11-26%20at%2013.25.58)
+![image](Gallery/Screenshot%202020-11-26%20at%2013.25.58.png)
 
 A medical Virtual Reality application for exploring 3D medical datasets on the Oculus Quest.
 
