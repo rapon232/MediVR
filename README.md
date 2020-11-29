@@ -10,6 +10,12 @@ MediVR aims to contribute to the medical field by allowing medical doctors, prof
 
 Developed on Unity, by Dimitar Tahov as a Bachelor's Thesis under Prof. Dr.-Ing. Kay Otto for Gesundheitselektronik course of study @ HTW Berlin.
 
+![image](Gallery/Screenshot%202020-11-26%20at%2013.28.54.png)
+
+![image](Gallery/Screenshot%202020-11-13%20at%2021.58.22.png)
+
+![image](Gallery/Screenshot%202020-11-13%20at%2021.57.56.png)
+
 ---
 
 ## Instructions for Setup & Use
@@ -44,16 +50,23 @@ For example use, download sample CT Dataset from the [Dicom Library](https://www
 ### Instructions for app use
 
   1. After opening of the app, choose imported study from the menu screen and the virtual cabinet automatically loads.
+  ![image](Gallery/Screenshot%202020-11-10%20at%2012.03.17.png)
   2. The left wall shows pertinent information related to loaded study.
+  ![image](Gallery/Screenshot%202020-11-11%20at%2013.22.46.png)
   3. The Back wall shows an instruction screen for use of the application.
+  ![image](Gallery/Screenshot%202020-11-26%20at%2013.27.29.png)
   2. Hit button **Show Instructions** on the back wall and get acquainted with all joystick combinations for interaction with the loaded volume.
   3. Hit button **Show Orientation** on the back wall to show patient orientation relative to study. The orientation will appear next to the loaded volume.
+  ![image](Gallery/Screenshot%202020-11-11%20at%2013.27.52.png)
   6. The 3D Volume is located in the centre of the room. A floating screen above it shows window parameters and scale as well as some buttons.
+  ![image](Gallery/Screenshot%202020-11-13%20at%2021.54.52.png)
   3. To toggle on/off the cutting of the study's black background, hit **Cut Background** button on the floating screen.
   8. To save all reproduced slices, hit the **Save Images** button. They will appear in .PNG format in the MediVR/Saved Slices directory on the Quest's internal storage.
   3. To reset cutting plane position and window, hit the **↺** button.
   4. To go back to menu and quit or choose different study, hit **Open Menu** button.
   10. The right wall has 10 interactive fields for comparing slices. To pin slices to wall, drag them near to the field and release. To remove, either delete or drag outside screen.
+  ![image](Gallery/Screenshot%202020-11-26%20at%2013.31.28.png)
+  ![image](Gallery/Screenshot%202020-11-19%20at%2012.56.31.png)
 
 ---
 
