@@ -85,7 +85,7 @@ For example use, download a sample CT Dataset from the [Dicom Library](https://w
 
 Student @ [HTW Berlin](https://www.htw-berlin.de), [Gesundheitselektronik](https://ge-bachelor.htw-berlin.de) Bachelor's thesis supervised by [Prof. Dr. Kay Otto](https://www.researchgate.net/profile/Kay_Otto).
 
-MediVR is licensed under the [GNU General Public License v3](GNU General Public License.txt). The GPLv3 License only covers the project, excluding ALL externally downloaded assets and packages. The licensing information can be found in the [LICENSE](LICENSE.txt) file.
+MediVR is licensed under the [GNU General Public License v3](GNU%20General%20Public%20License.txt). The GPLv3 License only covers the project, excluding ALL externally downloaded assets and packages. The licensing information can be found in the [LICENSE](LICENSE.txt) file.
 
 ---
 
